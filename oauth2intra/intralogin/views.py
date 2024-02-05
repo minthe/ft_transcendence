@@ -13,15 +13,15 @@ def intra_login(request: HttpRequest):
 
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
-	exchange_code(code)
 	print(code)
-	return JsonResponse({ "msg": "Redirected." })
+	user = exchange_code(code)
+	return JsonResponse({ "user": user })
 
 def exchange_code(code: str):
 	data = {
+		"grant_type": "authorization_code",
 		"client_id": os.environ.get('CLIENT_ID'),
 		"client_secret": os.environ.get('CLIENT_SECRET'),
-		"grant_type": "authorization_code",
 		"code": code,
 		"redirect_uri": os.environ.get('REDIRECT_URI'),
 		"scope": "public"
@@ -29,14 +29,13 @@ def exchange_code(code: str):
 	headers = {
 		"Content-Type": 'application/x-www-form-urlencoded'
 	}
-	oauth_url = os.environ.get('OAUTH_URL')
-	response = requests.post(oauth_url, data=data, headers=headers)
-	if response.text:
-		credentials = response.json()
-	else:
-		print("Empty response received")
-		credentials = None
+	response = requests.post("https://api.intra.42.fr/oauth/token", data=data, headers=headers)
 	print(response)
 	credentials = response.json()
-	print(credentials)
-	print(data)
+	access_token = credentials['access_token']
+	response = requests.get("https://api.intra.42.fr/v2/me", headers={
+		"Authorization": 'Bearer %s' % access_token})
+	print(response)
+	user = response.json()
+	# print(user)
+	return user
