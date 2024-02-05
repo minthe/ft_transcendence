@@ -14,9 +14,7 @@ def intra_login(request: HttpRequest):
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
 	exchange_code(code)
-	print('HERE::::::')
 	print(code)
-	print('\n')
 	return JsonResponse({ "msg": "Redirected." })
 
 def exchange_code(code: str):
@@ -31,16 +29,14 @@ def exchange_code(code: str):
 	headers = {
 		"Content-Type": 'application/x-www-form-urlencoded'
 	}
-	response = requests.post(os.environ.get('OAUTH_URL'), data=data, headers=headers)
+	oauth_url = os.environ.get('OAUTH_URL')
+	response = requests.post(oauth_url, data=data, headers=headers)
 	if response.text:
 		credentials = response.json()
 	else:
 		print("Empty response received")
 		credentials = None
-	# print(response)
+	print(response)
 	credentials = response.json()
-	# print(credentials)
-	print('HERE2::::::')
-	print(code)
-	print('\n')
-	print('hello test')
+	print(credentials)
+	print(data)

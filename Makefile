@@ -1,5 +1,3 @@
-include .env
-
 .PHONY: re all build stop up down clean fclean
 
 all: build up

@@ -2,8 +2,8 @@ version: "3"
 
 services:
   oauth2intra:
-    env_file:
-      - .env
+    container_name: oauth2
+    env_file: .env
     user: 1000:1000
     build: oauth2intra/
     command: python /code/manage.py runserver 0.0.0.0:8000
@@ -21,7 +21,10 @@ services:
       - 6969
   nginx:
     image: nginx
-    command: [nginx-debug, '-g', 'daemon off;']
+    container_name: nginx
+    build:
+      context: nginx
+    env_file: .env
     volumes:
       - nginx:/usr/share/nginx/html
     ports:
@@ -32,8 +35,8 @@ services:
     depends_on:
       - postgres
   postgres:
-    env_file:
-      - .env
+    container_name: postgres
+    env_file: .env
     image: postgres:16.1-alpine
     restart: always
     healthcheck:
@@ -55,13 +58,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: oauth2intra/
+      device: oauth2intra
   nginx:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: nginx/root/
+      device: nginx/root
   postgres_data:
 
 networks:
