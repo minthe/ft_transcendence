@@ -1,20 +1,22 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login
 import os
 import requests
 
-auth_url_intra = os.environ['AUTH_URL_INTRA']
+# auth_url_intra = os.environ['AUTH_URL_INTRA']
 
 def home(request: HttpRequest) -> JsonResponse:
 	return JsonResponse({ "msg": "Hello World!" })
 
 def intra_login(request: HttpRequest):
-	return redirect(auth_url_intra)
+	return redirect(os.environ['AUTH_URL_INTRA'])
 
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
 	print(code)
 	user = exchange_code(code)
+	authenticate(request, user=user)
 	return JsonResponse({ "user": user })
 
 def exchange_code(code: str):
@@ -32,6 +34,7 @@ def exchange_code(code: str):
 	response = requests.post("https://api.intra.42.fr/oauth/token", data=data, headers=headers)
 	print(response)
 	credentials = response.json()
+	print(credentials)
 	access_token = credentials['access_token']
 	response = requests.get("https://api.intra.42.fr/v2/me", headers={
 		"Authorization": 'Bearer %s' % access_token})

@@ -28,7 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTHENTICATION_BACKENDS = [
+    'intralogin.auth.IntraAuthenticationBackend'
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+	"intralogin.apps.IntraloginConfig",
 ]
 
 MIDDLEWARE = [
