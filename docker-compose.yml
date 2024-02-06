@@ -6,7 +6,7 @@ services:
     env_file: .env
     user: 1000:1000
     build: oauth2intra/
-    command: python /code/manage.py runserver 0.0.0.0:8000
+    # command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - oauth2intra:/code
     ports:

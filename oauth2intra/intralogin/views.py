@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 import os
 import requests
 
@@ -9,6 +10,19 @@ import requests
 def home(request: HttpRequest) -> JsonResponse:
 	return JsonResponse({ "msg": "Hello World!" })
 
+@login_required(login_url='/oauth2/login')
+def get_authenticated_user(request: HttpRequest):
+	print(request.user)
+	user = request.user
+	return JsonResponse({
+		"id": user.id,
+		"login": user.login,
+		"email": user.email,
+		"first_name": user.first_name,
+		"last_name": user.last_name,
+		"last_login": user.last_login
+	 })
+
 def intra_login(request: HttpRequest):
 	return redirect(os.environ['AUTH_URL_INTRA'])
 
@@ -16,8 +30,11 @@ def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
 	print(code)
 	user = exchange_code(code)
-	authenticate(request, user=user)
-	return JsonResponse({ "user": user })
+	intra_user = authenticate(request, user=user)
+	intra_user = list(intra_user).pop()
+	print(intra_user)
+	login(request, intra_user)
+	return redirect("/auth/user")
 
 def exchange_code(code: str):
 	data = {

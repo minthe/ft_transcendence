@@ -11,5 +11,5 @@ class IntraUser(models.Model):
 	last_name = models.CharField(max_length=42, null=True)
 	last_login = models.DateTimeField(null=True)
 
-	def __str__(self):
-		return self.login
+	def is_authenticated(self, request):
+		return True

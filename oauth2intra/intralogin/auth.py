@@ -10,3 +10,9 @@ class IntraAuthenticationBackend(BaseBackend):
 			print(new_user)
 			return new_user
 		return find_user
+
+	def get_user(self, user_id):
+		try:
+			return IntraUser.objects.get(pk=user_id)
+		except IntraUser.DoesNotExist:
+			return None
