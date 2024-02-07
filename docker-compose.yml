@@ -18,7 +18,7 @@ services:
       postgres:
         condition: service_healthy
     expose:
-      - 6969
+      - 8000
   nginx:
     image: nginx
     container_name: nginx

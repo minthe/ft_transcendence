@@ -20,7 +20,8 @@ def get_authenticated_user(request: HttpRequest):
 		"email": user.email,
 		"first_name": user.first_name,
 		"last_name": user.last_name,
-		"last_login": user.last_login
+		"last_login": user.last_login,
+		"session age": request.session.get_expiry_age(),
 	 })
 
 def intra_login(request: HttpRequest):
@@ -34,6 +35,8 @@ def intra_login_redirect(request: HttpRequest):
 	intra_user = list(intra_user).pop()
 	print(intra_user)
 	login(request, intra_user)
+	request.session.set_expiry(20)
+	print(request.session.get_expiry_age())
 	return redirect("/auth/user")
 
 def exchange_code(code: str):
