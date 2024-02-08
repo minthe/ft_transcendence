@@ -5,7 +5,8 @@ services:
     container_name: oauth2
     env_file: .env
     user: 1000:1000
-    build: oauth2intra/
+    build: 
+      context: oauth2intra
     # command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - oauth2intra:/code
@@ -20,7 +21,6 @@ services:
     expose:
       - 8000
   nginx:
-    image: nginx
     container_name: nginx
     build:
       context: nginx
@@ -36,8 +36,9 @@ services:
       - postgres
   postgres:
     container_name: postgres
+    build:
+      context: postgres
     env_file: .env
-    image: postgres:16.1-alpine
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -54,18 +55,21 @@ services:
 
 volumes:
   oauth2intra:
+    name: oauth2intra
     driver: local
     driver_opts:
       type: none
       o: bind
       device: oauth2intra
   nginx:
+    name: nginx
     driver: local
     driver_opts:
       type: none
       o: bind
       device: nginx/root
   postgres_data:
+    name: postgres
 
 networks:
   network:

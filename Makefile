@@ -12,7 +12,7 @@ down:
 	docker compose down
 clean:
 	docker compose down
-	docker rmi -f django-oauth2-42-oauth2intra postgres:16.1-alpine nginx
-	docker volume rm django-oauth2-42_oauth2intra django-oauth2-42_postgres_data django-oauth2-42_nginx
+	docker rmi -f ft_transcendence-oauth2intra ft_transcendence-postgres ft_transcendence-nginx
+	docker volume rm oauth2intra postgres nginx
 fclean: clean
 	docker system prune -a --force
