@@ -5,3 +5,4 @@ db.sqlite3
 .DS_Store
 notes.md
 me.json
+_temp
