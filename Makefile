@@ -12,7 +12,7 @@ down:
 	docker compose down
 clean:
 	docker compose down
-	docker rmi -f ft_transcendence-oauth2intra ft_transcendence-postgres ft_transcendence-nginx
+	docker rmi -f ft_transcendence-oauth2intra ft_transcendence-postgres ft_transcendence-nginx ft_transcendence-backend ft_transcendence-frontend
 	docker volume rm ft_transcendence_postgres_data
 fclean: clean
 	docker system prune -a --force
