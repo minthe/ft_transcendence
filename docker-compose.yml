@@ -9,7 +9,8 @@ services:
       context: oauth2intra
     # command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
-      - oauth2intra:/code
+      # - oauth2intra:/code
+      - ./oauth2intra:/code
     # ports:
     #   - 8000:8000
     networks:
@@ -25,11 +26,13 @@ services:
     build:
       context: nginx
     env_file: .env
+    user: root
     volumes:
-      - nginx:/usr/share/nginx/html
+      # - nginx:/usr/share/nginx/html
+      - ./nginx/root:/usr/share/nginx/html
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 8080:8080
+      - 80:80
     restart: always
     networks:
       - network
@@ -56,22 +59,28 @@ services:
       - 5432
 
 volumes:
-  oauth2intra:
-    name: oauth2intra
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: oauth2intra
-  nginx:
-    name: nginx
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: nginx/root
+  # oauth2intra:
+  # nginx:
   postgres_data:
-    name: postgres
+
+# for development
+# volumes:
+#   oauth2intra:
+#     name: oauth2intra
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: oauth2intra
+#   nginx:
+#     name: nginx
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: nginx/root
+#   postgres_data:
+#     name: postgres
 
 networks:
   network:

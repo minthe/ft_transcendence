@@ -1,7 +1,7 @@
 .PHONY: re all build stop up down clean fclean
 
 all: build up
-re: clean all
+re: down all
 build:
 	docker compose build
 stop:
@@ -13,6 +13,6 @@ down:
 clean:
 	docker compose down
 	docker rmi -f ft_transcendence-oauth2intra ft_transcendence-postgres ft_transcendence-nginx
-	docker volume rm oauth2intra postgres nginx
+	docker volume rm ft_transcendence_postgres_data
 fclean: clean
 	docker system prune -a --force
