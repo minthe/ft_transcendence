@@ -24,8 +24,8 @@ def get_authenticated_user(request: HttpRequest):
 		"session age": request.session.get_expiry_age(),
 	 })
 
-def intra_login(request: HttpRequest):
-	return redirect(os.environ['AUTH_URL_INTRA'])
+# def intra_login(request: HttpRequest):
+# 	return redirect(os.environ['AUTH_URL_INTRA'])
 
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')

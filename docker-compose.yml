@@ -28,8 +28,8 @@ services:
     volumes:
       # - oauth2intra:/code
       - ./game/backend:/code
-    ports:
-      - 6969:6969
+    # ports:
+    #   - 6969:6969
     networks:
       - network
     restart: always
@@ -68,8 +68,8 @@ services:
       # - nginx:/usr/share/nginx/html
       - ./nginx/root:/usr/share/nginx/html
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - /etc/letsencrypt/live/playpong.duckdns.org/fullchain.pem:/etc/nginx/ssl/fullchain.pem
-      - /etc/letsencrypt/live/playpong.duckdns.org/privkey.pem:/etc/nginx/ssl/privkey.pem
+      - ./.ssl/fullchain.pem:/etc/nginx/ssl/fullchain.pem
+      - ./.ssl/privkey.pem:/etc/nginx/ssl/privkey.pem
     ports:
       - 80:80
       - 443:443
