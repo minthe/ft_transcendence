@@ -8,29 +8,23 @@ services:
     env_file: .env
     user: root
     volumes:
-      # - nginx:/usr/share/nginx/html
       - ./game/frontend/src:/usr/share/nginx/html
       - ./game/frontend/nginx.conf.template:/nginx.conf.template
-      # - ./game/frontend/conf/nginx.conf:/etc/nginx/nginx.conf
-    # ports:
-    #   - 4242:4242
     restart: always
     networks:
       - network
     depends_on:
       - backend
+    expose:
+      - 4242
   backend:
     container_name: backend
     env_file: .env
     user: 1000:1000
     build: 
       context: game/backend
-    # command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
-      # - oauth2intra:/code
       - ./game/backend:/code
-    # ports:
-    #   - 6969:6969
     networks:
       - network
     restart: always
@@ -45,12 +39,8 @@ services:
     user: 1000:1000
     build: 
       context: oauth2intra
-    # command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
-      # - oauth2intra:/code
       - ./oauth2intra:/code
-    # ports:
-    #   - 8000:8000
     networks:
       - network
     restart: always
@@ -66,12 +56,9 @@ services:
     env_file: .env
     user: root
     volumes:
-      # - nginx:/usr/share/nginx/html
       - ./nginx/root:/usr/share/nginx/html
       - ./nginx/nginx.conf.template:/nginx.conf.template
       - ./.ssl/:/etc/nginx/ssl/
-      - ./.ssl/:/etc/nginx/ssl/
-      # - ./nginx/nginx_start.sh:/nginx_start.sh
     ports:
       - 80:80
       - 443:443
@@ -101,28 +88,7 @@ services:
       - 5432
 
 volumes:
-  # oauth2intra:
-  # nginx:
   postgres_data:
-
-# for development
-# volumes:
-#   oauth2intra:
-#     name: oauth2intra
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: oauth2intra
-#   nginx:
-#     name: nginx
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: nginx/root
-#   postgres_data:
-#     name: postgres
 
 networks:
   network:
