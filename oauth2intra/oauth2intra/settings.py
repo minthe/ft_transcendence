@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'oauth2']
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,8 +27,6 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['playpong.duckdns.org', 'oauth2']
 
 AUTHENTICATION_BACKENDS = [
     'intralogin.auth.IntraAuthenticationBackend'

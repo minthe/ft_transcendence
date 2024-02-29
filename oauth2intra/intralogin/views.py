@@ -25,8 +25,12 @@ def get_authenticated_user(request: HttpRequest):
 	 })
 
 def intra_login(request: HttpRequest):
-	client_id = os.environ.get('CLIENT_ID')
+	current_host = os.environ['CURRENT_HOST']
 	redirect_uri = os.environ.get('REDIRECT_URI')
+	if redirect_uri:
+		redirect_uri = f"https://{current_host}{redirect_uri}"
+	client_id = os.environ.get('CLIENT_ID')
+	redirect_uri = redirect_uri
 	authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
 	print("Authorization URL:", authorization_url) 
 	return redirect(authorization_url)
@@ -44,12 +48,16 @@ def intra_login_redirect(request: HttpRequest):
 	return redirect("/auth/user")
 
 def exchange_code(code: str):
+	current_host = os.environ['CURRENT_HOST']
+	redirect_uri = os.environ.get('REDIRECT_URI')
+	if redirect_uri:
+			redirect_uri = f"https://{current_host}{redirect_uri}"
 	data = {
 		"grant_type": "authorization_code",
 		"client_id": os.environ.get('CLIENT_ID'),
 		"client_secret": os.environ.get('CLIENT_SECRET'),
 		"code": code,
-		"redirect_uri": os.environ.get('REDIRECT_URI'),
+		"redirect_uri": redirect_uri,
 		"scope": "public"
 	}
 	headers = {

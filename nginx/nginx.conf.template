@@ -4,16 +4,16 @@ http {
 
     server {
         listen 80;
-        server_name playpong.duckdns.org;
+        server_name ${CURRENT_HOST};
         return 302 https://$server_name$request_uri;
     }
 
     server {
         listen 443 ssl;
-        server_name playpong.duckdns.org;
+        server_name ${CURRENT_HOST};
 
-        ssl_certificate /etc/nginx/ssl/fullchain.pem;
-        ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+        ssl_certificate /etc/nginx/ssl/fullchain_${CURRENT_HOST}.pem;
+        ssl_certificate_key /etc/nginx/ssl/privkey_${CURRENT_HOST}.pem;
 
         # allow 130.61.227.0/24;
         # allow 62.176.248.0/24;
