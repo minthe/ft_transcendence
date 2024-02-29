@@ -60,7 +60,7 @@ services:
     volumes:
       - ./nginx/root:/usr/share/nginx/html
       - ./nginx/nginx.conf.template:/nginx.conf.template
-      - ./.ssl/:/etc/nginx/ssl/
+      - ./.cert/:/etc/nginx/ssl/
     ports:
       - 80:80
       - 443:443
