@@ -3,6 +3,8 @@
 all: build up
 re: down all
 build:
+	chmod +x setup_env.sh
+	bash setup_env.sh
 	docker compose build
 stop:
 	docker compose stop
