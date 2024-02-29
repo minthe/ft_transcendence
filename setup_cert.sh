@@ -15,3 +15,4 @@ if grep -q "^CURRENT_HOST=" .env; then
 else
     echo "CURRENT_HOST='localhost'" >> .env
 fi
+
