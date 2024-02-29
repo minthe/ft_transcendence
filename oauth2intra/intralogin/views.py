@@ -24,8 +24,12 @@ def get_authenticated_user(request: HttpRequest):
 		"session age": request.session.get_expiry_age(),
 	 })
 
-# def intra_login(request: HttpRequest):
-# 	return redirect(os.environ['AUTH_URL_INTRA'])
+def intra_login(request: HttpRequest):
+	client_id = os.environ.get('CLIENT_ID')
+	redirect_uri = os.environ.get('REDIRECT_URI')
+	authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+	print("Authorization URL:", authorization_url) 
+	return redirect(authorization_url)
 
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
@@ -51,7 +55,8 @@ def exchange_code(code: str):
 	headers = {
 		"Content-Type": 'application/x-www-form-urlencoded'
 	}
-	response = requests.post("https://api.intra.42.fr/oauth/token", data=data, headers=headers)
+	authorization_url = os.environ.get('OAUTH_URL')
+	response = requests.post(authorization_url, data=data, headers=headers)
 	print(response)
 	credentials = response.json()
 	print(credentials)
