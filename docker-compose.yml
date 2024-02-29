@@ -2,10 +2,10 @@ version: "3"
 
 services:
   frontend:
+    env_file: .env
     container_name: frontend
     build:
       context: game/frontend
-    env_file: .env
     user: root
     volumes:
       - ./game/frontend/src:/usr/share/nginx/html
@@ -18,8 +18,8 @@ services:
     expose:
       - 4242
   backend:
-    container_name: backend
     env_file: .env
+    container_name: backend
     user: 1000:1000
     build: 
       context: game/backend
@@ -34,8 +34,8 @@ services:
     expose:
       - 6969
   oauth2intra:
-    container_name: oauth2
     env_file: .env
+    container_name: oauth2
     user: 1000:1000
     build: 
       context: oauth2intra
@@ -50,10 +50,12 @@ services:
     expose:
       - 8000
   nginx:
+    env_file: .env
     container_name: nginx
     build:
       context: nginx
-    env_file: .env
+      args:
+        CURRENT_HOST: ${CURRENT_HOST}
     user: root
     volumes:
       - ./nginx/root:/usr/share/nginx/html
