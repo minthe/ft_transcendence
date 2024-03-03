@@ -5,11 +5,6 @@ from django.contrib.auth.decorators import login_required
 import os
 import requests
 
-# auth_url_intra = os.environ['AUTH_URL_INTRA']
-
-def home(request: HttpRequest) -> JsonResponse:
-	return JsonResponse({ "msg": "Hello World!" })
-
 @login_required(login_url='/oauth2/login')
 def get_authenticated_user(request: HttpRequest):
 	print(request.user)
