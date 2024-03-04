@@ -32,15 +32,24 @@ def intra_login(request: HttpRequest):
 
 def intra_login_redirect(request: HttpRequest):
 	code = request.GET.get('code')
-	print(code)
+	print("Code:", code)
 	user = exchange_code(code)
+ 
 	intra_user = authenticate(request, user=user)
-	intra_user = list(intra_user).pop()
-	print(intra_user)
-	login(request, intra_user)
-	request.session.set_expiry(20)
-	print(request.session.get_expiry_age())
-	return redirect("/auth/user")
+	print("Intra_user:", intra_user)
+ 
+	# # intra_user = list(intra_user).pop()
+	# login(request, intra_user)
+	# request.session.set_expiry(20)
+	# print("Expires in:", request.session.get_expiry_age())
+	# return redirect("/auth/user")
+ 
+	if intra_user is not None:
+		login(request, intra_user)
+		return redirect("/auth/user")
+	else:
+		# Handle authentication failure
+		return HttpResponse("Authentication Failed")
 
 def exchange_code(code: str):
 	current_host = os.environ['CURRENT_HOST']
@@ -60,13 +69,13 @@ def exchange_code(code: str):
 	}
 	authorization_url = os.environ.get('OAUTH_URL')
 	response = requests.post(authorization_url, data=data, headers=headers)
-	print(response)
+	print("exchange response:", response)
 	credentials = response.json()
-	print(credentials)
+	print("exchange credentials:", credentials)
 	access_token = credentials['access_token']
 	response = requests.get("https://api.intra.42.fr/v2/me", headers={
 		"Authorization": 'Bearer %s' % access_token})
-	print(response)
+	print("exchange response:", response)
 	user = response.json()
 	# print(user)
 	return user
