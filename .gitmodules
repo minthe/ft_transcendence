@@ -1,0 +1,3 @@
+[submodule "game_chat"]
+	path = game_chat
+	url = git@github.com:mariekart42/TRANSCENDENCE.git
