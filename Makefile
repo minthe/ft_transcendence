@@ -1,7 +1,7 @@
 .PHONY: re all build stop up down clean fclean
 
 all: build up
-re: down all
+re: clean all
 build:
 	chmod +x setup_cert.sh
 	bash setup_cert.sh
