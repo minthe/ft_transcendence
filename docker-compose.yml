@@ -5,11 +5,11 @@ services:
     env_file: .env
     container_name: frontend
     build:
-      context: game/frontend
+      context: game_chat/frontend
     # user: 1000:1000
     volumes:
-      - ./game/frontend/src:/usr/share/nginx/html
-      - ./game/frontend/nginx.conf.template:/nginx.conf.template
+      - ./game_chat/frontend/src:/usr/share/nginx/html
+      - ./game_chat/frontend/nginx.conf.template:/nginx.conf.template
     restart: always
     networks:
       - network
@@ -22,9 +22,9 @@ services:
     container_name: backend
     # user: 1000:1000
     build: 
-      context: game/backend
+      context: game_chat/backend
     volumes:
-      - ./game/backend:/code
+      - ./game_chat/backend:/code
     networks:
       - network
     restart: always
