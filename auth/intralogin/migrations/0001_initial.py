@@ -19,7 +19,6 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254)),
                 ('first_name', models.CharField(max_length=42)),
                 ('last_name', models.CharField(max_length=42)),
-                ('image_url', models.URLField()),
                 ('last_login', models.DateTimeField()),
             ],
         ),

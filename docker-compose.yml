@@ -1,54 +1,8 @@
 version: "3"
 
 services:
-  frontend:
-    env_file: .env
-    container_name: frontend
-    build:
-      context: game_chat/frontend
-    # user: 1000:1000
-    volumes:
-      - ./game_chat/frontend/src:/usr/share/nginx/html
-      - ./game_chat/frontend/nginx.conf.template:/nginx.conf.template
-    restart: always
-    networks:
-      - network
-    depends_on:
-      - backend
-    expose:
-      - 4242
-  backend:
-    env_file: .env
-    container_name: backend
-    # user: 1000:1000
-    build: 
-      context: game_chat/backend
-    volumes:
-      - ./game_chat/backend:/code
-    networks:
-      - network
-    restart: always
-    depends_on:
-      postgres:
-        condition: service_healthy
-    expose:
-      - 6969
-  oauth2intra:
-    env_file: .env
-    container_name: oauth2
-    # user: 1000:1000
-    build: 
-      context: oauth2intra
-    volumes:
-      - ./oauth2intra:/code
-    networks:
-      - network
-    restart: always
-    depends_on:
-      postgres:
-        condition: service_healthy
-    expose:
-      - 8000
+
+# PROXY SERVER
   nginx:
     env_file: .env
     container_name: nginx
@@ -56,7 +10,6 @@ services:
       context: nginx
       args:
         CURRENT_HOST: ${CURRENT_HOST}
-    # user: 1000:1000
     volumes:
       - ./nginx/root:/usr/share/nginx/html
       - ./nginx/nginx.conf.template:/nginx.conf.template
@@ -68,10 +21,31 @@ services:
     networks:
       - network
     depends_on:
-      - postgres
-      - oauth2intra
-  postgres:
-    container_name: postgres
+      - auth_backend
+      - auth_db
+      - game_chat_frontend
+      - game_chat_backend
+      - game_chat_db
+
+
+# SERVICE AUTH
+  auth_backend:
+    env_file: .env
+    container_name: auth_backend
+    build: 
+      context: auth
+    volumes:
+      - ./auth:/code
+    networks:
+      - network
+    restart: always
+    depends_on:
+      auth_db:
+        condition: service_healthy
+    expose:
+      - 8000
+  auth_db:
+    container_name: auth_db
     build:
       context: postgres
     user: postgres
@@ -86,12 +60,68 @@ services:
     networks:
       - network
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - auth_db:/var/lib/postgresql/data/
     expose:
       - 5432
 
+
+# SERVICE GAME_CHAT
+  game_chat_frontend:
+    env_file: .env
+    container_name: game_chat_frontend
+    build:
+      context: game_chat/frontend
+    # user: 1000:1000
+    volumes:
+      - ./game_chat/frontend/src:/usr/share/nginx/html
+      - ./game_chat/frontend/nginx.conf.template:/nginx.conf.template
+    restart: always
+    networks:
+      - network
+    depends_on:
+      - game_chat_backend
+    expose:
+      - 4242
+  game_chat_backend:
+    env_file: .env
+    container_name: game_chat_backend
+    # user: 1000:1000
+    build: 
+      context: game_chat/backend
+    volumes:
+      - ./game_chat/backend:/code
+    networks:
+      - network
+    restart: always
+    depends_on:
+      game_chat_db:
+        condition: service_healthy
+    expose:
+      - 6969
+  game_chat_db:
+    container_name: game_chat_db
+    build:
+      context: postgres
+    user: postgres
+    env_file: .env
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - network
+    volumes:
+      - game_chat_db:/var/lib/postgresql/data/
+    expose:
+      - 5432
+
+
 volumes:
-  postgres_data:
+  game_chat_db:
+  auth_db:
 
 networks:
   network:
