@@ -60,5 +60,10 @@ http {
             proxy_pass http://oauth2:8000;
             proxy_set_header Host $host;
         }
+        
+        location /admin {
+            proxy_pass http://backend:6969;
+            proxy_set_header Host $host;
+        } 
     }
 }

@@ -27,6 +27,8 @@ services:
       - ./game_chat/backend:/code
     networks:
       - network
+    ports:
+      - 6969:6969
     restart: always
     depends_on:
       postgres:
