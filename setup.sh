@@ -16,3 +16,9 @@ if [[ $current_host != *"playpong"* ]]; then
 		-keyout "./.cert/privkey_$current_host.pem" -out "./.cert/fullchain_$current_host.pem" \
 		-subj "/CN=$current_host"
 fi
+
+directory="game_chat"
+if [ -z "$(ls -A $directory)" ]; then
+	git submodule init $directory
+	git submodule update $directory
+fi

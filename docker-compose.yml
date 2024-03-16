@@ -22,7 +22,7 @@ services:
       - network
     depends_on:
       - auth_backend
-      - auth_db
+      - users_db
       - game_chat_frontend
       - game_chat_backend
       - game_chat_db
@@ -40,12 +40,12 @@ services:
       - network
     restart: always
     depends_on:
-      auth_db:
+      users_db:
         condition: service_healthy
     expose:
       - 8000
-  auth_db:
-    container_name: auth_db
+  users_db:
+    container_name: users_db
     build:
       context: postgres
     user: postgres
@@ -60,7 +60,7 @@ services:
     networks:
       - network
     volumes:
-      - auth_db:/var/lib/postgresql/data/
+      - users_db:/var/lib/postgresql/data/
     expose:
       - 5432
 
@@ -121,7 +121,7 @@ services:
 
 volumes:
   game_chat_db:
-  auth_db:
+  users_db:
 
 networks:
   network:

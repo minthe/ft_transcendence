@@ -3,8 +3,8 @@
 all: build up
 re: clean all
 build:
-	chmod +x setup_cert.sh
-	bash setup_cert.sh
+	chmod +x setup.sh
+	bash setup.sh
 	docker compose build
 stop:
 	docker compose stop
