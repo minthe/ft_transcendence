@@ -26,7 +26,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
 
-ROOT_URLCONF = "auth.urls"
+ROOT_URLCONF = "django_project.urls"
 
 DATABASES = {
     'default': {
