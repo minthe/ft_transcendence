@@ -14,7 +14,7 @@ down:
 	docker compose down
 clean:
 	docker compose down
-	docker rmi -f ft_transcendence-nginx ft_transcendence-auth_backend ft_transcendence-auth_db ft_transcendence-game_chat_frontend ft_transcendence-game_chat_backend ft_transcendence-game_chat_db
-	docker volume rm ft_transcendence_game_chat_db ft_transcendence_auth_db
+	docker rmi -f ft_transcendence-nginx ft_transcendence-auth_backend ft_transcendence-users_db ft_transcendence-game_chat_frontend ft_transcendence-game_chat_backend ft_transcendence-game_chat_db
+	docker volume rm ft_transcendence_game_chat_db ft_transcendence_users_db
 fclean: clean
 	docker system prune -a --force
