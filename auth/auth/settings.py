@@ -3,7 +3,6 @@ import os
 
 ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'auth']
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET')
@@ -25,15 +24,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    # "django.middleware.security.SecurityMiddleware",
-    # "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",
-    # "django.contrib.messages.middleware.MessageMiddleware",
-    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "auth.urls"
-
 
 DATABASES = {
     'default': {
