@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 
-ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'auth']
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST')]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
