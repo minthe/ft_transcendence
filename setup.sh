@@ -13,10 +13,10 @@ else
 	echo -e "\nCURRENT_HOST='$current_host'" >> .env
 fi
 
-if [[ $CURRENT_HOST != *"playpong"* ]]; then
+if [[ current_host != *"playpong"* ]]; then
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-		-keyout "./.cert/privkey_$CURRENT_HOST.pem" -out "./.cert/fullchain_$CURRENT_HOST.pem" \
-		-subj "/CN=$CURRENT_HOST"
+		-keyout "./.cert/privkey_$current_host.pem" -out "./.cert/fullchain_$current_host.pem" \
+		-subj "/CN=$current_host"
 fi
 
 directory="game_chat"
@@ -26,7 +26,7 @@ if [ -z "$(ls -A $directory)" ]; then
 fi
 
 # Update the IP address for duckdns
-if [[ "$CURRENT_HOST" != *"localhost"*  && "$CURRENT_HOST" == *"duckdns.org"* ]]; then
-	echo "Updating IP address for $CURRENT_HOST" > status_duckdns.log
-	echo url="https://www.duckdns.org/update?domains=$CURRENT_HOST&token=$DUCKDNS_TOKEN" | curl -k -K - >> status_duckdns.log
+if [[ "$current_host" != *"localhost"*  && "$current_host" == *"duckdns.org"* ]]; then
+	echo "Updating IP address for $current_host" > status_duckdns.log
+	echo url="https://www.duckdns.org/update?domains=$current_host&token=$DUCKDNS_TOKEN" | curl -k -K - >> status_duckdns.log
 fi
