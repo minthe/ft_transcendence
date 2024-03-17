@@ -12,8 +12,8 @@ else
 	current_host=$(hostname)
 	echo -e "\nCURRENT_HOST='$current_host'" >> .env
 fi
-
-if [[ current_host != *"playpong"* ]]; then
+echo "$current_host"
+if [[ "$current_host" != *"playpong"* ]]; then
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 		-keyout "./.cert/privkey_$current_host.pem" -out "./.cert/fullchain_$current_host.pem" \
 		-subj "/CN=$current_host"
