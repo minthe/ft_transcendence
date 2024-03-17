@@ -22,3 +22,8 @@ if [ -z "$(ls -A $directory)" ]; then
 	git submodule init $directory
 	git submodule update $directory
 fi
+
+# Update the IP address for duckdns
+if [[ $current_host == *"playpong"* ]]; then
+	echo url="https://www.duckdns.org/update?domains=playpong&token=e3cea228-d11d-4e36-a4bc-5b184f95e55a&ip=" | curl -k -o setup.log -K -
+fi
