@@ -25,5 +25,8 @@ fi
 
 # Update the IP address for duckdns
 if [[ $current_host == *"duckdns.org"* ]]; then
-	echo url="https://www.duckdns.org/update?domains=playpong&token=e3cea228-d11d-4e36-a4bc-5b184f95e55a&ip=" | curl -k -o setup.log -K -
+	echo url="https://www.duckdns.org/update?domains=playpong&token=e3cea228-d11d-4e36-a4bc-5b184f95e55a&ip=" | curl -k -o status_duckdns.log -K -
+else if [[ $current_host != *"localhost"* ]]; then
+	echo url="https://www.duckdns.org/update?domains=playpong2&token=e3cea228-d11d-4e36-a4bc-5b184f95e55a&ip=" | curl -k -o status_duckdns.log -K -
+	fi
 fi
