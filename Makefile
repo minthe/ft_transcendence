@@ -11,10 +11,21 @@ stop:
 up:
 	docker compose up -d
 down:
-	docker compose down
-clean:
-	docker compose down
-	docker rmi -f ft_transcendence-nginx ft_transcendence-auth_backend ft_transcendence-users_db ft_transcendence-game_chat_frontend ft_transcendence-game_chat_backend ft_transcendence-game_chat_db
-	docker volume rm ft_transcendence_game_chat_db ft_transcendence_users_db
+	docker compose down --remove-orphans
+
+clean: down
+	$(eval dir_name := $(notdir $(shell pwd)))
+	$(eval images := $(shell docker image ls -q --filter=reference="$(dir_name)*"))
+	@if [ -n "$(images)" ]; then \
+		docker rmi -f $(images); \
+	else \
+		echo "clean: no images to remove"; \
+	fi
 fclean: clean
-	docker system prune -a --force
+	$(eval dir_name := $(notdir $(shell pwd)))
+	$(eval volumes := $(shell docker volume ls -q --filter name=$(dir_name)*))
+	@if [ -n "$(volumes)" ]; then \
+		docker volume rm $(volumes); \
+	else \
+		echo "fclean: no volumes to remove"; \
+	fi
