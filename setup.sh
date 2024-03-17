@@ -24,6 +24,6 @@ if [ -z "$(ls -A $directory)" ]; then
 fi
 
 # Update the IP address for duckdns
-if [[ $current_host == *"playpong"* ]]; then
+if [[ $current_host == *"duckdns.org"* ]]; then
 	echo url="https://www.duckdns.org/update?domains=playpong&token=e3cea228-d11d-4e36-a4bc-5b184f95e55a&ip=" | curl -k -o setup.log -K -
 fi
