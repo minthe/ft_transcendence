@@ -22,7 +22,6 @@ clean: down
 		echo "clean: no images to remove"; \
 	fi
 fclean: clean
-	$(eval dir_name := $(notdir $(shell pwd)))
 	$(eval volumes := $(shell docker volume ls -q --filter name=$(dir_name)*))
 	@if [ -n "$(volumes)" ]; then \
 		docker volume rm $(volumes); \
