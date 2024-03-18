@@ -1,3 +1,2 @@
 Django~=5.0
 psycopg[binary]
-requests~=2.31

@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-import os
-import requests
+import json
+from django.conf					import settings
+from django.shortcuts				import render, redirect
+from django.http					import HttpRequest, HttpResponse, JsonResponse
+from django.contrib.auth			import authenticate, login
+from django.contrib.auth.decorators	import login_required
+from urllib.parse					import urlencode
+from urllib.request					import Request, urlopen
 
 @login_required(login_url='/auth/login')
 def get_authenticated_user(request: HttpRequest):
@@ -20,11 +22,11 @@ def get_authenticated_user(request: HttpRequest):
 	 })
 
 def intra_login(request: HttpRequest):
-	current_host = os.environ['CURRENT_HOST']
-	redirect_uri = os.environ.get('REDIRECT_URI')
+	current_host = settings.CURRENT_HOST
+	redirect_uri = settings.REDIRECT_URI
 	if redirect_uri:
 		redirect_uri = f"https://{current_host}{redirect_uri}"
-	client_id = os.environ.get('CLIENT_ID')
+	client_id = settings.CLIENT_ID
 	redirect_uri = redirect_uri
 	authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
 	print("Authorization URL:", authorization_url) 
@@ -45,33 +47,39 @@ def intra_login_redirect(request: HttpRequest):
 		return HttpResponse("Authentication Failed")
 
 def exchange_code(code: str):
-	current_host = os.environ['CURRENT_HOST']
-	redirect_uri = os.environ.get('REDIRECT_URI')
-	if redirect_uri:
-			redirect_uri = f"https://{current_host}{redirect_uri}"
-	data = {
-		"grant_type": "authorization_code",
-		"client_id": os.environ.get('CLIENT_ID'),
-		"client_secret": os.environ.get('CLIENT_SECRET'),
-		"code": code,
-		"redirect_uri": redirect_uri,
-		"scope": "public"
-	}
-	headers = {
-		"Content-Type": 'application/x-www-form-urlencoded'
-	}
-	authorization_url = os.environ.get('OAUTH_URL')
-	response = requests.post(authorization_url, data=data, headers=headers)
- 
-	print("exchange response:", response)
-	credentials = response.json()
-	print("exchange credentials:", credentials)
- 
-	access_token = credentials['access_token']
-	response = requests.get("https://api.intra.42.fr/v2/me", headers={
-		"Authorization": 'Bearer %s' % access_token})
- 
-	print("exchange response:", response)
- 
-	user = response.json()
-	return user
+    current_host = settings.CURRENT_HOST
+    redirect_uri = settings.REDIRECT_URI
+    if redirect_uri:
+        redirect_uri = f"https://{current_host}{redirect_uri}"
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "code": code,
+        "redirect_uri": redirect_uri,
+        "scope": "public"
+    }
+    data_encoded = urlencode(data).encode("utf-8")
+    headers = {
+        "Content-Type": 'application/x-www-form-urlencoded'
+    }
+    authorization_url = settings.OAUTH_URL
+    
+    request = Request(authorization_url, data=data_encoded, headers=headers)
+    response = urlopen(request)
+    response_data = response.read().decode("utf-8")
+    
+    print("exchange response:", response_data)
+    credentials = json.loads(response_data)
+    print("exchange credentials:", credentials)
+    
+    access_token = credentials['access_token']
+    user_request = Request("https://api.intra.42.fr/v2/me")
+    user_request.add_header("Authorization", f"Bearer {access_token}")
+    user_response = urlopen(user_request)
+    user_data = user_response.read().decode("utf-8")
+    
+    print("user response:", user_data)
+    
+    user = json.loads(user_data)
+    return user

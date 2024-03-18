@@ -1,11 +1,27 @@
 from pathlib import Path
 import os
 
-ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST')]
+CURRENT_HOST = os.environ.get('CURRENT_HOST')
+
+DJANGO_SECRET = os.environ.get('DJANGO_SECRET')
+
+POSTGRES_ENGINE = os.environ.get('POSTGRES_ENGINE')
+POSTGRES_DB = os.environ.get('POSTGRES_DB')
+POSTGRES_USER = os.environ.get('POSTGRES_USER')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_HOST = 'users_db'
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
+
+REDIRECT_URI = os.environ.get('REDIRECT_URI')
+CLIENT_ID = os.environ.get('CLIENT_ID')
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+OAUTH_URL = os.environ.get('OAUTH_URL')
+
+ALLOWED_HOSTS = [CURRENT_HOST]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET')
+SECRET_KEY = DJANGO_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True # TODO minthe change to False
@@ -30,12 +46,12 @@ ROOT_URLCONF = "django_project.urls"
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('POSTGRES_ENGINE'),
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'ENGINE': POSTGRES_ENGINE,
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
         'HOST': 'users_db',
-        'PORT': os.environ.get('POSTGRES_PORT')
+        'PORT': POSTGRES_PORT
     }
 }
 
