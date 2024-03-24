@@ -10,6 +10,7 @@ class IntraUser(models.Model):
 	first_name = models.CharField(max_length=42, null=True)
 	last_name = models.CharField(max_length=42, null=True)
 	last_login = models.DateTimeField(null=True)
+	jwt_token = models.CharField(max_length=1024, null=True)
 
 	def is_authenticated(self, request):
 		return True

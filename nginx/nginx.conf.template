@@ -51,29 +51,15 @@ http {
             proxy_set_header Connection "upgrade";
         }
 
-        location /oauth {
-            alias /usr/share/nginx/html;
-            try_files $uri $uri/ =404;
-        }
-
-        location /auth/login {
+        location ~ ^/auth {
             proxy_pass http://auth_backend:8000;
             proxy_set_header Host $host;
         }
 
-        location /auth {
-            proxy_pass http://auth_backend:8000;
-            proxy_set_header Host $host;
-        }
+		location ~ ^/oauth/ {
+		proxy_pass http://auth_backend:8000;
+		proxy_set_header Host $host;
+	}	
 
-        location /oauth/login/redirect {
-            proxy_pass http://auth_backend:8000;
-            proxy_set_header Host $host;
-        }
-
-        location /auth/user {
-            proxy_pass http://auth_backend:8000;
-            proxy_set_header Host $host;
-        }
     }
 }

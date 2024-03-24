@@ -2,16 +2,14 @@ from pathlib import Path
 import os
 
 CURRENT_HOST = os.environ.get('CURRENT_HOST')
-
 DJANGO_SECRET = os.environ.get('DJANGO_SECRET')
-
+JWT_SECRET = os.environ.get('JWT_SECRET')
 POSTGRES_ENGINE = os.environ.get('POSTGRES_ENGINE')
 POSTGRES_DB = os.environ.get('POSTGRES_DB')
 POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRES_HOST = 'users_db'
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
-
 REDIRECT_URI = os.environ.get('REDIRECT_URI')
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
 	"intralogin.apps.IntraloginConfig",
+    "jwt.apps.JwtConfig",
 ]
 
 MIDDLEWARE = [

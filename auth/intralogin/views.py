@@ -6,11 +6,13 @@ from django.contrib.auth			import authenticate, login
 from django.contrib.auth.decorators	import login_required
 from urllib.parse					import urlencode
 from urllib.request					import Request, urlopen
+from jwt.views						import generate_jwt
 
 @login_required(login_url='/auth/login')
 def get_authenticated_user(request: HttpRequest):
 	print(request.user)
 	user = request.user
+	jwt_token = generate_jwt(user)
 	return JsonResponse({
 		"id": user.id,
 		"login": user.login,
@@ -19,6 +21,7 @@ def get_authenticated_user(request: HttpRequest):
 		"last_name": user.last_name,
 		"last_login": user.last_login,
 		"session age": request.session.get_expiry_age(),
+		"jwt_token": jwt_token,
 	 })
 
 def intra_login(request: HttpRequest):
