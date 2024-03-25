@@ -1,11 +1,12 @@
+from django.contrib.auth.hashers import make_password, check_password
+from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.shortcuts import redirect
+from django.conf import settings
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError
+from user.models import User
 import json
-from intralogin.models	import User
-from django.http		import HttpResponse, HttpRequest, JsonResponse
-from django.shortcuts	import redirect
-from django.conf		import settings
-from urllib.parse		import urlencode
-from urllib.request		import Request, urlopen
-from urllib.error		import HTTPError
 
 def oauth_login(request):
     # request authorization code
@@ -29,19 +30,28 @@ def oauth_authenticate(request):
 	}
 	request = Request(settings.OAUTH_URL, data=urlencode(data).encode("utf-8"), headers=headers)
 
-	try:
-		response = urlopen(request)
-		response_data = response.read().decode("utf-8")
-		credentials = json.loads(response_data)
-  
-		# add user
-		
-  
-		return JsonResponse(credentials)
-	except HTTPError as e:
-		if e.code == 401:
-			redirect_url = '/oauth/login'
-		else:
-			redirect_url = '/'
-		return redirect(redirect_url)
+	response = urlopen(request)
+	response_data = response.read().decode("utf-8")
+	credentials = json.loads(response_data)
+ 
+	# add user
+	new_user = User(intra='vfuhlenb', jwt_token=credentials['access_token'])
+	new_user.save()
+ 
+	all_users = User.objects.all()
+	return JsonResponse(list(all_users.values()), safe=False)
 
+
+# handling of 401 error
+
+	# try:
+	# 	response = urlopen(request)
+	# 	response_data = response.read().decode("utf-8")
+	# 	credentials = json.loads(response_data)
+	# 	return JsonResponse(credentials)
+	# except HTTPError as e:
+	# 	if e.code == 401:
+	# 		redirect_url = '/oauth/login'
+	# 	else:
+	# 		redirect_url = '/'
+	# 	return redirect(redirect_url)

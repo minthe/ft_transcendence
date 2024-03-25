@@ -22,25 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = DJANGO_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # TODO minthe change to False
-
-AUTHENTICATION_BACKENDS = [
-    'intralogin.auth.IntraAuthenticationBackend'
-]
+DEBUG = True
 
 INSTALLED_APPS = [
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-	"intralogin.apps.IntraloginConfig",
-    "jwt.apps.JwtConfig",
-    "oauth.apps.OauthConfig",
+    "user",
+    "oauth",
+    "jwt",
 ]
 
-MIDDLEWARE = [
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-]
+MIDDLEWARE = []
 
 ROOT_URLCONF = "django_project.urls"
 
