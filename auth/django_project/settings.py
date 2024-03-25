@@ -15,7 +15,7 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 OAUTH_URL = os.environ.get('OAUTH_URL')
 
-ALLOWED_HOSTS = [CURRENT_HOST]
+ALLOWED_HOSTS = [CURRENT_HOST, 'localhost']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
 	"intralogin.apps.IntraloginConfig",
     "jwt.apps.JwtConfig",
+    "oauth.apps.OauthConfig",
 ]
 
 MIDDLEWARE = [
