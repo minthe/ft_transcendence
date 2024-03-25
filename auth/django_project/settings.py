@@ -13,7 +13,8 @@ POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 REDIRECT_URI = os.environ.get('REDIRECT_URI')
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-OAUTH_URL = os.environ.get('OAUTH_URL')
+OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
+OAUTH_TOKEN = os.environ.get('OAUTH_TOKEN')
 
 ALLOWED_HOSTS = [CURRENT_HOST, 'localhost']
 

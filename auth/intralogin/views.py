@@ -62,7 +62,7 @@ def exchange_code(code: str):
 	headers = {
 		"Content-Type": 'application/x-www-form-urlencoded'
 	}
-	authorization_url = settings.OAUTH_URL
+	authorization_url = settings.OAUTH_AUTH
 
 	request = Request(authorization_url, data=data_encoded, headers=headers)
 	response = urlopen(request)
