@@ -4,14 +4,13 @@ from django.shortcuts import redirect
 from django.conf import settings
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from urllib.error import HTTPError
-from user.models import User
+from jwt.views import generate_jwt
 import json
 
 redirect_uri = f"https://{settings.CURRENT_HOST}{settings.REDIRECT_URI}"
 
 # request authorization code
-def oauth_login(request):
+def oauth2_request_code(request):
 	data = {
 		"client_id": settings.CLIENT_ID,
 		"redirect_uri": redirect_uri,
@@ -20,7 +19,7 @@ def oauth_login(request):
 	return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 
 # get access_token
-def oauth_authenticate(request):
+def oauth2_get_token(request):
 	data = {
 		"grant_type": "authorization_code",
 		"client_id": settings.CLIENT_ID,
@@ -37,14 +36,18 @@ def oauth_authenticate(request):
 	response = urlopen(request)
 	response_data = response.read().decode("utf-8")
 	credentials = json.loads(response_data)
- 
-	# add user
-	new_user = User(intra='vfuhlenb', jwt_token=credentials['access_token'])
-	new_user.save()
- 
-	all_users = User.objects.all()
-	return JsonResponse(list(all_users.values()), safe=False)
 
+	return (credentials.get("access_token"))
+
+
+	# generate jwt
+	# jwt_token = generate_jwt(credentials)
+ 
+	# # add user
+	# new_user = User(intra='vfuhlenb', jwt_token=jwt_token)
+	# new_user.save()
+ 
+	# all_users = User.objects.all()
 
 # handling of 401 error
 

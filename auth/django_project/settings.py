@@ -26,9 +26,10 @@ SECRET_KEY = DJANGO_SECRET
 DEBUG = True
 
 INSTALLED_APPS = [
-    "user",
-    "oauth",
+    "users",
+    "oauth2",
     "jwt",
+    "intra42",
 ]
 
 MIDDLEWARE = []

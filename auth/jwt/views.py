@@ -21,3 +21,4 @@ def generate_jwt(user):
 	
 	jwt_token = f'{encoded_header}.{encoded_payload}.{encoded_signature}'
 	return jwt_token
+
