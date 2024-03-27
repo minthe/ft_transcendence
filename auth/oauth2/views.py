@@ -36,7 +36,6 @@ def oauth2_get_token(request):
 	response = urlopen(request)
 	response_data = response.read().decode("utf-8")
 	credentials = json.loads(response_data)
-
 	return (credentials.get("access_token"))
 
 
