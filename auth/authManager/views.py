@@ -18,12 +18,9 @@ def authManager_loginIntra(request):
 	user_data = intra42_getUserData(access_token)
 
 	# check if user exists in database
-	if users_checkIntraUserExists(user_data['intra_id']):
-		sub = users_returnSubFromIntraId(user_data['intra_id'])
-		jwt_token = jwt_createToken(sub)
-		return JsonResponse(jwt_token, safe=False)
-	else:
+	if not users_checkIntraUserExists(user_data['intra_id']):
 		users_createIntraUser(user_data)
-		sub = users_returnSubFromIntraId(user_data['intra_id'])
-		jwt_token = jwt_createToken(sub)
-		return JsonResponse(jwt_token, safe=False)
+
+	sub = users_returnSubFromIntraId(user_data['intra_id'])
+	jwt_token = jwt_createToken(sub)
+	return JsonResponse(jwt_token, safe=False)
