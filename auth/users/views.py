@@ -17,3 +17,23 @@ def users_checkIntraUserExists(intra_id):
 		return True
 	except User.DoesNotExist:
 		return False
+
+def users_returnSubFromIntraId(intra_id):
+	try:
+		user = User.objects.get(intra_id=intra_id)
+		return user.sub
+	except User.DoesNotExist:
+		return 0
+
+def users_createIntraUser(user_data):
+	"""
+	- create user with "user_data" in database
+	- return user object
+	"""
+	user = User.objects.create(
+		intra_id=user_data['intra_id'],
+		username=user_data['username'],
+		email=user_data['email'],
+		image=user_data['image'],
+	)
+	return user

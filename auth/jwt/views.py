@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from datetime import timedelta
 from django.http import HttpResponse
 
-def jwt_createToken(data):
+def jwt_createToken(sub):
 	"""
 	takes a json object and returns a JWT token
 	- token contains user_id and expiration date (1 day)
@@ -18,7 +18,7 @@ def jwt_createToken(data):
 		'alg': 'HS256',
 		'typ': 'JWT'}
 	payload = {
-		'sub': data['id'],
+		'sub': sub,
 		'exp': expire_timestamp
 	}
 
