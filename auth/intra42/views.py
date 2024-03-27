@@ -10,8 +10,8 @@ def intra42_cleanUserData(user_data):
 	"""
 	user_data_dict = json.loads(user_data)
 	cleaned_user_data = {
-		"id": user_data_dict["id"],
-		"login": user_data_dict["login"],
+		"intra_id": user_data_dict["id"],
+		"username": user_data_dict["login"],
 		"email": user_data_dict["email"],
 		"first_name": user_data_dict["first_name"],
 		"last_name": user_data_dict["last_name"],

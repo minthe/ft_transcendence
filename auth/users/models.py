@@ -1,9 +1,12 @@
 from django.db import models
 
 class User(models.Model):
-	id = models.BigIntegerField(primary_key=True)
-	intra = models.CharField(max_length=12, null=True)
+	sub = models.BigIntegerField(primary_key=True)
+	intra_id = models.CharField(max_length=12, null=True)
+	username = models.CharField(max_length=255, null=True)	
 	password = models.CharField(max_length=255, null=True)
-	jwt_token = models.CharField(max_length=1024, null=True)
+	email = models.CharField(max_length=255, null=True)
+	image = models.CharField(max_length=255, null=True)
+	jwt = models.CharField(max_length=255, null=True)
 
-	id = models.AutoField(primary_key=True)
+	sub = models.AutoField(primary_key=True)
