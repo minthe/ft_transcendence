@@ -1,14 +1,18 @@
+import hashlib, base64, hmac, json
 from django.conf import settings
-import hashlib, base64, hmac
 from datetime import datetime, timedelta
 from datetime import timedelta
 from django.http import HttpResponse
 
 def jwt_createToken(user):
+	"""
+	takes a user object (json) and returns a JWT token
+	- token contains user_id and expiration date (1 day)
+	"""
 	if user:
 		datetime_formatted = datetime.now().isoformat()
 		payload = {
-			'user_id': user.id,
+			'user_id': user['id'],
 			'exp': (datetime.now() + timedelta(days=1)).isoformat()
 		}
 	header = {
@@ -21,4 +25,3 @@ def jwt_createToken(user):
 	
 	token = f'{encoded_header}.{encoded_payload}.{encoded_signature}'
 	return token
-
