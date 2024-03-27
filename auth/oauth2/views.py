@@ -1,16 +1,19 @@
-from django.contrib.auth.hashers import make_password, check_password
-from django.http import HttpResponse, HttpRequest, JsonResponse
-from django.shortcuts import redirect
+import json
 from django.conf import settings
+from django.shortcuts import redirect
+from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.contrib.auth.hashers import make_password, check_password
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from jwt.views import generate_jwt
-import json
 
 redirect_uri = f"https://{settings.CURRENT_HOST}{settings.REDIRECT_URI}"
 
 # request authorization code
-def oauth2_request_code(request):
+def oauth2_getCode(request):
+	"""
+	initiates oauth2 authorization code flow
+	- redirects to /oauth2/redirect
+	"""
 	data = {
 		"client_id": settings.CLIENT_ID,
 		"redirect_uri": redirect_uri,
@@ -19,7 +22,10 @@ def oauth2_request_code(request):
 	return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 
 # get access_token
-def oauth2_get_token(request):
+def oauth2_getToken(request):
+	"""
+	returns access_token from 42intra
+	"""
 	data = {
 		"grant_type": "authorization_code",
 		"client_id": settings.CLIENT_ID,
@@ -37,16 +43,6 @@ def oauth2_get_token(request):
 	response_data = response.read().decode("utf-8")
 	credentials = json.loads(response_data)
 	return (credentials.get("access_token"))
-
-
-	# generate jwt
-	# jwt_token = generate_jwt(credentials)
- 
-	# # add user
-	# new_user = User(intra='vfuhlenb', jwt_token=jwt_token)
-	# new_user.save()
- 
-	# all_users = User.objects.all()
 
 # handling of 401 error
 

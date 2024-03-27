@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 CURRENT_HOST = os.environ.get('CURRENT_HOST')
 DJANGO_SECRET = os.environ.get('DJANGO_SECRET')
@@ -26,6 +26,7 @@ SECRET_KEY = DJANGO_SECRET
 DEBUG = True
 
 INSTALLED_APPS = [
+    "authManager",
     "users",
     "oauth2",
     "jwt",

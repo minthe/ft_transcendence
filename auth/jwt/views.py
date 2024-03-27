@@ -1,10 +1,10 @@
-from django.http import HttpResponse
 from django.conf import settings
+import hashlib, base64, hmac
 from datetime import datetime, timedelta
-import json, hashlib, base64, hmac
 from datetime import timedelta
+from django.http import HttpResponse
 
-def generate_jwt(user):
+def jwt_createToken(user):
 	if user:
 		datetime_formatted = datetime.now().isoformat()
 		payload = {
@@ -19,6 +19,6 @@ def generate_jwt(user):
 	signature = hmac.new(settings.SECRET_KEY.encode('utf-8'), f'{encoded_header}.{encoded_payload}'.encode('utf-8'), hashlib.sha256).digest()
 	encoded_signature = base64.urlsafe_b64encode(signature).decode('utf-8')
 	
-	jwt_token = f'{encoded_header}.{encoded_payload}.{encoded_signature}'
-	return jwt_token
+	token = f'{encoded_header}.{encoded_payload}.{encoded_signature}'
+	return token
 
