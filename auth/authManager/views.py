@@ -3,8 +3,10 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from intra42.views import intra42_getUserData
 from oauth2.views import oauth2_getToken
-from jwt.views import jwt_createToken, jwt_validateToken, jwt_getUserId
+from jwt.jwt import JWT
 from users.views import users_checkIntraUserExists, users_createIntraUser, users_returnSubFromIntraId
+
+jwt = JWT(settings.JWT_SECRET)
 
 def authManager_loginIntra(request):
 	"""
@@ -22,5 +24,7 @@ def authManager_loginIntra(request):
 		users_createIntraUser(user_data)
 
 	sub = users_returnSubFromIntraId(user_data['intra_id'])
-	jwt_token = jwt_createToken(sub)
+	jwt_token = jwt.createToken(sub)
+	if not jwt.validateToken(jwt_token):
+		return HttpResponse("invalid token")
 	return JsonResponse(jwt_token, safe=False)
