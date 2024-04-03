@@ -30,10 +30,10 @@ def users_createIntraUser(user_data):
 	- create user with "user_data" in database
 	- return user object
 	"""
-	user = User.objects.create(
-		intra_id=user_data['intra_id'],
-		username=user_data['username'],
-		email=user_data['email'],
-		image=user_data['image'],
-	)
-	return user
+	user = User()
+	user.intra_id = user_data['intra_id']
+	user.username = user_data['username']
+	user.email = user_data['email']
+	user.image = user_data['image']
+	user.set_password('test123')
+	user.save()

@@ -6,7 +6,6 @@ class JWT:
 
 	def __init__(self, secret):
 		self.secret = secret
-		self.secret = 'gw3-3#-fGe-f3f#K_03kf2-3kf)#F_K)JF_)#fpeokwffewk30fsKPFGf'
 
 	def base64url_encode(self, input):
 		return base64.urlsafe_b64encode(input).decode('utf-8').rstrip('=')

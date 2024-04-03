@@ -1,12 +1,14 @@
 openapi: '3.0.2'
 info:
-  title: Auth
+  title: ft_transcendence
   version: '1.0'
 servers:
-  - url: https://api.playpong.duckdns.org/v1
-paths:
-  /test:
-    get:
-      responses:
-        '200':
-          description: OK
+  - url: https://playpong.duckdns.org/api/v1/
+
+components:
+  schemas:
+    name:
+      type: object
+      properties:
+        property:
+          type: integerpaths: {}
