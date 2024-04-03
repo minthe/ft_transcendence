@@ -6,6 +6,7 @@ class JWT:
 
 	def __init__(self, secret):
 		self.secret = secret
+		self.secret = 'gw3-3#-fGe-f3f#K_03kf2-3kf)#F_K)JF_)#fpeokwffewk30fsKPFGf'
 
 	def base64url_encode(self, input):
 		return base64.urlsafe_b64encode(input).decode('utf-8').rstrip('=')
@@ -15,7 +16,6 @@ class JWT:
 		takes a json object and returns a JWT token
 		- token contains user_id and expiration date (1 day)
 		"""
-		# create header and payload
 		current_time = datetime.utcnow()
 		expire_time = current_time + timedelta(days=1)
 		expire_timestamp = int(expire_time.timestamp())
@@ -29,23 +29,20 @@ class JWT:
 		}
 		json_header = json.dumps(header, separators=(",",":")).encode()
 		json_payload = json.dumps(payload, separators=(",",":")).encode()
-		# encode header and payload with base64
 		encoded_header = self.base64url_encode(json_header)
 		encoded_payload = self.base64url_encode(json_payload)
-		# create signature with header and payload
+
 		signature = hmac.new(self.secret.encode('utf-8'), f'{encoded_header}.{encoded_payload}'.encode('utf-8'), hashlib.sha256).digest()
-		# encode signature with base64
+		
 		encoded_signature = self.base64url_encode(signature)
-		# create JWT token
 		token = f'{encoded_header}.{encoded_payload}.{encoded_signature}'
-		print (token)
+
 		return token
 
 	def validateToken(self, token):
 		"""
 		takes a JWT token and returns True if the token is valid
 		"""
-		# Split token into its components
 		encoded_header, encoded_payload, encoded_signature = token.split('.')
 
 		header = json.loads(base64.urlsafe_b64decode(encoded_header + '=' * (4 - len(encoded_header) % 4)))
@@ -54,20 +51,21 @@ class JWT:
 
 		expected_signature = hmac.new(self.secret.encode('utf-8'), f'{encoded_header}.{encoded_payload}'.encode('utf-8'), hashlib.sha256).digest()
 		if not hmac.compare_digest(signature, expected_signature):
+			print ("Signature mismatch")
 			return False, "Signature mismatch"
 
-		# Check if the token is expired
 		if 'exp' in payload:
 			expiration_time = datetime.utcfromtimestamp(payload['exp'])
 			if expiration_time < datetime.now():
+				print ("Token expired")
 				return False, "Token expired"
 		else:
+			print ("Expiration time not found in payload")
 			return False, "Expiration time not found in payload"
-
-		# Token is valid
+		print ("Token is valid")
 		return True, "Token is valid"
 
-	def jwt_getUserId(token):
+	def getUserId(self, token):
 		"""
 		takes a JWT token and returns the user_id
 		"""
