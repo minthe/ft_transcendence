@@ -28,8 +28,9 @@ DEBUG = True
 INSTALLED_APPS = [
     "authManager",
     "users",
-    "oauth2", 
+    "oauth2",
     "intra42",
+    "ft_jwt",
 ]
 
 MIDDLEWARE = []

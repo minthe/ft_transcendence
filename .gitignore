@@ -1,11 +1,26 @@
-.venv
-.env
+# Python bytecode files
 __pycache__/
+*.pyc
+
+# Distribution files
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+.venv
+
+# Secrets
+.env
 db.sqlite3
+.cert
+
+# misc
 .DS_Store
 notes.md
 me.json
 _temp
-.cert
 status_duckdns.log
 _notes

@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from intra42.views import intra42_getUserData
 from oauth2.views import oauth2_getToken
 from users.views import users_checkIntraUserExists, users_createIntraUser, users_returnSubFromIntraId
-from ft_jwt.jwt import JWT
+from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
-jwt = JWT(settings.JWT_SECRET)
+jwt = FT_JWT(settings.JWT_SECRET)
 
 def authManager_test(request):
 	"""
