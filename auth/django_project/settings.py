@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "users",
     "oauth2", 
     "intra42",
-    "jwt",
 ]
 
 MIDDLEWARE = []

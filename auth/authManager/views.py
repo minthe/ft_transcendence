@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from intra42.views import intra42_getUserData
 from oauth2.views import oauth2_getToken
 from users.views import users_checkIntraUserExists, users_createIntraUser, users_returnSubFromIntraId
-from jwt.jwt import JWT
+from ft_jwt.jwt import JWT
 
 jwt = JWT(settings.JWT_SECRET)
 
