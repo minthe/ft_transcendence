@@ -1,8 +1,11 @@
-from django.urls import path
-from intralogin import views
+from django.urls import include, path
+from oauth2.views import oauth2_getToken, oauth2_getCode
+from authManager.views import authManager_loginIntra, authManager_test, authManager_getId
 
 urlpatterns = [
-    path('auth/user', views.get_authenticated_user, name='get_authenticated_user'),
-	path('auth/login', views.intra_login, name='auth_login'),
-	path('oauth/login/redirect', views.intra_login_redirect, name='auth_login_redirect')
+	path('user/', include('users.urls')),
+	path("oauth2/login", oauth2_getCode, name="oauth2_getCode"),
+	path("oauth2/redirect", authManager_loginIntra, name="authManager_loginIntra"),
+	path("test/test", authManager_test, name="test"),
+	path("test/id", authManager_getId, name="getId"),
 ]
