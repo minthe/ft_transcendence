@@ -5,7 +5,7 @@ on:
     branches:
       - jwt
     paths:
-      - 'auth/ft_jwt/ft_jwt/jwt.py'
+      - 'auth/ft_jwt/ft_jwt/ft_jwt.py'
 
 jobs:
 
