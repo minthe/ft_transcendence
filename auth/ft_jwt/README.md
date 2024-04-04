@@ -17,7 +17,7 @@ You can install the package via pip:
 ## Usage
 
 ```python
-from ft_jwt import FT_JWT
+from ft_jwt.ft_jwt import FT_JWT
 
 # Create a JWT instance with your secret key
 

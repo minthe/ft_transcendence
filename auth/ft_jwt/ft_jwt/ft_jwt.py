@@ -1,6 +1,6 @@
 import hashlib, base64, hmac, json
 from datetime import datetime, timedelta
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from functools import wraps
 
 class FT_JWT:
@@ -74,19 +74,19 @@ class FT_JWT:
 		user_id = payload['sub']
 		return user_id
 
-	def token_required(self, view_func):
-		@wraps(view_func)
-		def wrapper(*args, **kwargs):
-			token = None
-			# Check for the token in the request headers
-			if 'Authorization' in request.headers:
-				token = request.headers['Authorization'].split(' ')[1]
+	def token_required(self, f):
+		@wraps(f)
+		def decorated(request, *args, **kwargs):
+			token = request.COOKIES.get('jwt_token')
+
 			if not token:
-				return jsonify({'message': 'Token is missing!'}), 401
+				return JsonResponse({'message': 'Token is missing!'}, status=401)
 
-			is_valid, message = self.validateToken(token)
+			jwt_instance = FT_JWT(self.secret)
+			is_valid, message = jwt_instance.validateToken(token)
 			if not is_valid:
-				return jsonify({'message': message}), 401
+				return JsonResponse({'message': message}, status=401)
 
-			return view_func(*args, **kwargs)
-		return wrapper
+			return f(request, *args, **kwargs)
+
+		return decorated

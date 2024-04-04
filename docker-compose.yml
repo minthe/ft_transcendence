@@ -71,7 +71,6 @@ services:
     container_name: game_chat_frontend
     build:
       context: game_chat/frontend
-    # user: 1000:1000
     volumes:
       - ./game_chat/frontend/src:/usr/share/nginx/html
       - ./game_chat/frontend/nginx.conf.template:/nginx.conf.template
@@ -85,7 +84,6 @@ services:
   game_chat_backend:
     env_file: .env
     container_name: game_chat_backend
-    # user: 1000:1000
     build: 
       context: game_chat/backend
     volumes:
