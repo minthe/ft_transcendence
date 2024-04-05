@@ -1,8 +1,8 @@
 openapi: '3.1.0'
 info:
-  title: ft_transcendence
+  title: auth ms API
   version: '1.0'
-description: API for ft_transcendence
+description: openAPI specs for ft_transcendence auth microservice
 servers:
   - url: https://localhost/api/v1
 paths:
