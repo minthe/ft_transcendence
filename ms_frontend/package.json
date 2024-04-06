@@ -1,0 +1,12 @@
+{
+  "name": "frontmockvanilla",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo lol",
+    "start": "node src/index.html"
+  },
+  "author": "",
+  "license": "ISC"
+}

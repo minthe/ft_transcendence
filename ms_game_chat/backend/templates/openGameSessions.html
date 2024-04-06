@@ -1,0 +1,21 @@
+<h2>Your Game Sessions:</h2>
+<div>
+  {% for game_session in game_sessions %}
+  <!-- <button onclick="joinGame('{{ game_session.id }}')">Join Game {{ game_session.id }}</button> -->
+  <button id="joinGameButton" onclick="joinGame('{{ game_session.id }}')">Join Game {{ game_session.id }} against {{ game_session.opponent }}</button>
+
+  {% endfor %}
+</div>
+
+<!-- <script>
+
+    function joinGame(game_id) {
+        const joinMessage = {
+            type: 'join_game',
+            username: 'User123', // Replace with user's actual username
+        };
+
+        socket.send(JSON.stringify(joinMessage));
+    }
+
+</script> -->

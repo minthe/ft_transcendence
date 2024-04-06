@@ -19,12 +19,6 @@ if [[ "$current_host" != *"playpong"* ]]; then
 		-subj "/CN=$current_host"
 fi
 
-directory="game_chat"
-if [ -z "$(ls -A $directory)" ]; then
-	git submodule init $directory
-	git submodule update $directory
-fi
-
 # Update the IP address for duckdns
 if [[ "$current_host" != *"localhost"*  && "$current_host" == *"duckdns.org"* ]]; then
 	echo "Updating IP address for $current_host" > status_duckdns.log

@@ -20,7 +20,7 @@ http {
         # deny all;
 
         location / {
-            proxy_pass http://game_chat_frontend:4242;
+            proxy_pass http://frontend:4242;
             proxy_set_header Host $host;
         }
 

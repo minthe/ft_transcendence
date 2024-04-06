@@ -1,0 +1,27 @@
+events {}
+
+http {
+    types {
+        text/css css;
+        text/html   html;
+        application/javascript  js;
+        # Other MIME types...
+    }
+
+    server {
+        listen 4242 default_server;
+        server_name _;
+
+        return 404;
+    }
+
+    server {
+        listen 4242;
+        server_name ${CURRENT_HOST} localhost;
+
+        location / {
+            root /usr/share/nginx/html/src;
+            try_files $uri $uri/ =404;
+        }
+    }
+}

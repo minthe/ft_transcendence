@@ -1,18 +1,17 @@
 version: "3"
 
 services:
-
-# PROXY SERVER
-  nginx:
+# MICROSERVICE API-GATEWAY
+  api_gateway:
     env_file: .env
-    container_name: nginx
+    container_name: api_gateway
     build:
-      context: nginx
+      context: ms_api_gateway
       args:
         CURRENT_HOST: ${CURRENT_HOST}
     volumes:
-      - ./nginx/root:/usr/share/nginx/html
-      - ./nginx/nginx.conf.template:/nginx.conf.template
+      - ./ms_api_gateway/root:/usr/share/nginx/html
+      - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
       - ./.cert/:/etc/nginx/ssl/
     ports:
       - 80:80
@@ -23,19 +22,35 @@ services:
     depends_on:
       - auth_backend
       - users_db
-      - game_chat_frontend
+      - frontend
       - game_chat_backend
       - game_chat_db
 
+# MICROSERVICE FRONTEND
+  frontend:
+    env_file: .env
+    container_name: frontend
+    build: 
+      context: ms_frontend
+    volumes:
+      - ./ms_frontend/root://usr/share/nginx/html
+      - ./ms_frontend/nginx.conf.template:/nginx.conf.template
+    networks:
+      - network
+    depends_on:
+      - game_chat_backend
+    restart: always
+    expose:
+      - 4242
 
-# SERVICE AUTH
+# MICROSERVICE AUTH
   auth_backend:
     env_file: .env
     container_name: auth_backend
     build: 
-      context: auth
+      context: ms_auth
     volumes:
-      - ./auth:/code
+      - ./ms_auth:/code
     networks:
       - network
     restart: always
@@ -64,30 +79,14 @@ services:
     expose:
       - 5432
 
-
-# SERVICE GAME_CHAT
-  game_chat_frontend:
-    env_file: .env
-    container_name: game_chat_frontend
-    build:
-      context: game_chat/frontend
-    volumes:
-      - ./game_chat/frontend/src:/usr/share/nginx/html
-      - ./game_chat/frontend/nginx.conf.template:/nginx.conf.template
-    restart: always
-    networks:
-      - network
-    depends_on:
-      - game_chat_backend
-    expose:
-      - 4242
+# MICROSERVICE GAME_CHAT
   game_chat_backend:
     env_file: .env
     container_name: game_chat_backend
     build: 
-      context: game_chat/backend
+      context: ms_game_chat/backend
     volumes:
-      - ./game_chat/backend:/code
+      - ./ms_game_chat/backend:/code
     networks:
       - network
     restart: always
@@ -115,7 +114,6 @@ services:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
       - 5432
-
 
 volumes:
   game_chat_db:

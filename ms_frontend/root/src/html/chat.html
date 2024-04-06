@@ -1,0 +1,607 @@
+<div class="row app g-0">
+  <div id="chat-area" class="col-sm-4">
+    <div class="row left-heading">
+      <div class="col-sm-3 col-xs-3 heading-avatar">
+        <button class="btn btn-outline-dark profile-button" data-bs-toggle="modal" data-bs-target="#backdropSettings"></button>
+        <div id="userChatsList"></div>
+        <div class="modal fade" id="backdropSettings" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="backdropSettingsLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="backdropSettingsLabel">Settings</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="New public Chat..."
+                       aria-label="Chat Name" id="new_chat_name" aria-describedby="create_public_chat_button">
+                  <button class="btn btn-outline-success" type="button" id="create_public_chat_button">Create</button>
+                </div>
+                <div id="info_create_chat"></div>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="New private Chat..."
+                         aria-label="Chat Name" id="new_private_chat_name" aria-describedby="create_private_chat_button">
+                  <button class="btn btn-outline-success" type="button" id="create_private_chat_button">Create</button>
+                </div>
+                <div id="info_create_private_chat"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="chatsLeftSide" class="scroll-contacts"></div>
+  </div>
+  <div class="col-sm-8 conversation">
+    <div class="row heading g-0">
+      <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+        <div class="heading-avatar-icon">
+          <img id="chat_avatar" src="../img/ballWithEye.jpg">
+        </div>
+      </div>
+      <div class="col-sm-8 col-xs-7 heading-name">
+        <div id="right-heading-name" class="heading-name-meta" data-state="0"></div>
+      </div>
+      <div class="col">
+
+        <!-- MODAL FOR PRIVATE CHATS-->
+        <div class="modal fade" id="backdropPrivateProfile" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="backdropPrivateProfileLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title" id="backdropPrivateProfileLabel"></h1>
+              </div>
+              <div class="modal-body">
+                <button id="blockUserButton" class="btn btn-outline-danger hidden">block User</button>
+                <button id="unblockUserButton" class="btn btn-outline-warning hidden">unblock User</button>
+<!--?           TODO: KRISTINA:-->
+                <button id="challengeUserToGame" class="btn btn-outline-success">challenge User [coming soon]</button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL FOR PUBLIC CHATS-->
+        <div id="publicChatModal">
+        <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="backdropPublicProfileLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title" id="backdropPublicProfileLabel"></h1>
+              </div>
+              <div class="modal-body">
+                <div id="userInChatList"></div><br>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Invite User..."
+                         aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">
+                  <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>
+                </div>
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    All User
+                  </button>
+                  <ul id="dynamicContactsDropdown" class="dropdown-menu" style="max-height: 200px; overflow-y: auto;"></ul>
+                </div>
+                <div id="message_with_timeout"></div><br>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop2">Leave Chat
+                </button><br><br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- MODAL FOR CLICKED USER-->
+        <div class="modal fade" id="backdropClickedUser" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="backdropClickedUserLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title" id="backdropClickedUserLabel"></h1>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col">
+                    <button id="goToChatButton" class="btn btn-outline-dark">Go to Chat</button>
+                  </div>
+                  <div class="col">
+                    <div id="create_chat_alert" class="alert alert-warning hidden" role="alert">
+                      You don't have a Chat with this User yet
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close_button_clicked_user" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NESTED MODAL, LEAVE CHAT -->
+        <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel2">Leave Chat</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to leave the Chat?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="leaveChat()">Yes, I
+                  want to leave
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL FOR IF USER IS BLOCKED -->
+    <div class="modal fade" id="userBlockedYouWarning" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content user-blocked-you-warning">
+          <div class="modal-body">
+            ❗️This User blocked you
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="messageSide" class="row hidden">
+      <div id="messageContainer" class="scroll-messages"></div>
+      <div class="input-group format-input-group">
+        <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
+        <button id="sendMessageButton" class="btn btn-dark">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+
+  html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .user-blocked-you-warning {
+      border: 3px solid rgba(255, 56, 56, 0.35);
+      border-radius: 8px;
+      font-weight: bold;
+      color: #c02c43;
+      background-color: white;
+  }
+
+  #sendMessageButton {
+    margin-right: 128px; !important;
+  }
+
+  .lel {
+    margin-left: 120px;
+  }
+  .lel::placeholder {
+      color: #aaaaaa; !important;
+  }
+
+  .format-input-group {
+    position: absolute;
+    width: 69%;
+    bottom: 20px;
+    margin-top: 10px;
+  }
+
+  .heading {
+    white-space: nowrap;
+   /*"nowrap" removes elements while
+    rezising instead of newlining them*/
+    flex-wrap: nowrap;
+    padding: 10px 0 10px 7px;
+    margin: auto;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.71);
+    z-index: 1000;
+  }
+
+  .right-heading-settings {
+    position: absolute;
+    right: 10px;
+  }
+
+  .clicked_contact_div {
+      background-color: red;
+      padding: 100px;
+  }
+
+  .contacts-in-chat-profile {
+    cursor: pointer;
+    margin: 4px;
+    padding: 4px;
+    background-color: #e9e9e9;
+    border-radius: 5px;
+  }
+
+  .own-user-in-chat-profile {
+    /*cursor: pointer;*/
+    margin: 4px;
+    padding: 4px;
+    background-color: #c9c9c9;
+    /*border: 1px solid black;*/
+    border-radius: 5px;
+  }
+
+  .contacts-in-chat-profile:hover {
+    cursor: pointer;
+    margin: 4px;
+    padding: 4px;
+    background-color: #d3e8ef;
+    border-radius: 5px;
+  }
+
+  /*.own-user-in-chat-profile:hover {*/
+  /*  cursor: pointer;*/
+  /*  margin: 4px;*/
+  /*  padding: 4px;*/
+  /*  background-color: #d7d7d7;*/
+  /*  border-radius: 5px;*/
+  /*}*/
+
+  .left-heading {
+    padding: 5px 0 5px 5px;
+    margin: auto;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.71);
+    z-index: 1000;
+  }
+
+  .heading-avatar {
+    text-align: center;
+    padding: 0 !important;
+  }
+
+  .bottom {
+    padding: 10px 0 10px 7px;
+    margin: auto;
+    width: 100%;
+    background-color: red;
+    z-index: 1000;
+  }
+
+  .bottom-avatar{
+    text-align: center;
+    padding: 0 !important;
+  }
+
+  .heading-avatar-icon img {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+  }
+
+  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: white !important;
+    background-color: #212121 !important;
+  }
+
+  .navbar_background {
+    background: url("https://i0.wp.com/digital-photography-school.com/wp-content/uploads/2021/03/horizontal-lines-photography-1.jpg?w=1500&ssl=1");
+    color: #212121;
+  }
+
+  .profile-button {
+    width: 100%;
+    padding: 0; !important;
+    text-align: center;
+  }
+  .profile-button::after {
+    content: "🗿";
+    font-size: 32px;
+    display: block;
+  }
+
+  @media screen and (max-height: 400px) {
+    .format-input-group {
+      display: none;
+    }
+  }
+
+ /*conditions that happen if max-width is not possible to display anymore*/
+  @media screen and (max-width: 200px) {
+    .format-input-group {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 900px) {
+    #chat-area {
+      display: none;
+    }
+    .heading{
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    .conversation {
+      width: 100% !important;
+      min-height: 100vh;
+    }
+    .sideBar-time {
+       position: relative;
+       right: -5px;
+       display: none;
+    }
+
+    .format-input-group {
+      position: absolute;
+      width: 100%;
+      bottom: 20px;
+      margin-top: 10px;
+      margin-left: 10px;
+    }
+  }
+  @media screen and (max-width: 1200px) {
+    .sideBar-time {
+       display: none;
+    }
+    .scroll-messages {
+      height: calc(100vh - 169px);
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scroll-padding-bottom: 100%;
+      left: 12px;
+      position: relative;
+      padding: 10px 50px 10px 25px !important;
+    }
+    .lel {
+      margin-left: 20px;
+    }
+    #sendMessageButton {
+        margin-right: 28px; !important;
+    }
+  }
+
+  .app {
+    position: static;
+    overflow: hidden;
+    margin: auto;
+    background: url("https://www.androidauthority.com/wp-content/uploads/2023/07/Nothing-Phone-2-wallpaper-previews-5-540w-1200h.jpg.webp") no-repeat center;
+    background-size: cover;
+  }
+
+
+  /*contact names on right heading*/
+  .heading-name {
+    padding: 0 !important;
+    cursor: pointer;
+  }
+  .heading-name-meta {
+    font-weight: 700;
+    font-size: 100%;
+    padding: 5px 5px 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.82);
+    display: block;
+  }
+
+  /*.searchBox {*/
+  /*  padding: 0 !important;*/
+  /*  margin: 0 !important;*/
+  /*  height: 60px;*/
+  /*  width: 100%;*/
+  /*}*/
+
+  .searchBox-inner {
+    height: 100%;
+    width: 100%;
+    padding: 10px !important;
+    background-color: #fbfbfb;
+  }
+
+  .searchBox-inner input:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .sideBar {
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #2c93b9;
+    border: 1px solid #198754;
+  }
+
+/*uncomment border-bottom and background-color to get old design*/
+  .sideBar-body {
+    position: relative;
+    padding: 15px 5px !important; /*centers the avatar vertically*/
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5); /*line color between contacts*/
+    height: 100px; /*height of contact box*/
+    margin: 0 !important;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.29);
+    /*background: transparent;*/
+  }
+
+  .sideBar-body:hover{
+    background-color: rgba(255, 255, 255, 0.45);
+      border-radius: 10px
+  }
+
+  .sideBar-avatar {
+    text-align: center;
+    padding: 0 !important;
+  }
+
+  .avatar-icon img {
+    border-radius: 50%;
+    height: 69px;
+    width: 69px;
+  }
+
+  .sideBar-main {
+    padding: 0 !important;
+  }
+
+  .sideBar-main .row {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .composeBox {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 60px;
+    width: 100%;
+  }
+
+  .composeBox-inner {
+    height: 100%;
+    width: 100%;
+    padding: 10px !important;
+    background-color: #fbfbfb;
+  }
+
+  .composeBox-inner input:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .compose-sideBar {
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #fff;
+    border: 1px solid #f7f7f7;
+  }
+
+  /*Conversation*/
+
+  .conversation {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100%;
+    min-height: 100vh;
+    background-size: cover;
+    overflow-y: auto;
+  }
+
+  /*.message {*/
+  /*  padding: 0 !important;*/
+  /*  margin: 0 !important;*/
+  /*  background: url("https://www.gstatic.com/recaptcha/api2/logo_48.png") no-repeat fixed center;*/
+  /*  background-size: cover;*/
+  /*  overflow-y: auto;*/
+  /*  border: 1px solid #f7f7f7;*/
+  /*}*/
+
+  .scroll-contacts {
+    height: calc(100vh - 100px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-padding-bottom: 100%;
+    transition: scrollbar-color 0.3s ease;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: auto;
+
+    &::-webkit-scrollbar {
+      background-color: transparent;
+      width: 0;
+    }
+  }
+
+  .scroll-contacts:hover {
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.34);
+    }
+  }
+
+  .scroll-messages {
+    height: calc(100vh - 169px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-padding-bottom: 100%;
+    left: 12px;
+    position: relative;
+    padding: 10px 150px 10px 125px;
+  }
+
+</style>
+
+
+
+<style>
+  .sender-title {
+    font-weight: bold;
+      white-space: nowrap;
+  }
+  .receiver-title {
+    color: #e6e6e6eb;
+    font-weight: bold;
+  }
+  .sender-message-content {
+    color: #313131;
+    background-color: #e6e6e6eb;
+    padding: 5px 8px 5px 8px;
+    border-radius: 20px 20px 0 20px;
+    display: inline-block;
+    font-size: 20px;
+    max-width: 70%;
+    word-break: break-all;
+  }
+  .receiver-message-content {
+    color: #e6e6e6eb;
+    background-color: #313131;  /* Example background color for own messages */
+    padding: 5px 8px 5px 8px;
+    border-radius: 20px 20px 20px 0;
+    display: inline-block;
+    font-size: 20px;
+    max-width: 70%;
+    word-break: break-all;
+  }
+  .sender-timestamp {
+    color: rgba(103, 103, 103, 0.91);
+    font-size: 14px;
+    font-weight: normal;
+  }
+  .receiver-timestamp {
+    color: rgba(166, 166, 166, 0.92);
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+</style>
+
+
