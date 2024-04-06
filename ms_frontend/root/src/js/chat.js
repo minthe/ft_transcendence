@@ -101,7 +101,7 @@ function chatDom() {
 //     websocket_obj.invited_id = invited_username
     
 //     try {
-//       const response = await fetch(`${window.location.origin}/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+//       const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
 //       const data = await response.json();
   
   
@@ -149,7 +149,7 @@ function chatDom() {
   //   websocket_obj.invited_id = invited_username
     
   //   try {
-  //     const response = await fetch(`${window.location.origin}/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+  //     const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
   //     const data = await response.json();
   
   
@@ -176,7 +176,7 @@ function chatDom() {
   // //   try {
   
 
-  // //     const response = await fetch(`${window.location.origin}/user/game/render/invites/${username}/`);
+  // //     const response = await fetch(`${window.location.origin}/game/render/invites/${username}/`);
   // //     const htmlContent = await response.text();
   
   // //     const container = document.getElementById('game-session-container');
@@ -629,7 +629,7 @@ async function challengeUserClicked() {
   // const invited_username = 'test'
   websocket_obj.invited_id = invited_username 
   try {
-    const response = await fetch(`${window.location.origin}/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+    const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
     const data = await response.json();
     console.log('DATA ', data);
     // websocket_obj.active_game = data.id;
