@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'channels',
     # my created apps:
     'backend_app',
-    'ft_jwt',
 
     # 'channels_redis'
     ]
