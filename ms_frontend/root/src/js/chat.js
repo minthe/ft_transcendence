@@ -234,13 +234,6 @@ async function showPublicChatModal() {
   $('#staticBackdropProfile').modal('show');
 }
 
-
-async function logoutUser() {
-  let websocket_obj = null
-  showDiv('userIsNotAuth')
-  hideDiv('userIsAuth')
-}
-
 async function inviteUser(invited_user_name){
   websocket_obj.invited_user_name = invited_user_name
   await sendDataToBackend('set_invited_user_to_chat')

@@ -132,3 +132,23 @@ function changeToRegisterPageButton() {
     // const info_login = document.getElementById('info_login')
     // info_login.style.display = 'none';
 }
+
+async function logoutUser() {
+  const url = `${window.location.origin}/logout`
+  fetch(url)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Token could not be deleted!');
+    }
+    let websocket_obj = null
+    showDiv('userIsNotAuth')
+    hideDiv('userIsAuth')
+    // return response.json();
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error);
+  });
+  // .then(data => {
+  //   console.log(data); // Here you can handle the JSON data returned by the endpoint
+  // })
+}
