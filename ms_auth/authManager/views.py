@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from intra42.views import intra42_getUserData
 from oauth2.views import oauth2_getToken
 from users.views import users_checkIntraUserExists, users_createIntraUser, users_returnSubFromIntraId
@@ -7,26 +7,22 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def authManager_test(request):
+def authManager_logout(request):
 	"""
-	- test function to check if JWT token is valid
+	View for logging out a user.
 	"""
 	jwt_token = request.COOKIES.get('jwt_token')
-	if jwt_token == None:
-		return HttpResponse("no token")
-	print (jwt_token)
-	if jwt.validateToken(jwt_token) == False:
-		return HttpResponse("invalid token")
-	response = HttpResponse("Cookie deleted")
-	response.delete_cookie('jwt_token')
-	return response
 
-def authManager_getId(request):
-	jwt_token = request.COOKIES.get('jwt_token')
-	if jwt_token == None:
-			return HttpResponse("no token")
-	user_id = jwt.getUserId(jwt_token)
-	return HttpResponse(user_id)
+	if jwt_token is not None:
+		response = JsonResponse({'success': True, 'message': 'Logged out successfully'})
+		response.delete_cookie('jwt_token')
+		status_code = 200
+	else:
+		response = JsonResponse({'success': False, 'message': 'No token to delete'})
+		status_code = 404
+
+	response.status_code = status_code
+	return response
 
 def authManager_loginIntra(request):
 	"""
