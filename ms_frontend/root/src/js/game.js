@@ -440,6 +440,35 @@ observerGame.observe(document.body, { childList: true, subtree: true });
 
 
 
+
+// function drawStripedLine() {
+//   var canvas = document.getElementById("gameCanvas");
+//     var ctx = canvas.getContext("2d");
+
+//     // Set line properties
+//     ctx.strokeStyle = "blue"; // Line color
+//     ctx.lineWidth = 5; // Line width
+
+//     // Draw the striped line
+//     var numStripes = 20; // Number of stripes
+//     var stripeWidth = 10; // Width of each stripe
+//     var spaceWidth = 5; // Width of space between stripes
+
+//     var totalWidth = stripeWidth + spaceWidth;
+
+//     for (var i = 0; i < numStripes; i++) {
+//         var startX = i * totalWidth;
+//         var endX = startX + stripeWidth;
+
+//         ctx.beginPath();
+//         ctx.moveTo(startX, canvas.height / 2);
+//         ctx.lineTo(endX, canvas.height / 2);
+//         ctx.stroke();
+//     }
+// }
+
+
+
 function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('invites-screen').classList.add('hidden');

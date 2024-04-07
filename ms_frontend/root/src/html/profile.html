@@ -3,10 +3,11 @@
     <div class="profile-header">
       <label id="changeProfileImage" class="change-profile-image">
         <input type="file" style="display: none;" accept="image/*">
-        <img src="https://www.course-api.com/images/people/person-1.jpeg" class="profile-picture" alt="Profile Picture">
+        <img id="profilePicture" src="https://www.course-api.com/images/people/person-1.jpeg" class="profile-picture" alt="Profile Picture">
       </label>
+      <div id="fileError" class="error-message" style="color: red; display: none;">Invalid file type. Please select an image file.</div>
     
-      <h1 class="profile-name">John Doe</h1>
+      <h1 id="profileName" class="profile-name"></h1>
       <select class="form-select" aria-label="Default select example" name="select-status">
         <option value="1">Online</option>
         <option value="2">Invisible</option>
@@ -17,7 +18,7 @@
         
         <ul class="details-list">
           <li class="input-field"><strong style="color: #124457;">Email:</strong> <input id="email" class="input-field" value="john@example.com" readonly autocomplete="email"></li>
-          <li class="input-field"><strong style="color: #124457;">Location:</strong> <input id="location" class="input-field" value="New York, USA" readonly></li>
+          <li class="input-field"><strong style="color: #124457;">Game-Alias:</strong> <input id="gameAlias" class="input-field" value="" readonly></li>
           <li class="input-field"><strong style="color: #124457;">Age:</strong> <input id="age" class="input-field" value="30" readonly></li>
         </ul>
         <button id="saveButton" class="change-profile-btn btn btn-outline-secondary" style="display: none;">Save</button>

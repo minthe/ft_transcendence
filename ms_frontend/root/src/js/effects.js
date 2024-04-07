@@ -164,11 +164,14 @@ function getCurrentTime() {
 
 
   // Variables for countdown
-  let countdown = 3;
+  let countdown;
   let countdownInterval;
 
   // Function to draw countdown
-  function drawCountdown() {
+function drawCountdown() {
+	const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = '48px Arial';
     ctx.fillStyle = 'black';
@@ -177,7 +180,8 @@ function getCurrentTime() {
   }
 
   // Function to start countdown animation
-  function startCountdownAnimation() {
+function startCountdownAnimation() {
+	countdown = 3;
     countdownInterval = setInterval(() => {
       countdown--;
       if (countdown <= 0) {

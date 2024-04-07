@@ -84,7 +84,7 @@ body, html {
   justify-content: center;
   align-items: center;
   text-align: center;
-  height: 100vh;
+  height: 85vh;
 
 }
 
@@ -101,12 +101,57 @@ body, html {
   justify-content: center;
   align-items: center;
   text-align: center;
-  height: 100vh;
+  height: 85vh;
 }
 
 .register-page * {
   margin: 10px;
 }
+
+.header-login {
+  margin-top: 4vh;
+  text-align: center;
+  font-size: 13vh;
+  color: #ef7267;
+  text-shadow: 
+    2px 2px 2px rgba(0, 0, 0, 0.1),
+    3px 3px 3px rgba(0, 0, 0, 0.1),
+    4px 4px 4px rgba(0, 0, 0, 0.1),
+    5px 5px 5px rgba(0, 0, 0, 0.1),
+    6px 6px 6px rgba(0, 0, 0, 0.1),
+    7px 7px 7px rgba(0, 0, 0, 0.1),
+    8px 8px 8px rgba(0, 0, 0, 0.1);
+  transform: translate3d(0, 0, -10px);
+}
+
+
+
+/* .header-login {
+  margin-top: 4vh;
+  text-align: center;
+  font-size: 13vh;
+  color: #ef7267;
+  text-shadow: 0 0 5px #ecc85d, 0 0 7px #ecc85d, 0 0 10px #ecc85d, 0 0 12px #ecc85d, 0 0 15px #ecc85d, 0 0 17px #ecc85d, 0 0 20px #ecc85d, 0 0 22px #ecc85d;
+} */
+
+
+.login-icon-one {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-bottom: 3vh;
+  margin-right: 3vh;
+}
+
+.login-icon-two {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 3vh;
+  margin-left: 3vh;
+}
+
+
 
 /* home page */
 

@@ -1,4 +1,7 @@
 websocket_obj = {
+  // profile_picture: null,
+  // file_data: null,
+
   active_game: null,
 
   username: null,
@@ -60,8 +63,10 @@ websocket_obj = {
       ball_x: 0,
       ball_y: 0,
       host_score: 0,
-      guest_score: 0
+      guest_score: 0,
 
+      // hostName: null,
+      // guestName: null
     }
   ],
   userInCurrentChat: [
@@ -171,12 +176,11 @@ async function establishWebsocketConnection() {
         break
       case 'game_start':
         console.log("GAME START");
+        document.getElementById('playerOne').textContent = websocket_obj.username;
+        document.getElementById('playerTwo').textContent = "test";
         document.getElementById("waitingScreen").style.display = "none";
-        
-      //   setTimeout(() => {
-      //   startCountdownAnimation();
-      // }, 3000);
         launchGame();
+        startCountdownAnimation();
         break
       case 'ball_update':
         // console.log("BALL_UPDATE");
@@ -255,7 +259,7 @@ async function establishWebsocketConnection() {
 
 
       case 'recieve_invites':
-        // websocket_obj.game.invites = data.matches
+      // websocket_obj.game.invites = data.matches
         websocket_obj.game.invites = JSON.parse(data.matches);
 
         console.log('DATA: ', websocket_obj.game.invites)
@@ -451,6 +455,12 @@ async function sendDataToBackend(request_type) {
 
           }
           break
+        // case 'new_profile_picture':
+        //   type = 'new_profile_picture'
+        //   data = {
+        //     'profile_picture': websocket_obj.profile_picture,
+        //     'file_data': websocket_obj.file_data,
+        //   }
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
