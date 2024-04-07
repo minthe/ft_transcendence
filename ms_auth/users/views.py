@@ -3,9 +3,16 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User
+from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
-def index(request):
-	return HttpResponse("Hello, world. You're at the user index.")
+jwt = FT_JWT(settings.JWT_SECRET)
+
+def users_getId(request):
+	jwt_token = request.COOKIES.get('jwt_token')
+	if jwt_token == None:
+			return HttpResponse("no token")
+	user_id = jwt.getUserId(jwt_token)
+	return HttpResponse(user_id)
 
 def users_checkIntraUserExists(intra_id):
 	"""

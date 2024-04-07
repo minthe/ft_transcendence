@@ -56,12 +56,12 @@ http {
 		proxy_set_header Host $host;
 		}
 
-		location ~ ^/user {
+		location ~ ^/users {
 		proxy_pass http://auth_backend:8000;
 		proxy_set_header Host $host;
 		}
 
-		location ~ ^/test {
+		location ~ ^/logout {
 		proxy_pass http://auth_backend:8000;
 		proxy_set_header Host $host;
 		}
