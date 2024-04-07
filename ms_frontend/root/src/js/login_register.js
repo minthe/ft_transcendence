@@ -7,6 +7,14 @@ function initUserData(data, username, password, age) {
 	websocket_obj.age = age
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
+
+
+  document.getElementById('profileName').textContent = websocket_obj.username;
+  document.getElementById('age').value = websocket_obj.age;
+  // if (websocket_obj.game_alias)
+  document.getElementById('gameAlias').value = websocket_obj.username;
+
+  // document.getElementById("profilePicture").src = websocket_obj.profile_picture;
 }
 
 function loginUserButton() {

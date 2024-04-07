@@ -110,6 +110,8 @@ class _Game:
 
 
     async def game_loop(self):
+        #julien changed
+        await asyncio.sleep(3)
         # game_status = self.game_states.get(self.game_id, {}).get('game_active')
         while True:
             # print("game_status")
@@ -236,7 +238,6 @@ class _Game:
             new_pedal_pos = self.prev_pos + 0.05
         else:
             new_pedal_pos = self.prev_pos
-
         if (self.is_host == True):
             response_type = 'render_left'
             await self.assign_left_pedal(new_pedal_pos)
@@ -316,8 +317,10 @@ class _Game:
             )
             print("after TWO PLAYERS\n")
 
+
             # await self.game_loop()
             asyncio.create_task(self.game_loop())
+        
 
 
     async def handle_send_ball_update(self):

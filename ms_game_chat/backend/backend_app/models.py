@@ -11,6 +11,7 @@ class MyUser(models.Model):
     new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
 
+
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
     isPrivate = models.BooleanField(default=False)

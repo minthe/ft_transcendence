@@ -1,15 +1,5 @@
 function handleDOMChangesProfile() {
-    // const sidebar = document.getElementById("sidebar")
-    // const sidebarToggle = document.getElementById("sidebar-toggler");
-    // const profileSite = document.getElementById("profileSite");
 
-    // sidebarToggle.addEventListener('click', function () {
-    //     console.log("profile shrinkin");
-    //   if (sidebar.classList.contains("show-sidebar")) 
-    //     profileSite.classList.add("shrink");
-    //   else
-    //     profileSite.classList.remove("shrink");
-    // });
 }
 
 function handleDOMChangesProfileBtn() {
@@ -21,25 +11,10 @@ function handleDOMChangesProfileBtn() {
   const globalStats = document.getElementById("globalStats");
 
 
- 
-
   const profileImageInput = document.querySelector('.change-profile-image input[type="file"]');
   
   if (profileImageInput) {
-    profileImageInput.addEventListener("change", function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function(e) {
-          const profilePicture = document.querySelector('.profile-picture');
-          const imageSidebar = document.getElementById("imageSidebar");
-
-          profilePicture.src = e.target.result;
-          imageSidebar.src = e.target.result;
-        };
-      }
-    });
+    addNewProfileImage(profileImageInput);
   }
 
 
@@ -78,6 +53,51 @@ const observerProfile = new MutationObserver(function(mutations) {
 observerProfile.observe(document.body, { childList: true, subtree: true });
 
 
+function addNewProfileImage(profileImageInput) {
+//   profileImageInput.addEventListener("change", function() {
+//     const file = this.files[0];
+
+
+//     if (file) {
+//       if (!file.type.startsWith('image/')) {
+//         setTimeout(function () {document.getElementById('fileError').style.display = 'none';}, 3000);
+//         document.getElementById('fileError').style.display = 'block';
+//         return;
+//       }
+//       // console.log('this is the file type: ', file.type);
+//       const reader = new FileReader();
+//       websocket_obj.profile_picture = websocket_obj.username + '.' + file.type.substring(6);
+//       // websocket_obj.file_data = e.target.result;
+//       reader.readAsDataURL(file);
+//       reader.onload = function(e) {
+//         const dataURI = e.target.result;
+  
+//         // Send the data URI to the Django backend
+//         // fetch(`${window.location.origin}/game/create/${websocket_obj.username}/`);
+//         fetch(`/user/picture/${username}/`, { // Using template literal to construct the URL
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({ data_uri: dataURI, file_name: websocket_obj.profile_picture, file_type: file.type.substring(6)}),
+//           // body: JSON.stringify({ data_uri: dataURI }),
+//       })
+//       .then(response => response.json())
+//       .then(data => {
+//           console.log(data.message);
+//           // Handle response from backend if needed
+//       })
+//       .catch(error => console.error('Error:', error));
+
+
+
+//         document.getElementById('profilePicture').src = websocket_obj.profile_picture;
+//       };
+//       // sendDataToBackend('new_profile_picture')
+//     }
+//   });
+}
+
 function toggleEdit() {
   let inputs = document.querySelectorAll('input[readonly]');
 
@@ -87,13 +107,11 @@ function toggleEdit() {
 }
 
 function saveChanges() {
-  let emailValue = document.getElementById("email").value;
-  let locationValue = document.getElementById("location").value;
-  let ageValue = document.getElementById("age").value;
-
   document.getElementById("email").setAttribute('readonly', true);
-  document.getElementById("location").setAttribute('readonly', true);
+  document.getElementById("gameAlias").setAttribute('readonly', true);
   document.getElementById("age").setAttribute('readonly', true);
+
+  //sendNewDataToBackend
   editButton.style.display = 'block';
   saveButton.style.display = 'none';
 }

@@ -82,7 +82,7 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#invite_user_button')) {
       await inviteUserClicked();
 	}
-  else if (event.target.closest('#creat_public_chat_button'))
+  else if (event.target.closest('#create_public_chat_button'))
 		await createPublicChat()
   else if (event.target.closest('#create_private_chat_button'))
 		await createPrivateChat() 
