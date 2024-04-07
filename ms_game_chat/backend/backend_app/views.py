@@ -9,6 +9,7 @@ jwt = FT_JWT(settings.JWT_SECRET)
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
+@jwt.token_required
 def checkUserCredentials(request, username, password):
     try:
         user_exist_check = MyUser.objects.filter(name=username).exists()
