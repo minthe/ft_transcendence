@@ -14,7 +14,16 @@ from backend_app.consumer.chat.chats import _Chat
 from backend_app.consumer.game.game import _Game
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from django.conf import settings
+from ft_jwt.ft_jwt import FT_JWT
+
+jwt = FT_JWT(settings.JWT_SECRET)
+
+
+# @jwt.token_required
+
 class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
+
     connections = [
         {
             'user_id': '',
@@ -44,6 +53,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.game_group_id = None
 
     async def connect(self):
+        if not jwt.validateToken(self.scope['cookies'].get('jwt_token')):
+            # print("TOKEN IS NOT VALID")
+            return
+        # print("TOKEN IS VALID")
+
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
@@ -71,6 +85,12 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
 
     async def receive(self, text_data):
+        if not jwt.validateToken(self.scope['cookies'].get('jwt_token')):
+            # print("TOKEN IS NOT VALID")
+            await self.close()
+            return
+        # print("TOKEN IS VALID")
+
         text_data_json = json.loads(text_data)
         what_type = text_data_json["type"]
 
