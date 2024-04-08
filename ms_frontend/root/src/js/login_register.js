@@ -15,6 +15,11 @@ function initUserData(data, username, password, age) {
   document.getElementById('gameAlias').value = websocket_obj.username;
 
   // document.getElementById("profilePicture").src = websocket_obj.profile_picture;
+
+  if (getJwtTokenFromCookie()) {
+		console.log('found token');
+		// await establishWebsocketConnection();
+	}
 }
 
 function loginUserButton() {
@@ -140,9 +145,13 @@ async function logoutUser() {
     if (!response.ok) {
       throw new Error('Token could not be deleted!');
     }
-    let websocket_obj = null
+    // let websocket_obj = null
     showDiv('userIsNotAuth')
     hideDiv('userIsAuth')
+    document.cookie = 'test' + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // state.logedOut = true;
+    // userLogedIn = false;
+    // websocket_obj.websocket.close();
     // return response.json();
   })
   .catch(error => {
