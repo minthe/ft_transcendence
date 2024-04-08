@@ -24,12 +24,19 @@ function initUserData(data, username, password, age) {
 
 function loginUserButton() {
 	const usernameElement = document.getElementById('loginUsername')
-    const passwordElement = document.getElementById('loginPassword')
+  const passwordElement = document.getElementById('loginPassword')
     usernameElement.style.border = ""
     passwordElement.style.border = ""
 
-    const url = `${window.location.origin}/login/${usernameElement.value}/${passwordElement.value}/`
-    fetch(url)
+    const url = `${window.location.origin}/user/login`
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
+      },
+      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
+    })
       .then(response => {
         if (!response.ok) {
           document.getElementById("wrong-password").classList.remove("hidden");
@@ -73,7 +80,7 @@ function RegisterUserButton() {
 
     const age = document.getElementById('registerAge').value;
 
-    const url = `${window.location.origin}/register/${usernameElement.value}/${passwordElement.value}/${age}/`
+    const url = `${window.location.origin}/user/register/${usernameElement.value}/${passwordElement.value}/${age}/`
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -139,7 +146,7 @@ function changeToRegisterPageButton() {
 }
 
 async function logoutUser() {
-  const url = `${window.location.origin}/logout`
+  const url = `${window.location.origin}/user/logout`
   fetch(url)
   .then(response => {
     if (!response.ok) {
