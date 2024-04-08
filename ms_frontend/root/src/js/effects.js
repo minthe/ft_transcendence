@@ -239,7 +239,7 @@ async function onRefresh() {
 function disconnectBeforeUnload() {
 	if (websocket_obj.websocket) {
 	//   websocket_obj.websocket.send(JSON.stringify({ type: 'disconnect' }));
-	  websocket_obj.websocket.close();
+	//   websocket_obj.websocket.close();
 	}
   }
   
@@ -248,11 +248,11 @@ function disconnectBeforeUnload() {
   
   // Attach load event listener to establish websocket connection when page is loaded
   window.addEventListener('load', async function() {
-	if (getJwtTokenFromCookie()) {
-	  console.log('found token');
-	  await establishWebsocketConnection();
-	  await onRefresh();
-	}
+	// if (getJwtTokenFromCookie()) {
+	//   console.log('found token');
+	//   await establishWebsocketConnection();
+	//   await onRefresh();
+	// }
   });
 
 
