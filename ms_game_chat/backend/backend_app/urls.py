@@ -11,7 +11,7 @@ urlpatterns = [
     path('user/login/', views.checkUserCredentials),
 
     # 'register'
-    path('user/register/<str:username>/<str:password>/<int:age>/', views.createAccount),
+    path('user/register/', views.createAccount),
 
     # CHAT
     # 'user/avatar'
