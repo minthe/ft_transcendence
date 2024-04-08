@@ -53,10 +53,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.game_group_id = None
 
     async def connect(self):
-        if not jwt.validateToken(self.scope['cookies'].get('jwt_token')):
-            # print("TOKEN IS NOT VALID")
-            return
-        # print("TOKEN IS VALID")
+        # token = self.scope['cookies'].get('jwt_token')
+        # if not jwt.validateToken(token):
+        #     # print("TOKEN IS NOT VALID")
+        #     return
+        # # print("TOKEN IS VALID")
 
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
@@ -85,10 +86,12 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
 
     async def receive(self, text_data):
-        if not jwt.validateToken(self.scope['cookies'].get('jwt_token')):
-            # print("TOKEN IS NOT VALID")
-            await self.close()
-            return
+        token = self.scope['cookies'].get('jwt_token')
+        print("TOKEN: ", token)
+        # if not jwt.validateToken():
+        #     # print("TOKEN IS NOT VALID")
+        #     await self.close()
+        #     return
         # print("TOKEN IS VALID")
 
         text_data_json = json.loads(text_data)

@@ -28,7 +28,7 @@ function loginUserButton() {
     usernameElement.style.border = ""
     passwordElement.style.border = ""
 
-    const url = `${window.location.origin}/user/login`
+    const url = `${window.location.origin}/user/login/`
     fetch(url, {
       method: 'POST',
       headers: {
