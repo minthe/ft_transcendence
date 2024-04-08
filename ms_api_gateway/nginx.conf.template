@@ -29,21 +29,6 @@ http {
             proxy_set_header Host $host;
         }
 
-        location ~ ^/user/avatar/ {
-            proxy_pass http://game_chat_backend:6969;
-            proxy_set_header Host $host;
-        }
-
-        location ~ ^/login/ {
-            proxy_pass http://game_chat_backend:6969;
-            proxy_set_header Host $host;
-        }
-
-        location ~ ^/register/ {
-            proxy_pass http://game_chat_backend:6969;
-            proxy_set_header Host $host;
-        }
-
         location ~ ^/ws/ {
             proxy_pass http://game_chat_backend:6969;
             proxy_http_version 1.1;
@@ -51,17 +36,7 @@ http {
             proxy_set_header Connection "upgrade";
         }
 
-		location ~ ^/oauth2 {
-		proxy_pass http://auth_backend:8000;
-		proxy_set_header Host $host;
-		}
-
-		location ~ ^/users {
-		proxy_pass http://auth_backend:8000;
-		proxy_set_header Host $host;
-		}
-
-		location ~ ^/logout {
+		location ~ ^/user {
 		proxy_pass http://auth_backend:8000;
 		proxy_set_header Host $host;
 		}
