@@ -7,6 +7,19 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
+def checkTokenExist(request):
+	jwt_token = request.COOKIES.get('jwt_token')
+
+	if jwt_token is not None:
+		response = JsonResponse({'success': True, 'message': 'Token exists'})
+		status_code = 200
+	else:
+		response = JsonResponse({'success': False, 'message': 'Token does not exists'})
+		status_code = 404
+
+	response.status_code = status_code
+	return response
+
 def logout(request):
 	"""
 	View for logging out a user.
