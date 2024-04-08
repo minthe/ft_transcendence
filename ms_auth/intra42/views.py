@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from urllib.request import Request, urlopen
 
-def intra42_cleanUserData(user_data):
+def cleanUserData(user_data):
 	"""
 	cleans user profile data from 42intra
 	- returns cleaned user data as json
@@ -19,7 +19,7 @@ def intra42_cleanUserData(user_data):
 	}
 	return cleaned_user_data
 
-def intra42_getUserData(access_token):
+def getUserData(access_token):
 	"""
 	returns whole user profile data from 42intra as json
  	- from api endpoint: /v2/me
@@ -28,5 +28,5 @@ def intra42_getUserData(access_token):
 	user_response = urlopen(user_request)
 	user_data = user_response.read().decode("utf-8")
 	# remove unnecessary data
-	cleaned_user_data = intra42_cleanUserData(user_data)
+	cleaned_user_data = cleanUserData(user_data)
 	return cleaned_user_data

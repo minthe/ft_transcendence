@@ -1,6 +1,12 @@
-from django.urls import path
-from . import views
+from django.urls import include, path
+from . import views as authManager_views
+from user import views as user_views
 
 urlpatterns = [
-	path("logout", views.authManager_logout, name="authManager_logout"),
+	path('oauth2/', include('oauth2.urls')),
+    path("login", authManager_views.login, name="login"),
+	path("logout", authManager_views.logout, name="logout"),
+ 
+	# users
+	path("me", user_views.getId, name="getId"),
 ]

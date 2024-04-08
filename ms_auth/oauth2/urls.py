@@ -1,8 +1,8 @@
 from django.urls import path
-from . import views
-from authManager.views import authManager_loginIntra
+from . import views as oauth2_views
+from authManager import views as authManager_views
 
 urlpatterns = [
-	path("login", views.oauth2_getCode, name="oauth2_getCode"),
-	path("redirect", authManager_loginIntra, name="authManager_loginIntra"),
+	path("login", oauth2_views.getCode, name="getCode"),
+	path("redirect", authManager_views.loginIntra, name="loginIntra"),
 ]

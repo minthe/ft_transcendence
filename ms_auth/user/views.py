@@ -7,14 +7,14 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def users_getId(request):
+def getId(request):
 	jwt_token = request.COOKIES.get('jwt_token')
 	if jwt_token == None:
 			return HttpResponse("no token")
 	user_id = jwt.getUserId(jwt_token)
 	return HttpResponse(user_id)
 
-def users_checkIntraUserExists(intra_id):
+def checkIntraUserExists(intra_id):
 	"""
 	- check if Intra user with "intra_id" exists in database
 	- return True if user exists, False if not
@@ -25,14 +25,14 @@ def users_checkIntraUserExists(intra_id):
 	except User.DoesNotExist:
 		return False
 
-def users_returnSubFromIntraId(intra_id):
+def returnSubFromIntraId(intra_id):
 	try:
 		user = User.objects.get(intra_id=intra_id)
 		return user.sub
 	except User.DoesNotExist:
 		return 0
 
-def users_createIntraUser(user_data):
+def createIntraUser(user_data):
 	"""
 	- create user with "user_data" in database
 	- return user object
