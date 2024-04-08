@@ -86,7 +86,7 @@ class FT_JWT:
 			is_valid, message = jwt_instance.validateToken(token)
 			if not is_valid:
 				return JsonResponse({'message': message}, status=401)
-
-			return f(request, *args, **kwargs)
+			user_id = jwt_instance.getUserId(token)
+			return f(request, user_id, *args, **kwargs)
 
 		return decorated
