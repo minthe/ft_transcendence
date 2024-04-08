@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from intra42.views import intra42_getUserData
-from oauth2.views import oauth2_getToken
-from users.views import users_checkIntraUserExists, users_createIntraUser, users_returnSubFromIntraId
+from intra42 import views as intra42_views
+from oauth2 import views as oauth2_views
+from user import views as user_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def authManager_logout(request):
+def logout(request):
 	"""
 	View for logging out a user.
 	"""
@@ -24,7 +24,24 @@ def authManager_logout(request):
 	response.status_code = status_code
 	return response
 
-def authManager_loginIntra(request):
+def login(request):
+    if request.method == 'POST':
+        # Get the username and password from the request
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # Log the received payload
+        print(f"Received payload: username={username}, password={password}")
+
+        # You can add your login logic here and return the appropriate response
+
+        # For debugging, return the received payload as a JSON response
+        return JsonResponse({'username': username, 'password': password}, status=200)
+
+    # Handle other HTTP methods as needed
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def loginIntra(request):
 	"""
 	- get user data from 42intra
 	- check if user exists in database
@@ -32,14 +49,14 @@ def authManager_loginIntra(request):
 	- generate/refresh JWT token
 	"""
 	# get user data from 42intra
-	access_token = oauth2_getToken(request)
-	user_data = intra42_getUserData(access_token)
+	access_token = oauth2_views.getToken(request)
+	user_data = intra42_views.getUserData(access_token)
 
 	# check if user exists in database
-	if not users_checkIntraUserExists(user_data['intra_id']):
-		users_createIntraUser(user_data)
+	if not user_views.checkIntraUserExists(user_data['intra_id']):
+		user_views.createIntraUser(user_data)
 
-	sub = users_returnSubFromIntraId(user_data['intra_id'])
+	sub = user_views.returnSubFromIntraId(user_data['intra_id'])
 	jwt_token = jwt.createToken(sub)
 
 	response = HttpResponse("valid token")

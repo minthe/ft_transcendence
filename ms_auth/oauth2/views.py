@@ -9,10 +9,10 @@ from urllib.request import Request, urlopen
 redirect_uri = f"https://{settings.CURRENT_HOST}{settings.REDIRECT_URI}"
 
 # request authorization code
-def oauth2_getCode(request):
+def getCode(request):
 	"""
 	initiates oauth2 authorization code flow
-	- redirects to /oauth2/redirect
+	- redirects to /user/oauth2/redirect
 	"""
 	data = {
 		"client_id": settings.CLIENT_ID,
@@ -22,7 +22,7 @@ def oauth2_getCode(request):
 	return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 
 # get access_token
-def oauth2_getToken(request):
+def getToken(request):
 	"""
 	returns access_token from 42intra
 	"""
