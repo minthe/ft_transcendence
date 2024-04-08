@@ -8,10 +8,10 @@ urlpatterns = [
 
     # LOGIN/REGISTER
     # 'login'
-    path('login/<str:username>/<str:password>/', views.checkUserCredentials),
+    path('user/login/<str:username>/<str:password>/', views.checkUserCredentials),
 
     # 'register'
-    path('register/<str:username>/<str:password>/<int:age>/', views.createAccount),
+    path('user/register/<str:username>/<str:password>/<int:age>/', views.createAccount),
 
     # CHAT
     # 'user/avatar'

@@ -36,9 +36,35 @@ http {
             proxy_set_header Connection "upgrade";
         }
 
-		location ~ ^/user {
+		location ~ ^/user/oauth2 {
 		proxy_pass http://auth_backend:8000;
 		proxy_set_header Host $host;
 		}
+
+		location ~ ^/user/me {
+		proxy_pass http://auth_backend:8000;
+		proxy_set_header Host $host;
+		}
+
+		location ~ ^/user/token {
+		proxy_pass http://auth_backend:8000;
+		proxy_set_header Host $host;
+		}
+
+		location ~ ^/user/logout {
+		proxy_pass http://auth_backend:8000;
+		proxy_set_header Host $host;
+		}
+
+		location ~ ^/user/login {
+		proxy_pass http://game_chat_backend:6969;
+		proxy_set_header Host $host;
+		}
+
+		location ~ ^/user/register {
+		proxy_pass http://game_chat_backend:6969;
+		proxy_set_header Host $host;
+		}
+
     }
 }
