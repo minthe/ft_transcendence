@@ -8,7 +8,7 @@ urlpatterns = [
 
     # LOGIN/REGISTER
     # 'login'
-    path('user/login/<str:username>/<str:password>/', views.checkUserCredentials),
+    path('user/login/', views.checkUserCredentials),
 
     # 'register'
     path('user/register/<str:username>/<str:password>/<int:age>/', views.createAccount),

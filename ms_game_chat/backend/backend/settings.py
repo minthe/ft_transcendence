@@ -31,6 +31,8 @@ JWT_SECRET = os.environ.get('JWT_SECRET')
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
 
+APPEND_SLASH = False
+
 ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost']
 
 # Application definition

@@ -3,6 +3,8 @@ from django.conf import settings
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
@@ -10,8 +12,14 @@ def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
 @jwt.token_required
-def checkUserCredentials(request, username, password):
+@csrf_exempt
+@require_POST
+def checkUserCredentials(request):
     try:
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get('username')
+        password = data.get('password')
+
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
             return JsonResponse({}, status=404)
