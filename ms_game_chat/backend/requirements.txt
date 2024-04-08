@@ -3,4 +3,4 @@ psycopg[binary]
 channels~=4.0
 daphne~=4.0
 channels_redis~=4.1
-ft_jwt>=0.0.16
+ft_jwt>=0.0.17
