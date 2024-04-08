@@ -1,0 +1,249 @@
+openapi: 3.0.2
+info:
+  title: ft_transcendence-auth REST API
+  version: '0.1'
+
+tags:
+  - name: Authentication
+    description: Endpoints related to user authentication
+  - name: User
+    description: Endpoints related to user data and profile
+  - name: JWT
+    description: Endpoints related to JWT token management
+
+servers:
+  - url: https://{hostname}/api
+
+paths:
+  /user/login:
+    post:
+      tags:
+        - Authentication
+      summary: regular user login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful Login
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid Credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/oauth2/login:
+    get:
+      tags:
+        - Authentication
+      summary: intra42 login
+      responses:
+        '200':
+          description: Successful OAuth2 Login
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3OCIsImlhdCI6MTYyNDU2Nzg5MH0.abcdefghijklmnopqrstuvwxyz; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuth2LoginResponse'
+        '302':
+          description: Redirect to OAuth2 Provider
+          headers:
+            Location:
+              schema:
+                type: string
+                example: https://example.com/oauth2/authorize
+  /user/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User Logout
+      responses:
+        '200':
+          description: Successful Logout (Token Deleted)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=; Max-Age=0; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '404':
+          description: No Token to Delete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/{user_id}/avatar:
+    get:
+      tags:
+            - User
+      summary: Get User Avatar
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Avatar Retrieval
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - User
+      summary: Update User Avatar
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Successful Avatar Update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAvatarResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/token/existence:
+    get:
+      tags:
+        - JWT
+      summary: Check Token Existence
+      responses:
+        '200':
+          description: Token Exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenExistenceResponse'
+        '404':
+          description: Token Does Not Exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenExistenceResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      required:
+        - userId
+        - jwt_token
+      properties:
+        userId:
+          type: string
+    OAuth2LoginResponse:
+      type: object
+      required:
+        - userId
+        - jwt_token
+      properties:
+        userId:
+          type: string
+        jwt_token:
+          type: string
+    LogoutResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    ProtectedResource:
+      type: object
+      properties:
+        data:
+          type: string
+    UpdateAvatarResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    TokenExistenceResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
