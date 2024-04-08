@@ -14,11 +14,15 @@ def goToFrontend(request):
 @jwt.token_required
 @csrf_exempt
 @require_POST
-def checkUserCredentials(request):
+def checkUserCredentials(request, user_id):#TODO Marie: user user_id to get user
     try:
+        print("before")
+        print("TRY: ", user_id)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
+        print("USERNAME: ", username)
         password = data.get('password')
+        print("PASSWORD: ", password)
 
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
@@ -33,8 +37,17 @@ def checkUserCredentials(request):
         return JsonResponse({}, status=500)
 
 @jwt.token_required
-def createAccount(request, username, password, age):
+@csrf_exempt
+@require_POST
+def createAccount(request, user_id):#TODO Marie: user user_id to get user
     try:
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get('username')
+        print("USERNAME: ", username)
+        password = data.get('password')
+        print("PASSWORD: ", password)
+        age = data.get('age')
+        print("AGE: ", age)
         user_exist = MyUser.objects.filter(name=username).exists()
         if user_exist:
             return JsonResponse({}, status=409)
