@@ -42,7 +42,7 @@ function submitForm() {
         const formData = new FormData();
         formData.append('avatar', file);
         // if response good, assign new image && display Image
-        const url = `${window.location.origin}/user/upload/avatar/${websocket_obj.username}/`
+        const url = `${window.location.origin}/game/upload/avatar/${websocket_obj.username}/`
         fetch(url, {
             method: 'POST',
             body: formData
