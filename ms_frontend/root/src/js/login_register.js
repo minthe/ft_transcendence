@@ -20,6 +20,8 @@ function initUserData(data, username, password, age) {
 		console.log('found token');
 		// await establishWebsocketConnection();
 	}
+
+  state.userName = websocket_obj.username;
 }
 
 function loginUserButton() {

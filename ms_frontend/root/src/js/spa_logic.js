@@ -3,6 +3,8 @@ let state = {
 	currPage: "home",
   chatObj: {},
   chatOpen: false,
+
+  userName: null
   // groupChatName: "",
   //   idxState : 0
   // logedOut: false
@@ -23,7 +25,8 @@ function handleButtonClick(url) {
 
 
 
-state.bodyText = document.body.innerHTML;
+  state.bodyText = document.body.innerHTML;
+  state.userName = websocket_obj.username;
 
 // state.currPage = url;
   window.history.pushState(state, null, url);
@@ -39,31 +42,38 @@ window.onpopstate = async function (event) {
       location.reload();
       throw new Error('Token could not be deleted!');
     }
+
     if (event.state)
-		state = event.state;
+      state = event.state;
+
+    if (state.userName === websocket_obj.username) {
+      if (state.currPage === 'chat' || state.currPage === 'group_chat') {
+        await sendDataToBackend('get_current_users_chats')
+        await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user') // NEW since 02.02
+      }
+      if (state.currPage === 'group_chat') {
+        if (state.chatOpen)
+          state.chatOpen = false;
+        else
+          state.chatOpen = true;
+        await handleClickedOnChatElement(state.chatObj);
+      }
+      if (state.currPage === 'invites')
+        await requestInvites();
   
-
-	if (state.currPage === 'chat' || state.currPage === 'group_chat') {
-		await sendDataToBackend('get_current_users_chats')
-		await sendDataToBackend('get_blocked_by_user')
-		await sendDataToBackend('get_blocked_user') // NEW since 02.02
-  }
-	if (state.currPage === 'group_chat') {
-    if (state.chatOpen)
-      state.chatOpen = false;
-    else
-      state.chatOpen = true;
-		await handleClickedOnChatElement(state.chatObj);
-  }
-  if (state.currPage === 'invites')
-    await requestInvites();
-
-  render(state);
-  if (state.currPage === 'chat') {
-    hideDiv('messageSide');
-    document.getElementById('right-heading-name').textContent = "";
-    chat_avatar.src = "../img/ballWithEye.jpg";
-  }
+      render(state);
+      if (state.currPage === 'chat') {
+        hideDiv('messageSide');
+        document.getElementById('right-heading-name').textContent = "";
+        chat_avatar.src = "../img/ballWithEye.jpg";
+      }
+    }
+    else {
+      showSiteHideOthers('homeSite');
+      render(state);
+      state.userName = websocket_obj.username;
+    }
   })
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
