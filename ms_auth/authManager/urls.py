@@ -7,6 +7,9 @@ urlpatterns = [
     path("login", authManager_views.login, name="login"),
 	path("logout", authManager_views.logout, name="logout"),
  
+	# for frontend
+	path("token/existence", authManager_views.checkTokenExist, name="token/existence"),
+ 
 	# users
 	path("me", user_views.getId, name="getId"),
 ]
