@@ -72,9 +72,12 @@ def loginIntra(request):
 	sub = user_views.returnSubFromIntraId(user_data['intra_id'])
 	jwt_token = jwt.createToken(sub)
 
-	response = HttpResponse("valid token")
-	response.set_cookie('jwt_token', jwt_token, httponly=True)
-
 	if not jwt.validateToken(jwt_token):
-		return HttpResponse("invalid token") 
+		response = JsonResponse({'success': False, 'message': 'Login failed'})
+		response.status_code = 401
+		return response
+
+	response = JsonResponse({'success': True, 'message': 'Logged in successfully'})
+	response.status_code = 200
+	response.set_cookie('jwt_token', jwt_token, httponly=True)
 	return response
