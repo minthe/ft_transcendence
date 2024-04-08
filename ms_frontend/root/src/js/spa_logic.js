@@ -5,7 +5,10 @@ let state = {
   chatOpen: false,
   // groupChatName: "",
   //   idxState : 0
+  // logedOut: false
 };
+
+let userLogedIn = true;
   
 function render() {
   document.body.innerHTML = state.bodyText;
@@ -31,6 +34,17 @@ state.bodyText = document.body.innerHTML;
 window.onpopstate = async function (event) {
 	if (event.state)
 		state = event.state;
+  console.log('onpopstate ######');
+  if (!getJwtTokenFromCookie()) {
+    console.log('session over!!!!!!!!!!!');
+
+   
+    // render(state);
+    location.reload();
+    return ;
+    // console.log('log out this user');
+    // await logoutUser();
+  }
 	// let stateJson = JSON.stringify(event.state);
 
 	if (state.currPage === 'chat' || state.currPage === 'group_chat') {
@@ -111,4 +125,8 @@ async function handleClickEvent(event) {
     changeToLoginPageButton();
   else if (event.target.closest('#changeToRegisterPageButton'))
     changeToRegisterPageButton();
+
+  else if (event.target.closest('#Register42Button')) {
+    window.location.href = 'https://localhost/user/oauth2/login';
+  }
 }

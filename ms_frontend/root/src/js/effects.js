@@ -198,41 +198,85 @@ function startCountdownAnimation() {
 
 
 
-
-
-// window.addEventListener('beforeunload', function (e) {
-//     // Cancel the event
-//     e.preventDefault();
-   
-	// if (state.currPage = "invites")
-// 	// 	await requestInvites();
-// 	// if (state.currPage)
+async function onRefresh() {
+	if (!getJwtTokenFromCookie()) {
+		console.log('session over!!!!!!!!!!!');
 	
+	   
+		// render(state);
+		location.reload();
+		return ;
+		// console.log('log out this user');
+		// await logoutUser();
+	  }
+		// let stateJson = JSON.stringify(event.state);
 	
+		if (state.currPage === 'chat' || state.currPage === 'group_chat') {
+			await sendDataToBackend('get_current_users_chats')
+			await sendDataToBackend('get_blocked_by_user')
+			await sendDataToBackend('get_blocked_user') // NEW since 02.02
+	  }
+		if (state.currPage === 'group_chat') {
+		if (state.chatOpen)
+		  state.chatOpen = false;
+		else
+		  state.chatOpen = true;
+			await handleClickedOnChatElement(state.chatObj);
+	  }
+	  if (state.currPage === 'invites')
+		await requestInvites();
 	
-// 	// // Chrome requires returnValue to be set
-//     // e.returnValue = '';
-//     // // Prompt the user with a custom message
-//     // var confirmationMessage = 'Are you sure you want to leave?';
-//     // (e || window.event).returnValue = confirmationMessage;
-//     // return confirmationMessage;
-// });
+	  render(state);
+	  if (state.currPage === 'chat') {
+		hideDiv('messageSide');
+		document.getElementById('right-heading-name').textContent = "";
+		chat_avatar.src = "../img/ballWithEye.jpg";
+	  }
+}
 
 
-// window.addEventListener('beforeunload', function(e) {
-// 	e.preventDefault();
 
-//     sessionStorage.setItem('websocketUrl', websocket_obj.webSocket.url);
-//     // You can store other necessary information like authentication tokens as well
-// });
+function disconnectBeforeUnload() {
+	if (websocket_obj.websocket) {
+	//   websocket_obj.websocket.send(JSON.stringify({ type: 'disconnect' }));
+	  websocket_obj.websocket.close();
+	}
+  }
+  
+  // Attach beforeunload event listener to ensure websocket is closed before page refresh
+  window.addEventListener('beforeunload', disconnectBeforeUnload);
+  
+  // Attach load event listener to establish websocket connection when page is loaded
+  window.addEventListener('load', async function() {
+	if (getJwtTokenFromCookie()) {
+	  console.log('found token');
+	  await establishWebsocketConnection();
+	  await onRefresh();
+	}
+  });
 
-// // When the page is loaded, attempt to reconnect WebSocket
-// window.addEventListener('load', function() {
-//     let websocketUrl = sessionStorage.getItem('websocketUrl');
-//     if (websocketUrl) {
-//         // Reestablish WebSocket connection
-//         websocket_obj.webSocket = new WebSocket(websocketUrl);
-//         // Handle WebSocket events as before
-//         // Ensure to handle WebSocket events appropriately
-//     }
-// });
+
+
+
+function getJwtTokenFromCookie() {
+	const cookies = document.cookie.split(';');
+	console.log(document.cookie);
+	for (let i = 0; i < cookies.length; i++) {
+		const cookie = cookies[i].trim();
+		console.log(cookies[i]);
+	  if (cookie.startsWith('test='))
+		return true;
+	}
+	return false;
+}
+  
+
+
+// //check if it is the correct token
+// window.onload = async function() {
+// 	// e.preve
+// 	if (getJwtTokenFromCookie()) {
+// 		console.log('found token');
+// 		await establishWebsocketConnection();
+// 	}
+// };
