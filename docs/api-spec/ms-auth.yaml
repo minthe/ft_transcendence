@@ -79,18 +79,41 @@ paths:
                 type: string
                 example: jwt_token=; Max-Age=0; HttpOnly
         '404':
-          description: No Token to Delete
+          description: Token does not exist
+  /user/token:
+    get:
+      tags:
+        - Authentication
+      summary: Get JWT Token Payload
+      description: Decodes the JWT token and returns the payload. 'sub' is the user ID.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPayload'
+        '401':
+          description: Missing or invalid JWT token
+        '500':
+          description: Error decoding JWT token
   /user/token/existence:
     get:
       tags:
         - Authentication
       summary: Check if Token Exists
       description: Checking if the JWT is stored in the cookie with the name 'jwt_token'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Token exists
         '404':
           description: Token does not exist
+        '401':
+          description: Missing or invalid JWT token
   /user/{userId}/username:
     get:
       tags:
@@ -241,15 +264,34 @@ components:
     AuthResponse:
       type: object
       required:
-        - id
+        - userId
       properties:
-        id:
+        userId:
           type: string
         jwt_token:
           type: string
           nullable: true
           description: |
             If this property is null, the user needs to log in again through the Auth microservice to get a new token.
+    TokenPayload:
+      type: object
+      description: Decoded JWT token payload.
+      properties:
+        sub:
+          type: string
+          description: Subject (user ID)
+        exp:
+          type: integer
+          description: Expiration timestamp
+        amr:
+          type: array
+          items:
+            type: string
+          description: Authentication methods references
+      example:
+        sub: "1"
+        exp: 1672531200
+        amr: ["password", "oauth2", "2fa"]
     Error:
       type: object
       required:
