@@ -39,7 +39,7 @@ else:
 
 # Get the user ID from a token
 
-user_id = ftjwt.getUserId(token)
+userId = ftjwt.getUserId(token)
 print(f'User ID: {sub}')
 
 # Use the decorator to validate against a JWT for a protected route

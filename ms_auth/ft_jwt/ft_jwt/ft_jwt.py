@@ -14,7 +14,7 @@ class FT_JWT:
 	def createToken(self, sub):
 		"""
 		takes a json object and returns a JWT token
-		- token contains user_id and expiration date (1 day)
+		- token contains userId and expiration date (1 day)
 		"""
 		current_time = datetime.utcnow()
 		expire_time = current_time + timedelta(days=1)
@@ -67,12 +67,12 @@ class FT_JWT:
 
 	def getUserId(self, token):
 		"""
-		takes a JWT token and returns the user_id
+		takes a JWT token and returns the userId
 		"""
 		encoded_header, encoded_payload, encoded_signature = token.split('.')
 		payload = json.loads(base64.urlsafe_b64decode(encoded_payload + '=' * (4 - len(encoded_payload) % 4)))
-		user_id = payload['sub']
-		return user_id
+		userId = payload['sub']
+		return userId
 
 	def token_required(self, f):
 		@wraps(f)
@@ -86,7 +86,7 @@ class FT_JWT:
 			is_valid, message = jwt_instance.validateToken(token)
 			if not is_valid:
 				return JsonResponse({'message': message}, status=401)
-			user_id = jwt_instance.getUserId(token)
-			return f(request, user_id, *args, **kwargs)
+			userId = jwt_instance.getUserId(token)
+			return f(request, userId, *args, **kwargs)
 
 		return decorated

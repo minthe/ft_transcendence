@@ -1,25 +1,26 @@
 openapi: 3.0.2
 info:
   title: ft_transcendence-auth REST API
-  version: '0.1'
+  version: '0.3'
+  description: |
+    This API is used for authentication and user profile management.
+    Version 0.3 includes improved details and added endpoints for username.
 
 tags:
   - name: Authentication
     description: Endpoints related to user authentication
   - name: User
     description: Endpoints related to user data and profile
-  - name: JWT
-    description: Endpoints related to JWT token management
 
 servers:
-  - url: https://{hostname}/api
+  - url: https://{hostname}
 
 paths:
   /user/login:
     post:
       tags:
         - Authentication
-      summary: regular user login
+      summary: Regular Login
       requestBody:
         required: true
         content:
@@ -37,18 +38,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Invalid Credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: Missing or invalid JWT token
   /user/oauth2/login:
     get:
       tags:
         - Authentication
-      summary: intra42 login
+      summary: Intra42 Login
       responses:
         '200':
           description: Successful OAuth2 Login
@@ -60,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OAuth2LoginResponse'
+                $ref: '#/components/schemas/AuthResponse'
         '302':
           description: Redirect to OAuth2 Provider
           headers:
@@ -72,7 +69,7 @@ paths:
     post:
       tags:
         - Authentication
-      summary: User Logout
+      summary: Logout
       responses:
         '200':
           description: Successful Logout (Token Deleted)
@@ -81,93 +78,147 @@ paths:
               schema:
                 type: string
                 example: jwt_token=; Max-Age=0; HttpOnly
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LogoutResponse'
         '404':
           description: No Token to Delete
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /user/{user_id}/avatar:
+  /user/token/existence:
     get:
       tags:
-            - User
-      summary: Get User Avatar
+        - Authentication
+      summary: Check if Token Exists
+      description: Checking if the JWT is stored in the cookie with the name 'jwt_token'
+      responses:
+        '200':
+          description: Token exists
+        '404':
+          description: Token does not exist
+  /user/{userId}/username:
+    get:
+      tags:
+        - User
+      summary: Get Username
       security:
         - bearerAuth: []
       parameters:
         - in: path
-          name: user_id
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Missing or invalid JWT token
+    put:
+      tags:
+        - User
+      summary: Update Username
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Missing or invalid JWT token
+  /user/{userId}/avatarUrl:
+    get:
+      tags:
+        - User
+      summary: Get Avatar URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Successful Avatar Retrieval
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-        '401':
-          description: Unauthorized
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
+        '401':
+          description: Missing or invalid JWT token
     put:
       tags:
         - User
-      summary: Update User Avatar
+      summary: Update Avatar URL
       security:
         - bearerAuth: []
       parameters:
         - in: path
-          name: user_id
+          name: userId
           required: true
           schema:
             type: string
       requestBody:
         required: true
         content:
-          image/png:
+          application/json:
             schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                avatarUrl:
+                  type: string
       responses:
         '200':
-          description: Successful Avatar Update
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdateAvatarResponse'
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /user/token/existence:
-    get:
-      tags:
-        - JWT
-      summary: Check Token Existence
-      responses:
-        '200':
-          description: Token Exists
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenExistenceResponse'
-        '404':
-          description: Token Does Not Exist
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenExistenceResponse'
+          description: Missing or invalid JWT token
 
 components:
   securitySchemes:
@@ -187,59 +238,18 @@ components:
           type: string
         password:
           type: string
-    LoginResponse:
+    AuthResponse:
       type: object
       required:
-        - userId
-        - jwt_token
+        - id
       properties:
-        userId:
-          type: string
-    OAuth2LoginResponse:
-      type: object
-      required:
-        - userId
-        - jwt_token
-      properties:
-        userId:
+        id:
           type: string
         jwt_token:
           type: string
-    LogoutResponse:
-      type: object
-      required:
-        - success
-        - message
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-    ProtectedResource:
-      type: object
-      properties:
-        data:
-          type: string
-    UpdateAvatarResponse:
-      type: object
-      required:
-        - success
-        - message
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-    TokenExistenceResponse:
-      type: object
-      required:
-        - success
-        - message
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
+          nullable: true
+          description: |
+            If this property is null, the user needs to log in again through the Auth microservice to get a new token.
     Error:
       type: object
       required:
