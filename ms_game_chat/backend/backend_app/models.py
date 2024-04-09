@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.postgres.fields import ArrayField
 
 # inherits from "models.Model" which means it's a database model
 class MyUser(models.Model):
@@ -10,7 +11,6 @@ class MyUser(models.Model):
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
-
 
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
@@ -28,6 +28,11 @@ class Message(models.Model):
         return self.timestamp.strftime('%H:%M %d.%m.%Y')
 
 class Game(models.Model):
-    # alias = models.CharField("name", max_length=100)
     hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)
+
+class Tournament(models.Model):
+    # quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    quarterMatch = ArrayField(models.IntegerField(), blank=True, default=list)
+    semiMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    finalMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
