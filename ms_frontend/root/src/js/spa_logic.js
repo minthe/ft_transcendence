@@ -126,7 +126,7 @@ async function handleClickEvent(event) {
     changeToRegisterPageButton();
 
   else if (event.target.closest('#Register42Button')) {
-    window.location.href = '${window.location.origin}/user/oauth2/login';
+    window.location.href = '/user/oauth2/login';
   }
 }
 
