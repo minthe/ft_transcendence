@@ -1,6 +1,6 @@
 let state = { 
-	bodyText: "<div id=userIsNotAuth></div>",
-	currPage: "home",
+	bodyText: "notInit",
+	currPage: "homeSite",
   chatObj: {},
   chatOpen: false,
 
@@ -17,7 +17,10 @@ function render() {
 }
   
 // (function initialize() {
-//   window.history.replaceState(state, null, "");
+//   if (state.bodyText === "notInit") {
+//     state.bodyText = document.innerHTML;
+//     window.history.replaceState(state, null, "");
+//   }
 //   render(state);
 // })();
 
@@ -35,6 +38,9 @@ function handleButtonClick(url) {
   
 // Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
+  console.log('onpopstate triggered')
+
+
   const url = `${window.location.origin}/user/token/existence`
  fetch(url)
   .then(async response => {
@@ -54,14 +60,14 @@ window.onpopstate = async function (event) {
       }
       if (state.currPage === 'group_chat') {
         if (state.chatOpen)
-          state.chatOpen = false;
+        state.chatOpen = false;
         else
-          state.chatOpen = true;
+        state.chatOpen = true;
         await handleClickedOnChatElement(state.chatObj);
       }
       if (state.currPage === 'invites')
         await requestInvites();
-  
+      
       render(state);
       if (state.currPage === 'chat') {
         hideDiv('messageSide');
@@ -70,15 +76,34 @@ window.onpopstate = async function (event) {
       }
     }
     else {
-      showSiteHideOthers('homeSite');
-      render(state);
+      console.log('goes into else of popstate');
+      // showSiteHideOthers('homeSite');
+      showSiteHideOthersSpa('homeSite')
+      state.bodyText = document.body.innerHTML;
       state.userName = websocket_obj.username;
+      window.history.replaceState(state, null, "");
+      render(state);
+      // state.userName = websocket_obj.username;
     }
   })
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
   });
 };
+
+function showSiteHideOthersSpa(site_to_show) {
+  console.log(site_to_show);
+
+  if (state.currPage === site_to_show)
+    return ;
+
+  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];//gameSiteStart, gameSiteInvite, gameSitePlay, gameSiteEnd
+  sites.forEach(site => {
+    if (site === site_to_show) showDiv(site)
+    else hideDiv(site)
+  });
+  state.currPage = site_to_show;
+}
 
 async function handleClickEvent(event) {
   // console.log(event);
@@ -136,7 +161,20 @@ async function handleClickEvent(event) {
     changeToRegisterPageButton();
 
   else if (event.target.closest('#Register42Button')) {
+    // initUserData(data, usernameElement.value, passwordElement.value, 69)
+    // showDiv('userIsAuth');
+    // hideDiv('userIsNotAuth');
+    // showDiv('homeSite');
+    
+    // state.bodyText = document.body.innerHTML;
+    // window.history.replaceState(state, null, "");
     window.location.href = 'https://localhost/user/oauth2/login';
+    // window.location.href = 'https://localhost/';
+    // establishWebsocketConnection();
+    // hideDiv('userIsNotAuth');
+    // showDiv('userIsAuth');
+
+    establishWebsocketConnection()
   }
 }
 

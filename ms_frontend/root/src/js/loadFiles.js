@@ -3,6 +3,30 @@
 document.addEventListener('DOMContentLoaded', function () {
   loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
   loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
+
+// 	console.log(state.bodyText);
+//   if (state.bodyText === "notInit") {
+//     state.bodyText = document.body.innerHTML;
+//     window.history.replaceState(state, null, "");
+//   }
+// 	render(state);
+
+
+
+	const url = `${window.location.origin}/user/token/existence`
+	fetch(url)
+	 .then(async response => {
+	   if (!response.ok) {
+		 throw new Error('Token could not be deleted!');
+	   }
+	   	// showDiv('userIsAuth');
+    	// hideDiv('userIsNotAuth');
+		// handleButtonClick("");
+	//    await establishWebsocketConnection();
+	})
+	 .catch(error => {
+	   console.error('There was a problem with the fetch operation:', error);
+	 });
 });
 
 function loadContent(file, targetId) {

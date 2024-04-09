@@ -62,13 +62,18 @@ function loginUserButton() {
       .then(data => {
         initUserData(data, usernameElement.value, passwordElement.value, 69)
         showDiv('showUserProfile')
+        document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
         
-        state.bodyText = document.body.innerHTML;
-        window.history.replaceState(state, null, "");
-
         establishWebsocketConnection()
+        state.bodyText = document.body.innerHTML;
+        console.log(state.bodyText);
+        window.history.replaceState(state, null, "");
+        usernameElement.value = "";
+        passwordElement.value = "";
       })
       .catch(error => {
+        usernameElement.value = "";
+        passwordElement.value = "";
         // setErrorWithTimout('info_login', error, 9999999)
         console.log('Error during login:', error);
       });
@@ -82,11 +87,8 @@ function RegisterUserButton() {
 
     const age = document.getElementById('registerAge').value;
 
-    const url = `${window.location.origin}/user/register/`
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value, age: age })
-    })
+    const url = `${window.location.origin}/user/register/${usernameElement.value}/${passwordElement.value}/${age}/`
+    fetch(url)
       .then(response => {
         if (!response.ok) {
           document.getElementById("wrong-register").classList.remove("hidden");
@@ -113,9 +115,13 @@ function RegisterUserButton() {
         window.history.replaceState(state, null, "");
 
         establishWebsocketConnection()
+        usernameElement.value = "";
+        passwordElement.value = "";
       })
       .catch(error => {
         // setErrorWithTimout('info_register', error, 9999999)
+        usernameElement.value = "";
+        passwordElement.value = "";
         console.log('Error during login:', error);
       });
 }

@@ -248,11 +248,56 @@ function disconnectBeforeUnload() {
   
   // Attach load event listener to establish websocket connection when page is loaded
   window.addEventListener('load', async function() {
-	// if (getJwtTokenFromCookie()) {
-	//   console.log('found token');
+	// const url = `${window.location.origin}/user/me/`
+    // fetch(url, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
+    //   },
+    //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
+    // })
+    //   .then(response => {
+    //     if (!response.ok) {
+    //       document.getElementById("wrong-password").classList.remove("hidden");
+    //       switch (response.status) {
+    //         case 404:
+    //           document.getElementById("loginUsername").style.border = "1px solid red";
+    //           document.getElementById("wrong-password").innerHTML = "This User does not exist!";
+    //           throw new Error('This User does not exist!');
+    //         case 401:
+    //           document.getElementById("loginPassword").style.border = "1px solid red";
+    //           document.getElementById("wrong-password").innerHTML = "Credentials are wrong!";
+    //           throw new Error('Credentials are wrong!');
+    //         default:
+    //           document.getElementById("wrong-password").innerHTML = "Unexpected Error: Failed to check Credentials!";
+    //           throw new Error('Unexpected Error: Failed to check Credentials')
+    //       }
+    //     }
+    //     document.getElementById("wrong-password").classList.add("hidden");
+    //     return response.json();
+    //   })
+    //   .then(data => {
+    //     initUserData(data, usernameElement.value, passwordElement.value, 69)
+    //     showDiv('showUserProfile')
+        
+    //     state.bodyText = document.body.innerHTML;
+    //     window.history.replaceState(state, null, "");
+
+    //     establishWebsocketConnection()
+    //   })
+    //   .catch(error => {
+    //     // setErrorWithTimout('info_login', error, 9999999)
+    //     console.log('Error during login:', error);
+    //   });
+
+	// if (state.bodyText === "notInit") {
+	// 	state.bodyText = document.documentElement.innerHTML;
+	// 	window.history.replaceState(state, null, "");
+	//   }
+	//   render(state);
 	//   await establishWebsocketConnection();
-	//   await onRefresh();
-	// }
+	  console.log(state.currPage);
   });
 
 

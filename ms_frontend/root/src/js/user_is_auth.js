@@ -9,6 +9,15 @@ function addEventListenersIsAuth() {
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
   });
+ 
+ 
+  // if (state.bodyText === "notInit") {
+	// 	state.bodyText = document.body.innerHTML;
+    
+	// 	window.history.replaceState(state, null, "");
+  //   console.log(state.bodyText);
+  // }
+  // render(state);
 }
 
 
