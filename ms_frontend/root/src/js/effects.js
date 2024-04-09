@@ -235,25 +235,76 @@ async function onRefresh() {
 }
 
 
+// @julien your code
+// function disconnectBeforeUnload() {
+// 	if (websocket_obj.websocket) {
+// 	//   websocket_obj.websocket.send(JSON.stringify({ type: 'disconnect' }));
+// 	//   websocket_obj.websocket.close();
+// 	}
+//   }
+//
+//   // Attach beforeunload event listener to ensure websocket is closed before page refresh
+//   window.addEventListener('beforeunload', disconnectBeforeUnload);
+//
+//   // Attach load event listener to establish websocket connection when page is loaded
+//   window.addEventListener('load', async function() {
+// 	// if (getJwtTokenFromCookie()) {
+// 	//   console.log('found token');
+// 	//   await establishWebsocketConnection();
+// 	//   await onRefresh();
+// 	// }
+//   });
 
-function disconnectBeforeUnload() {
-	if (websocket_obj.websocket) {
-	//   websocket_obj.websocket.send(JSON.stringify({ type: 'disconnect' }));
-	//   websocket_obj.websocket.close();
-	}
-  }
-  
-  // Attach beforeunload event listener to ensure websocket is closed before page refresh
-  window.addEventListener('beforeunload', disconnectBeforeUnload);
-  
+
+
+  window.addEventListener('beforeunload', function(event) {
+		// using the local storage to safe userdata, makes sure user can login again on 'load'
+		const myData = {
+    ws_obj: websocket_obj
+};
+		console.log(myData)
+		localStorage.clear();
+		localStorage.setItem('myData', JSON.stringify(myData));
+	})
   // Attach load event listener to establish websocket connection when page is loaded
-  window.addEventListener('load', async function() {
-	// if (getJwtTokenFromCookie()) {
+  window.addEventListener('load',  function() {
+		const myData = JSON.parse(localStorage.getItem('myData'));
+		localStorage.clear();
+		websocket_obj = myData.ws_obj
+		username = myData.ws_obj.username
+		password = myData.ws_obj.password
+		user_id = myData.ws_obj.user_id
+
+		sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+
+
+		// if (getJwtTokenFromCookie()) {
 	//   console.log('found token');
 	//   await establishWebsocketConnection();
 	//   await onRefresh();
 	// }
   });
+
+
+function sillyLogin(username, password, user_id) {
+			showDiv('userIsAuth')
+			hideDiv('userIsNotAuth')
+			websocket_obj.username = username
+			websocket_obj.password = password
+			websocket_obj.age = 69
+			websocket_obj.user_id = user_id
+
+			// if (getJwtTokenFromCookie()) {
+			// 	console.log('found token');
+			// 	// await establishWebsocketConnection();
+			// }
+
+			// showDiv('showUserProfile')
+
+			state.bodyText = document.body.innerHTML;
+			window.history.replaceState(state, null, "");
+			establishWebsocketConnection()
+}
 
 
 
