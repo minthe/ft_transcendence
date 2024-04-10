@@ -5,7 +5,7 @@ on:
     branches:
       - auth_valentin
     paths:
-      - 'docs/api-spec'
+      - 'docs/api-spec/**'
 
 jobs:
   publish:
