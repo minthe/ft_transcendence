@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate HTML Documentation
         run: |
-          npm install -g redoc-cli
-          redoc-cli bundle docs/api-spec/openapi.yaml -o docs/index.html
+          npm install -g swagger-ui-cli
+          swagger-ui-cli bundle -o docs/index.html docs/api-spec/openapi.yaml
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
