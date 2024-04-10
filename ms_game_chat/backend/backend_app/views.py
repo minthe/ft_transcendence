@@ -11,13 +11,12 @@ jwt = FT_JWT(settings.JWT_SECRET)
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
-@jwt.token_required
 @csrf_exempt
 @require_POST
-def checkUserCredentials(request, user_id):#TODO Marie: user user_id to get user
+def checkUserCredentials(request):#TODO Marie: user user_id to get user
     try:
         print("before")
-        print("TRY: ", user_id)
+        # print("TRY: ", user_id)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         print("USERNAME: ", username)
@@ -36,10 +35,9 @@ def checkUserCredentials(request, user_id):#TODO Marie: user user_id to get user
         print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
 
-@jwt.token_required
 @csrf_exempt
 @require_POST
-def createAccount(request, user_id):#TODO Marie: user user_id to get user
+def createAccount(request):#TODO Marie: user user_id to get user
     try:
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')

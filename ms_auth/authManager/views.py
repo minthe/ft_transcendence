@@ -69,8 +69,8 @@ def loginIntra(request):
 	if not user_views.checkIntraUserExists(user_data['intra_id']):
 		user_views.createIntraUser(user_data)
 
-	sub = user_views.returnSubFromIntraId(user_data['intra_id'])
-	jwt_token = jwt.createToken(sub)
+	userId = user_views.returnUserId(user_data['intra_id'])
+	jwt_token = jwt.createToken(userId)
 
 	if not jwt.validateToken(jwt_token):
 		response = JsonResponse({'success': False, 'message': 'Login failed'})

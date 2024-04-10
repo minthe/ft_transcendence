@@ -1,9 +1,11 @@
 import json
 import asyncio
 from channels.db import database_sync_to_async
-from backend_app.models import MyUser, Chat, Message, Game
+from backend_app.models import MyUser, Chat, Message, Game, Tournament
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+
+
 
 
 class _Game:
@@ -110,8 +112,6 @@ class _Game:
 
 
     async def game_loop(self):
-        #julien changed
-        await asyncio.sleep(3)
         # game_status = self.game_states.get(self.game_id, {}).get('game_active')
         while True:
             # print("game_status")
@@ -238,6 +238,7 @@ class _Game:
             new_pedal_pos = self.prev_pos + 0.05
         else:
             new_pedal_pos = self.prev_pos
+
         if (self.is_host == True):
             response_type = 'render_left'
             await self.assign_left_pedal(new_pedal_pos)
@@ -317,10 +318,8 @@ class _Game:
             )
             print("after TWO PLAYERS\n")
 
-
             # await self.game_loop()
             asyncio.create_task(self.game_loop())
-        
 
 
     async def handle_send_ball_update(self):
@@ -369,9 +368,44 @@ class _Game:
             'data': return_data,
         })
 
+    async def handle_send_join_tournament(self):
+        await self.add_to_tourn(self.game_id, self.user['user_id'])
+
 
 
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
+
+
+    @database_sync_to_async
+    def add_to_tourn(self, game_id, user_id):
+        tourn_instance = Tournament.objects.order_by('-id').first()
+        print("tourn_instance")
+        print(tourn_instance)
+        if tourn_instance is not None:
+            if len(tourn_instance.quarterMatch) == 8:
+                tourn_instance = Tournament.objects.create()
+            # elif user_id in tourn_instance.quarterMatch:
+            for i in range(len(tourn_instance.quarterMatch)):
+                # print("tourn_instance.quarterMatch[i]")
+                # print(tourn_instance.quarterMatch[i])
+                # print("user_id")
+                # print(user_id)
+                # data_type = type(tourn_instance.quarterMatch[i])
+                # print(data_type)
+                # data_type = type(user_id)
+                # print(data_type)
+
+                if tourn_instance.quarterMatch[i] == int(user_id):
+                    print("user already in tourn")
+                    tourn_instance = Tournament.objects.create()
+                    break
+        else:
+            tourn_instance = Tournament.objects.create()
+
+        tourn_instance.quarterMatch.append(user_id)
+        tourn_instance.save()
+        print("tourn_instance.quarterMatch")
+        print(tourn_instance.quarterMatch)
 
     @database_sync_to_async
     def get_host(self, game_id, user_id):

@@ -11,8 +11,8 @@ def getId(request):
 	jwt_token = request.COOKIES.get('jwt_token')
 	if jwt_token == None:
 			return HttpResponse("no token")
-	user_id = jwt.getUserId(jwt_token)
-	return HttpResponse(user_id)
+	userId = jwt.getUserId(jwt_token)
+	return HttpResponse(userId)
 
 def checkIntraUserExists(intra_id):
 	"""
@@ -25,10 +25,10 @@ def checkIntraUserExists(intra_id):
 	except User.DoesNotExist:
 		return False
 
-def returnSubFromIntraId(intra_id):
+def returnUserId(intra_id):
 	try:
 		user = User.objects.get(intra_id=intra_id)
-		return user.sub
+		return user.userId
 	except User.DoesNotExist:
 		return 0
 
