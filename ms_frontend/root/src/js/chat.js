@@ -121,7 +121,6 @@ async function handleClickedOnChatElement(chat_obj) {
     document.getElementById('right-heading-name').textContent = "";
     chat_avatar.src = "../img/ballWithEye.jpg";
     state.chatOpen = false;
-    window.history.back();
   }
   if (state.currPage !== 'group_chat' || state.chatObj.chat_name !== chat_obj.chat_name) {
     state.currPage = 'group_chat';
