@@ -88,7 +88,7 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
   console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
-    renderProfile()
+    // renderProfile()
     sendDataToBackend('get_all_user') // NEW since 03.02 | this should also happen on refresh!
     sendDataToBackend('get_avatar')// NEW since 07.02
   };

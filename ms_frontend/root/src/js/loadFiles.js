@@ -40,7 +40,6 @@ function loadContentChat(file, targetId) {
 	.then(response => response.text())
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
-		chatDom();
 	})
 	.catch(error => console.error('Error loading content:', error));
 }
@@ -50,7 +49,6 @@ function loadContentProfile(file, targetId) {
 	.then(response => response.text())
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
-		// chatDom();
 	})
 	.catch(error => console.error('Error loading content:', error));
 }
@@ -60,7 +58,6 @@ function loadStats(file, targetId) {
 	.then(response => response.text())
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
-	// chatDom();
 	})
 	.catch(error => console.error('Error loading content:', error));
 }
@@ -70,7 +67,6 @@ function loadCreators(file, targetId) {
 	.then(response => response.text())
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
-		// chatDom();
 	})
 	.catch(error => console.error('Error loading content:', error));
 }
