@@ -1,10 +1,9 @@
 openapi: 3.0.2
 info:
-  title: ft_transcendence-auth REST API
+  title: auth REST API
   version: '0.3'
   description: |
     This API is used for authentication and user profile management.
-    Version 0.3 includes improved details and added endpoints for username.
 
 tags:
   - name: Status

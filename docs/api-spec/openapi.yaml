@@ -1,0 +1,11 @@
+openapi: 3.0.2
+info:
+  title: ft_transcendence REST API
+  version: '0.1'
+paths:
+  /auth:
+    $ref: 'ms-auth.yaml'
+  /vault:
+    $ref: 'ms-vault.yaml'
+  /game_chat:
+    $ref: 'ms-game-chat.yaml'
