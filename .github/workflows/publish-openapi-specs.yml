@@ -3,7 +3,7 @@ name: Publish OpenAPI Documentation
 on:
   push:
     branches:
-      - auth_valentin
+      - main
     paths:
       - 'docs/api-spec/openapi.yaml'
 
@@ -13,14 +13,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Create docs folder
-        run: mkdir -p docs
       - name: Generate HTML Documentation
         run: |
           npm install -g redoc-cli
-          redoc-cli bundle docs/api-spec/openapi.yaml -o docs/index.html
+          redoc-cli bundle docs/api-spec/openapi.yaml -o index.html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: .
