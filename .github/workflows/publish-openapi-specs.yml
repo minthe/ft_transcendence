@@ -3,7 +3,7 @@ name: Publish OpenAPI Documentation
 on:
   push:
     paths:
-      - 'docs/api-spec/openapi.yaml'
+      - 'docs/api-spec/ms-auth.yaml'
 
 jobs:
   publish:
