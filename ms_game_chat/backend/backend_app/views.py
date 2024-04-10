@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
 import json
@@ -11,24 +11,76 @@ jwt = FT_JWT(settings.JWT_SECRET)
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
+
+# Create new user:
+# - Endpoint: game/user/{user_id}/
+# - Method:   POST
+# - Payload:  username:string, avatar:string
+@require_POST
+def createUser(request, user_id):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get('username')
+        avatar = data.get('avatar')
+
+        # check if user already exists
+        user_exist = MyUser.objects.filter(user_id=user_id).exists()
+        if user_exist:
+            return JsonResponse({}, status=409)
+
+        new_user = MyUser()
+        new_user.user_id = user_id
+        new_user.name = username
+        new_user.avatar = avatar
+        new_user.save()
+
+        return JsonResponse({}, status=200)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({}, status=500)
+
+
+# Update Avatar:
+# - Endpoint: game/user/{user_id}/avatar/
+# - Method:   PUT
+# - Payload:  avatar:string
+@require_http_methods(["PUT"])
+def updateAvatar(request, user_id):
+    try:
+        return JsonResponse({}, status=501)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({}, status=500)
+
+
+# Update game alias:
+# - Endpoint: game/user/{user_id}/alias/
+# - Method:   PUT
+# - Payload:  alias:string
+@require_http_methods(["PUT"])
+def updateAlias(request, user_id):
+    try:
+        return JsonResponse({}, status=501)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({}, status=500)
+
+
+
 @csrf_exempt
 @require_POST
 def checkUserCredentials(request):#TODO Marie: user user_id to get user
     try:
-        print("before")
-        # print("TRY: ", user_id)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
-        print("USERNAME: ", username)
         password = data.get('password')
-        print("PASSWORD: ", password)
 
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
             return JsonResponse({}, status=404)
         user_object = MyUser.objects.get(name=username)
         if password == user_object.password:
-            return JsonResponse({'user_id': user_object.id}, status=200)
+            return JsonResponse({'user_id': user_object.user_id}, status=200)
         else:
             return JsonResponse({}, status=401)  # wrong credentials
     except Exception as e:
@@ -41,26 +93,21 @@ def createAccount(request):#TODO Marie: user user_id to get user
     try:
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
-        print("USERNAME: ", username)
         password = data.get('password')
-        print("PASSWORD: ", password)
-        age = data.get('age')
-        print("AGE: ", age)
         user_exist = MyUser.objects.filter(name=username).exists()
         if user_exist:
             return JsonResponse({}, status=409)
-        # if age is not None and (age < 0 or age > 200):
-        #     return JsonResponse({"error": "Dude, there is no way you're " + str(age)}, status=409)
         user_data = {
             "name": username,
             "password": password,
-            "age": age,
+            "age": 69
         }
         new_user = MyUser(**user_data)
         new_user.save()
         user_instance = MyUser.objects.get(name=username)
-        return JsonResponse({'user_id': user_instance.id}, status=200)
+        return JsonResponse({'user_id': user_instance.user_id}, status=200)
     except Exception as e:
+        print("in createAccount: ", e)
         return JsonResponse({}, status=500)
 
 @require_POST
@@ -81,7 +128,6 @@ def uploadAvatar(request, username):
             if avatar_file:
                 user_instance.avatar = avatar_file
                 user_instance.save()
-
         return JsonResponse({}, status=200)
     except Exception as e:
         return JsonResponse({}, status=500)

@@ -58,7 +58,6 @@ class _User:
 
 
 # ---------- SEND FUNCTIONS ---------------------------------------
-    # TODO: MARIE: ever used? delete?
     async def send_user(self, user_id, message):
         await self.send(text_data=json.dumps({
             'user_id': user_id,
@@ -86,7 +85,7 @@ class _User:
         user_in_chat = [
             {
                 'user_name': user.name,
-                'user_id': user.id
+                'user_id': user.user_id  # changed id to user_id
             }
             for user in all_user_in_current_chat
         ]
@@ -95,14 +94,14 @@ class _User:
     @database_sync_to_async
     def leaveChat(self, user_id, chat_id):
         try:
-            user_exists = MyUser.objects.filter(id=user_id).exists()
+            user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
             if not user_exists:
                 return 'User in leaveChat not found'
             chat_exists = Chat.objects.filter(id=chat_id).exists()
             if not chat_exists:
                 return 'Chat in leaveChat not found'
             chat_instance = Chat.objects.get(id=chat_id)
-            user_instance = MyUser.objects.get(id=user_id)
+            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             user_instance.chats.remove(chat_instance)
             user_instance.save()
             return 'ok'
@@ -111,16 +110,16 @@ class _User:
 
     @database_sync_to_async
     def get_all_user(self):
-        all_users_info = MyUser.objects.values('id', 'name')
+        all_users_info = MyUser.objects.values('user_id', 'name')  # changed id to user_id
         all_user = list(all_users_info)
         return all_user
 
     @database_sync_to_async
     def get_avatar(self, user_id):
-        user_exists = MyUser.objects.filter(id=user_id).exists()
+        user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
         if not user_exists:
             return None
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         avatar_url = user_instance.avatar.url if user_instance.avatar else None
         result = '../../backend' + str(avatar_url) if avatar_url else None
         return result

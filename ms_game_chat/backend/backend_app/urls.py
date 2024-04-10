@@ -6,6 +6,14 @@ from . import utils
 urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
 
+
+
+    # request for ms_auth, updateAvatar and updateAlias not done yet
+    path('game/user/<int:user_id>/', views.createUser),
+    path('game/user/<int:user_id>/avatar/', views.updateAvatar),
+    path('game/user/<int:user_id>/alias/', views.updateAlias),
+
+
     # LOGIN/REGISTER
     # 'login'
     path('user/login/', views.checkUserCredentials),

@@ -4,6 +4,8 @@ from django.contrib.postgres.fields import ArrayField
 
 # inherits from "models.Model" which means it's a database model
 class MyUser(models.Model):
+    user_id = models.AutoField(primary_key=True) # delete this and use next line, as soon as we get user in backend from ms_auth
+    # user_id = models.IntegerField(default=-1, null=False, blank=False)
     name = models.CharField("name", max_length=100)
     password = models.CharField("password", max_length=100)
     age = models.IntegerField("age")

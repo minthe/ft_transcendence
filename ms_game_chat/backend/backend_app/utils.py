@@ -8,7 +8,7 @@ from django.utils import timezone
 @require_POST
 def createMessage(request, user_id, chat_id):
     try:
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         specific_timestamp = timezone.now()
         data = json.loads(request.body.decode('utf-8'))
         text = data.get('text')
@@ -47,7 +47,7 @@ def get_user_in_chat(request, chat_id):
         user_in_chat = [
             {
                 'user_name': user.name,
-                'user_id': user.id
+                'user_id': user.user_id  # changed id to user_id
             }
             for user in all_user_in_current_chat
         ]
