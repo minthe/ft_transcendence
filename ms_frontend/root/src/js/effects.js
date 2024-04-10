@@ -320,14 +320,3 @@ function getJwtTokenFromCookie() {
 	}
 	return false;
 }
-  
-
-
-// //check if it is the correct token
-// window.onload = async function() {
-// 	// e.preve
-// 	if (getJwtTokenFromCookie()) {
-// 		console.log('found token');
-// 		await establishWebsocketConnection();
-// 	}
-// };

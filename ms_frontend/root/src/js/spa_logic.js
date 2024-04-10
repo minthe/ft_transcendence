@@ -7,8 +7,6 @@ let state = {
   //   idxState : 0
   // logedOut: false
 };
-
-let userLogedIn = true;
   
 function render() {
   document.body.innerHTML = state.bodyText;
@@ -28,10 +26,14 @@ state.bodyText = document.body.innerHTML;
 // state.currPage = url;
   window.history.pushState(state, null, url);
 }
-  
-  
+
+
+
 // Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
+  console.log('onpopstate triggered')
+
+
   const url = `${window.location.origin}/user/token/existence`
  fetch(url)
   .then(async response => {
@@ -39,31 +41,43 @@ window.onpopstate = async function (event) {
       location.reload();
       throw new Error('Token could not be deleted!');
     }
+
     if (event.state)
-		state = event.state;
-  
+      state = event.state;
 
-	if (state.currPage === 'chat' || state.currPage === 'group_chat') {
-		await sendDataToBackend('get_current_users_chats')
-		await sendDataToBackend('get_blocked_by_user')
-		await sendDataToBackend('get_blocked_user') // NEW since 02.02
-  }
-	if (state.currPage === 'group_chat') {
-    if (state.chatOpen)
-      state.chatOpen = false;
-    else
-      state.chatOpen = true;
-		await handleClickedOnChatElement(state.chatObj);
-  }
-  if (state.currPage === 'invites')
-    await requestInvites();
-
-  render(state);
-  if (state.currPage === 'chat') {
-    hideDiv('messageSide');
-    document.getElementById('right-heading-name').textContent = "";
-    chat_avatar.src = "../img/ballWithEye.jpg";
-  }
+    if (state.userName === websocket_obj.username) {
+      if (state.currPage === 'chat' || state.currPage === 'group_chat') {
+        await sendDataToBackend('get_current_users_chats')
+        await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user') // NEW since 02.02
+      }
+      if (state.currPage === 'group_chat') {
+        if (state.chatOpen)
+        state.chatOpen = false;
+        else
+        state.chatOpen = true;
+        await handleClickedOnChatElement(state.chatObj);
+      }
+      if (state.currPage === 'invites')
+        await requestInvites();
+      
+      render(state);
+      if (state.currPage === 'chat') {
+        hideDiv('messageSide');
+        document.getElementById('right-heading-name').textContent = "";
+        chat_avatar.src = "../img/ballWithEye.jpg";
+      }
+    }
+    else {
+      console.log('goes into else of popstate');
+      // showSiteHideOthers('homeSite');
+      showSiteHideOthersSpa('homeSite')
+      state.bodyText = document.body.innerHTML;
+      state.userName = websocket_obj.username;
+      window.history.replaceState(state, null, "");
+      render(state);
+      // state.userName = websocket_obj.username;
+    }
   })
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
@@ -129,45 +143,3 @@ async function handleClickEvent(event) {
     window.location.href = '/user/oauth2/login';
   }
 }
-
-
-
-// window.onpopstate = async function (event) {
-//  	if (event.state)
-// 		state = event.state;
-//   console.log('onpopstate ######');
-//   // if (!getJwtTokenFromCookie()) {
-//   //   console.log('session over!!!!!!!!!!!');
-
-   
-//   //   // render(state);
-//   //   location.reload();
-//   //   return ;
-//   //   // console.log('log out this user');
-//   //   // await logoutUser();
-//   // }
-// 	// let stateJson = JSON.stringify(event.state);
-
-// 	if (state.currPage === 'chat' || state.currPage === 'group_chat') {
-// 		await sendDataToBackend('get_current_users_chats')
-// 		await sendDataToBackend('get_blocked_by_user')
-// 		await sendDataToBackend('get_blocked_user') // NEW since 02.02
-//   }
-// 	if (state.currPage === 'group_chat') {
-//     if (state.chatOpen)
-//       state.chatOpen = false;
-//     else
-//       state.chatOpen = true;
-// 		await handleClickedOnChatElement(state.chatObj);
-//   }
-//   if (state.currPage === 'invites')
-//     await requestInvites();
-
-//   render(state);
-//   if (state.currPage === 'chat') {
-//     hideDiv('messageSide');
-//     document.getElementById('right-heading-name').textContent = "";
-//     chat_avatar.src = "../img/ballWithEye.jpg";
-//   }
-// // attachEventListeners();
-// };

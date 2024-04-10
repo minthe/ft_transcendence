@@ -60,13 +60,17 @@ function loginUserButton() {
       .then(data => {
         initUserData(data, usernameElement.value, passwordElement.value, 69)
         showDiv('showUserProfile')
-        
-        state.bodyText = document.body.innerHTML;
-        window.history.replaceState(state, null, "");
+        document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
 
         establishWebsocketConnection()
+        state.bodyText = document.body.innerHTML;
+        window.history.replaceState(state, null, "");
+        usernameElement.value = "";
+        passwordElement.value = "";
       })
       .catch(error => {
+        usernameElement.value = "";
+        passwordElement.value = "";
         // setErrorWithTimout('info_login', error, 9999999)
         console.log('Error during login:', error);
       });
@@ -104,15 +108,21 @@ function RegisterUserButton() {
         return response.json();
       })
       .then(data => {
-        initUserData(data, usernameElement.value, passwordElement.value, age)
+        initUserData(data, usernameElement.value, passwordElement.value, 69)
         showDiv('showUserProfile')
-
-        state.bodyText = document.body.innerHTML;
-        window.history.replaceState(state, null, "");
+        document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
 
         establishWebsocketConnection()
+        state.bodyText = document.body.innerHTML;
+        window.history.replaceState(state, null, "");
+        usernameElement.value = "";
+        passwordElement.value = "";
+        age.value = "";
       })
       .catch(error => {
+        usernameElement.value = "";
+        passwordElement.value = "";
+        age.value = "";
         // setErrorWithTimout('info_register', error, 9999999)
         console.log('Error during login:', error);
       });
