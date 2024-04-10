@@ -7,8 +7,10 @@ info:
     Version 0.3 includes improved details and added endpoints for username.
 
 tags:
+  - name: Account
+    description: Endpoints related to user account management
   - name: Authentication
-    description: Endpoints related to user authentication
+    description: Endpoints related to user authentication with JWT and OAuth2
   - name: User
     description: Endpoints related to user data and profile
 
@@ -16,10 +18,41 @@ servers:
   - url: https://{hostname}
 
 paths:
+  /user/register:
+    post:
+      tags:
+        - Account
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Successful registration
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad request (e.g., email or username already taken, or password too weak)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationError'
+        '500':
+          description: Internal server error
   /user/login:
     post:
       tags:
-        - Authentication
+        - Account
       summary: Regular Login
       requestBody:
         required: true
@@ -41,6 +74,25 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           description: Missing or invalid JWT token
+        '500':
+          description: Internal server error
+  /user/logout:
+    post:
+      tags:
+        - Account
+      summary: Logout
+      responses:
+        '200':
+          description: Successful Logout (Token Deleted)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=; Max-Age=0; HttpOnly
+        '404':
+          description: Token does not exist
+        '500':
+          description: Internal server error
   /user/oauth2/login:
     get:
       tags:
@@ -53,7 +105,7 @@ paths:
             Set-Cookie:
               schema:
                 type: string
-                example: jwt_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3OCIsImlhdCI6MTYyNDU2Nzg5MH0.abcdefghijklmnopqrstuvwxyz; HttpOnly
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
           content:
             application/json:
               schema:
@@ -65,25 +117,24 @@ paths:
               schema:
                 type: string
                 example: https://example.com/oauth2/authorize
-  /user/logout:
-    post:
-      tags:
-        - Authentication
-      summary: Logout
-      responses:
-        '200':
-          description: Successful Logout (Token Deleted)
-          headers:
-            Set-Cookie:
+        '400':
+          description: Bad request
+          content:
+            application/json:
               schema:
-                type: string
-                example: jwt_token=; Max-Age=0; HttpOnly
-        '404':
-          description: Token does not exist
+                $ref: '#/components/schemas/OAuthError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '500':
+          description: Internal server error
   /user/token:
     get:
       tags:
-        - Authentication
+        - User
       summary: Get JWT Token Payload
       description: Decodes the JWT token and returns the payload. 'sub' is the user ID.
       security:
@@ -139,10 +190,6 @@ paths:
                     type: string
         '404':
           description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '401':
           description: Missing or invalid JWT token
     put:
@@ -178,10 +225,6 @@ paths:
                     type: string
         '404':
           description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '401':
           description: Missing or invalid JWT token
   /user/{userId}/avatarUrl:
@@ -251,6 +294,37 @@ components:
       bearerFormat: JWT
 
   schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+    RegistrationError:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            username:
+              type: array
+              items:
+                type: string
+            email:
+              type: array
+              items:
+                type: string
+            password:
+              type: array
+              items:
+                type: string
     LoginRequest:
       type: object
       required:
@@ -273,6 +347,12 @@ components:
           nullable: true
           description: |
             If this property is null, the user needs to log in again through the Auth microservice to get a new token.
+    OAuthError:
+        type: object
+        properties:
+          error:
+            type: string
+            description: Error message (e.g., "Invalid OAuth2 credentials", "OAuth2 provider error", "Internal server error")
     TokenPayload:
       type: object
       description: Decoded JWT token payload.
@@ -292,10 +372,3 @@ components:
         sub: "1"
         exp: 1672531200
         amr: ["password", "oauth2", "2fa"]
-    Error:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
