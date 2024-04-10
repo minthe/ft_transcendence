@@ -42,6 +42,6 @@ def createIntraUser(user_data):
 	user.username = user_data['username']
 	user.email = user_data['email']
 	user.image = user_data['image']
-	user.set_password('test123') # TODO valentin: change before production
+	user.set_password('') # TODO valentin: change before production
 	user.two_factor_enabled = False
 	user.save()
