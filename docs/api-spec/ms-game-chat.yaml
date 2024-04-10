@@ -1,0 +1,16 @@
+openapi: 3.0.2
+info:
+  title: game-chat REST API
+  version: '0.1'
+  description: |
+    This API is used for game and chat management.
+
+servers:
+  - url: https://{hostname}
+
+paths:
+  /test:
+    get:
+      responses:
+        '200':
+          description: OK
