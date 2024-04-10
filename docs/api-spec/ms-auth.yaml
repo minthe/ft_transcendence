@@ -352,7 +352,7 @@ components:
         properties:
           error:
             type: string
-            description: Error message (e.g., "Invalid OAuth2 credentials", "OAuth2 provider error", "Internal server error")
+            description: Error message (e.g., "Invalid OAuth2 credentials", "OAuth2 provider error")
     TokenPayload:
       type: object
       description: Decoded JWT token payload.
