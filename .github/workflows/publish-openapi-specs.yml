@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Create docs folder
+        run: mkdir -p docs
       - name: Generate HTML Documentation
         run: |
           npm install -g redoc-cli
