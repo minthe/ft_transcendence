@@ -7,6 +7,8 @@ info:
     Version 0.3 includes improved details and added endpoints for username.
 
 tags:
+  - name: Status
+    description: Endpoints related to the service status
   - name: Account
     description: Endpoints related to user account management
   - name: Authentication
@@ -18,6 +20,17 @@ servers:
   - url: https://{hostname}
 
 paths:
+  /user/heartbeat:
+    get:
+      tags:
+        - Status
+      summary: Check Heartbeat Status for Auth Microservice
+      responses:
+        '200':
+          description: Service is up and running
+        '503':
+          description: Service is down or unhealthy
+
   /user/register:
     post:
       tags:
@@ -153,7 +166,7 @@ paths:
   /user/token/existence:
     get:
       tags:
-        - Authentication
+        - Status
       summary: Check if Token Exists
       description: Checking if the JWT is stored in the cookie with the name 'jwt_token'
       security:
