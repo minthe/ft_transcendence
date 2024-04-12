@@ -1,22 +1,16 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '0.3'
+  version: '1.0.14'
   description: |
-    This API is used for authentication and user profile management.
-
-tags:
-  - name: Status
-    description: Endpoints related to the service status
-  - name: Account
-    description: Endpoints related to user account management
-  - name: Authentication
-    description: Endpoints related to user authentication with JWT and OAuth2
-  - name: User
-    description: Endpoints related to user data and profile
+    REST API Documentation for ft_transcendence.
+    Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://{hostname}
+  - url: https://localhost
+    description: Localhost server
+  - url: https://playpong.duckdns.org
+    description: Production server (main branch)
 
 paths:
   /user/heartbeat:
@@ -56,9 +50,9 @@ paths:
         '400':
           description: Bad request (e.g., email or username already taken, or password too weak)
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/RegistrationError'
+                type: string
         '500':
           description: Internal server error
   /user/login:
@@ -85,7 +79,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Missing or invalid JWT token
+          description: Credentials are wrong
+        '404':
+          description: User not found
         '500':
           description: Internal server error
   /user/logout:
@@ -194,12 +190,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  username:
-                    type: string
+                type: string
+              example: "username"
         '404':
           description: User not found
         '401':
@@ -256,12 +250,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  avatarUrl:
-                    type: string
+                type: string
+                example: "https://example.com/avatar.jpg"
         '401':
           description: Missing or invalid JWT token
     put:
@@ -298,6 +290,7 @@ paths:
         '401':
           description: Missing or invalid JWT token
 
+# COMPONENTS
 components:
   securitySchemes:
     bearerAuth:
@@ -319,24 +312,6 @@ components:
           type: string
         email:
           type: string
-    RegistrationError:
-      type: object
-      properties:
-        errors:
-          type: object
-          properties:
-            username:
-              type: array
-              items:
-                type: string
-            email:
-              type: array
-              items:
-                type: string
-            password:
-              type: array
-              items:
-                type: string
     LoginRequest:
       type: object
       required:

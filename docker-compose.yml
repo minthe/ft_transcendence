@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+# REST API DOCUMENTATION
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: swagger
+    environment:
+      URLS_PRIMARY_NAME: "Auth"
+      URLS: "[{ url: './openapi/ms-auth.yaml', name: 'Auth'},
+              { url: './openapi/ms-game-chat.yaml', name: 'Game-Chat' },
+              { url: './openapi/ms-vault.yaml', name: 'Vault' },
+            ]"
+    restart: always
+    volumes:
+      - ./docs/openapi:/usr/share/nginx/html/openapi
+    networks:
+      - network
+    expose:
+      - 8080
+
 # MICROSERVICE API-GATEWAY
   api_gateway:
     env_file: .env
