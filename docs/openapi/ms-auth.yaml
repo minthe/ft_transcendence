@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.0.17'
+  version: '1.1.0'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development. Expect breaking changes.
@@ -22,7 +22,7 @@ paths:
         '200':
           description: Service is up and running
         '401':
-          description: Missing or invalid JWT token'
+          description: Missing or invalid JWT token
         '503':
           description: Service is down or unhealthy
   /register:
@@ -54,6 +54,7 @@ paths:
             text/plain:
               schema:
                 type: string
+                example: "Username already taken"
         '500':
           description: Internal server error
   /login:
@@ -175,72 +176,15 @@ paths:
         '404':
           description: Token does not exist
         '401':
-          description: Missing or invalid JWT token
-  /{userId}username:
+          description: invalid JWT token
+        '500':
+          description: Internal server error
+  
+  /{userId}/avatar:
     get:
       tags:
         - User
-      summary: Get Username
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: "username"
-        '404':
-          description: User not found
-        '401':
-          description: Missing or invalid JWT token
-    put:
-      tags:
-        - User
-      summary: Update Username
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-        '404':
-          description: User not found
-        '401':
-          description: Missing or invalid JWT token
-  /{userId}/avatarUrl:
-    get:
-      tags:
-        - User
-      summary: Get Avatar URL
+      summary: Get Avatar
       security:
         - bearerAuth: []
       parameters:
@@ -262,7 +206,7 @@ paths:
     put:
       tags:
         - User
-      summary: Update Avatar URL
+      summary: Update Avatar
       security:
         - bearerAuth: []
       parameters:
@@ -329,14 +273,12 @@ components:
       type: object
       required:
         - userId
+        - username
       properties:
         userId:
           type: string
-        jwt_token:
+        username:
           type: string
-          nullable: true
-          description: |
-            If this property is null, the user needs to log in again through the Auth microservice to get a new token.
     OAuthError:
         type: object
         properties:
