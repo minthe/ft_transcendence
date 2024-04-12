@@ -7,13 +7,11 @@ info:
     Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://localhost
-    description: Localhost server
-  - url: https://playpong.duckdns.org
-    description: Production server (main branch)
+  - url: https://localhost/game
+  - url: https://playpong.duckdns.org/game
 
 paths:
-  /game/test:
+  /test:
     get:
       tags:
         - Test

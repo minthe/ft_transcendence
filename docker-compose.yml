@@ -6,8 +6,9 @@ services:
     image: swaggerapi/swagger-ui
     container_name: swagger
     environment:
-      URLS_PRIMARY_NAME: "Auth"
+      URLS_PRIMARY_NAME: "Frontend"
       URLS: "[{ url: './doc/ms-auth.yaml', name: 'Auth'},
+              { url: './doc/ms-frontend.yaml', name: 'Frontend' },
               { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
               { url: './doc/ms-vault.yaml', name: 'Vault' },
             ]"
