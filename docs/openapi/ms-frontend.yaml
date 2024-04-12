@@ -1,0 +1,29 @@
+openapi: 3.0.2
+info:
+  title: frontend REST API
+  version: '1.0.13'
+  description: |
+    REST API Documentation for ft_transcendence.
+    Under heavy development. Expect breaking changes.
+
+servers:
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
+paths:
+  /:
+    get:
+      tags:
+        - Homepage
+      summary: Serves the homepage
+      responses:
+        '200':
+          description: Service is up and running
+        '503':
+          description: Service is down or unhealthy
+  /static/{avatar_id}:
+    get:
+      tags:
+        - Avatar
+      responses:
+        '200':
+          description: OK

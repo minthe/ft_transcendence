@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+# REST API DOCUMENTATION
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: swagger
+    environment:
+      URLS_PRIMARY_NAME: "API Gateway"
+      URLS: "[{ url: './doc/ms-api-gateway.yaml', name: 'API Gateway'},
+              { url: './doc/ms-auth.yaml', name: 'Auth' },
+              { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
+              { url: './doc/ms-vault.yaml', name: 'Vault' },
+            ]"
+    restart: always
+    volumes:
+      - ./docs/openapi:/usr/share/nginx/html/doc
+    networks:
+      - network
+    expose:
+      - 8080
+
 # MICROSERVICE API-GATEWAY
   api_gateway:
     env_file: .env

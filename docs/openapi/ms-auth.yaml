@@ -1,36 +1,31 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '0.3'
+  version: '1.1.0'
   description: |
-    This API is used for authentication and user profile management.
-
-tags:
-  - name: Status
-    description: Endpoints related to the service status
-  - name: Account
-    description: Endpoints related to user account management
-  - name: Authentication
-    description: Endpoints related to user authentication with JWT and OAuth2
-  - name: User
-    description: Endpoints related to user data and profile
+    REST API Documentation for ft_transcendence.
+    Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://{hostname}
+  - url: https://localhost/user
+  - url: https://playpong.duckdns.org/user
 
 paths:
-  /user/heartbeat:
+  /:
     get:
       tags:
         - Status
-      summary: Check Heartbeat Status for Auth Microservice
+      summary: Check Heartbeat Status
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Service is up and running
+        '401':
+          description: Missing or invalid JWT token
         '503':
           description: Service is down or unhealthy
-
-  /user/register:
+  /register:
     post:
       tags:
         - Account
@@ -56,12 +51,13 @@ paths:
         '400':
           description: Bad request (e.g., email or username already taken, or password too weak)
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/RegistrationError'
+                type: string
+                example: "Username already taken"
         '500':
           description: Internal server error
-  /user/login:
+  /login:
     post:
       tags:
         - Account
@@ -85,14 +81,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Missing or invalid JWT token
+          description: Credentials are wrong
+        '404':
+          description: User not found
         '500':
           description: Internal server error
-  /user/logout:
+  /logout:
     post:
       tags:
         - Account
       summary: Logout
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful Logout (Token Deleted)
@@ -105,7 +105,7 @@ paths:
           description: Token does not exist
         '500':
           description: Internal server error
-  /user/oauth2/login:
+  /oauth2/login:
     get:
       tags:
         - Authentication
@@ -143,7 +143,7 @@ paths:
                 $ref: '#/components/schemas/OAuthError'
         '500':
           description: Internal server error
-  /user/token:
+  /token:
     get:
       tags:
         - User
@@ -162,7 +162,7 @@ paths:
           description: Missing or invalid JWT token
         '500':
           description: Error decoding JWT token
-  /user/token/existence:
+  /token/existence:
     get:
       tags:
         - Status
@@ -176,74 +176,15 @@ paths:
         '404':
           description: Token does not exist
         '401':
-          description: Missing or invalid JWT token
-  /user/{userId}/username:
+          description: invalid JWT token
+        '500':
+          description: Internal server error
+  
+  /{userId}/avatar:
     get:
       tags:
         - User
-      summary: Get Username
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-        '404':
-          description: User not found
-        '401':
-          description: Missing or invalid JWT token
-    put:
-      tags:
-        - User
-      summary: Update Username
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-        '404':
-          description: User not found
-        '401':
-          description: Missing or invalid JWT token
-  /user/{userId}/avatarUrl:
-    get:
-      tags:
-        - User
-      summary: Get Avatar URL
+      summary: Get Avatar
       security:
         - bearerAuth: []
       parameters:
@@ -256,18 +197,16 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  avatarUrl:
-                    type: string
+                type: string
+                example: "https://example.com/avatar.jpg"
         '401':
           description: Missing or invalid JWT token
     put:
       tags:
         - User
-      summary: Update Avatar URL
+      summary: Update Avatar
       security:
         - bearerAuth: []
       parameters:
@@ -298,6 +237,7 @@ paths:
         '401':
           description: Missing or invalid JWT token
 
+# COMPONENTS
 components:
   securitySchemes:
     bearerAuth:
@@ -319,24 +259,6 @@ components:
           type: string
         email:
           type: string
-    RegistrationError:
-      type: object
-      properties:
-        errors:
-          type: object
-          properties:
-            username:
-              type: array
-              items:
-                type: string
-            email:
-              type: array
-              items:
-                type: string
-            password:
-              type: array
-              items:
-                type: string
     LoginRequest:
       type: object
       required:
@@ -351,14 +273,12 @@ components:
       type: object
       required:
         - userId
+        - username
       properties:
         userId:
           type: string
-        jwt_token:
+        username:
           type: string
-          nullable: true
-          description: |
-            If this property is null, the user needs to log in again through the Auth microservice to get a new token.
     OAuthError:
         type: object
         properties:
