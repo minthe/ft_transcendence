@@ -29,6 +29,13 @@ paths:
       tags:
         - Frontend
       summary: Serves the avatar image
+      parameters:
+        - in: path
+          name: url
+          required: true
+          schema:
+            type: string
+            example: "https://localhost/static/avatar/abcdef1234567890.png"
       security:
         - bearerAuth: []
       responses:
