@@ -84,10 +84,13 @@ function RegisterUserButton() {
 
     const age = document.getElementById('registerAge').value;
 
+    const email = 'marie.a.mensing@gmail.com'
+    const enable2FA = true
+
     const url = `${window.location.origin}/user/register/`
     fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value, age: age })
+      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value, email: email })
     })
       .then(response => {
         if (!response.ok) {

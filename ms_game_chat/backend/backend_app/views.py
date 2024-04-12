@@ -87,6 +87,10 @@ def checkUserCredentials(request):#TODO Marie: user user_id to get user
         print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
 
+
+import random
+import string
+from django.core.mail import send_mail
 @csrf_exempt
 @require_POST
 def createAccount(request):#TODO Marie: user user_id to get user
@@ -94,6 +98,12 @@ def createAccount(request):#TODO Marie: user user_id to get user
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         password = data.get('password')
+
+        # enable2FA boolean
+        enable2FA = data.get('enable2FA')
+        # print("enable2FA: ", enable2FA)
+        email_to = data.get('email')
+
         user_exist = MyUser.objects.filter(name=username).exists()
         if user_exist:
             return JsonResponse({}, status=409)
@@ -105,10 +115,24 @@ def createAccount(request):#TODO Marie: user user_id to get user
         new_user = MyUser(**user_data)
         new_user.save()
         user_instance = MyUser.objects.get(name=username)
+
+        if enable2FA:
+            send_email_to_user(email_to)
         return JsonResponse({'user_id': user_instance.user_id}, status=200)
     except Exception as e:
         print("in createAccount: ", e)
         return JsonResponse({}, status=500)
+
+async def send_email_to_user(email_to):
+    email_from = settings.EMAIL_HOST_USER
+    code = ''.join(random.choices(string.digits, k=6))  # Generate 6-digit random code
+    send_mail(
+        'Your 2FA Code',
+        f'Your 2FA code is: {code}',
+        email_from,
+        [email_to],
+        fail_silently=False,
+    )
 
 @require_POST
 @jwt.token_required
