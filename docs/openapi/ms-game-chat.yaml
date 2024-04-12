@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: game-chat REST API
-  version: '1.0.0'
+  version: '1.0.1'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development. Expect breaking changes.
@@ -26,6 +26,12 @@ paths:
         '503':
           description: Service is down or unhealthy
   /user/{user_id}:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
     post:
       summary: add new User
       security:
@@ -51,6 +57,12 @@ paths:
         '500':
           description: Internal server error
   /user/{user_id}/avatar:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
     put:
       summary: Update Avatar
       security:
@@ -72,6 +84,12 @@ paths:
         '500':
           description: Internal server error
   /user/{user_id}/alias:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
     put:
       summary: Update Alias
       security:
