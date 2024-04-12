@@ -7,13 +7,13 @@ services:
     container_name: swagger
     environment:
       URLS_PRIMARY_NAME: "Auth"
-      URLS: "[{ url: './openapi/ms-auth.yaml', name: 'Auth'},
-              { url: './openapi/ms-game-chat.yaml', name: 'Game-Chat' },
-              { url: './openapi/ms-vault.yaml', name: 'Vault' },
+      URLS: "[{ url: './doc/ms-auth.yaml', name: 'Auth'},
+              { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
+              { url: './doc/ms-vault.yaml', name: 'Vault' },
             ]"
     restart: always
     volumes:
-      - ./docs/openapi:/usr/share/nginx/html/openapi
+      - ./docs/openapi:/usr/share/nginx/html/doc
     networks:
       - network
     expose:
