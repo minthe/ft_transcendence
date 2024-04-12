@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.0.16'
+  version: '1.0.17'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development. Expect breaking changes.
@@ -11,17 +11,20 @@ servers:
   - url: https://playpong.duckdns.org/user
 
 paths:
-  /heartbeat:
+  /:
     get:
       tags:
         - Status
-      summary: Check Heartbeat Status for Auth Microservice
+      summary: Check Heartbeat Status
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Service is up and running
+        '401':
+          description: Missing or invalid JWT token'
         '503':
           description: Service is down or unhealthy
-
   /register:
     post:
       tags:
@@ -87,6 +90,8 @@ paths:
       tags:
         - Account
       summary: Logout
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful Logout (Token Deleted)

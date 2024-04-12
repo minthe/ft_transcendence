@@ -11,10 +11,24 @@ servers:
   - url: https://playpong.duckdns.org/vault
 
 paths:
-  /test:
+  /:
     get:
       tags:
-        - Test
+        - Status
+      summary: Check Heartbeat Status
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: OK
+          description: Service is up and running
+        '401':
+          description: Missing or invalid JWT token'
+        '503':
+          description: Service is down or unhealthy
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
