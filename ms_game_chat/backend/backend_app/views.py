@@ -26,18 +26,18 @@ def createUser(request, user_id):
         # check if user already exists
         user_exist = MyUser.objects.filter(user_id=user_id).exists()
         if user_exist:
-            return JsonResponse({}, status=409)
+            return JsonResponse({'message': 'user already exists'}, status=409)
 
         new_user = MyUser()
         new_user.user_id = user_id
         new_user.name = username
         new_user.avatar = avatar
         new_user.save()
-
-        return JsonResponse({}, status=200)
+        return JsonResponse({'message': 'ok'}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
+        return JsonResponse({'message': e}, status=500)
+
 
 
 # Update Avatar:
@@ -47,10 +47,21 @@ def createUser(request, user_id):
 @require_http_methods(["PUT"])
 def updateAvatar(request, user_id):
     try:
-        return JsonResponse({}, status=501)
+        user_exists = MyUser.objects.filter(user_id=user_id).exists()
+        if not user_exists:
+            return JsonResponse({}, status=404)
+        user_instance = MyUser.objects.get(user_id=user_id)
+        data = json.loads(request.body.decode('utf-8'))
+        avatar = data.get('avatar')
+        print("AVATA: ", avatar)
+        if avatar:
+            user_instance.avatar = avatar
+            user_instance.save()
+            return JsonResponse({}, status=200)
+        return JsonResponse({'message': 'this avatar does not exist'}, status=415)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
+        return JsonResponse({'message': e}, status=500)
 
 
 # Update game alias:
@@ -60,90 +71,92 @@ def updateAvatar(request, user_id):
 @require_http_methods(["PUT"])
 def updateAlias(request, user_id):
     try:
-        return JsonResponse({}, status=501)
+        return JsonResponse({}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
+        return JsonResponse({'message': e}, status=500)
 
 
 
-@csrf_exempt
-@require_POST
-def checkUserCredentials(request):#TODO Marie: user user_id to get user
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
-
-        # enable2FA boolean | later get this from db instead of frontend
-        enable2FA:bool = data.get('enable2FA')
-        email_to = data.get('email')
-
-        user_exist_check = MyUser.objects.filter(name=username).exists()
-        if not user_exist_check:
-            return JsonResponse({}, status=404)
-        user_object = MyUser.objects.get(name=username)
-        if password == user_object.password:
-            if enable2FA:
-                send_email_to_user(user_object, email_to)
-            return JsonResponse({'user_id': user_object.user_id, 'twoFactorAuth': enable2FA}, status=200)
-        else:
-            return JsonResponse({}, status=401)  # wrong credentials
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-def send_email_to_user(user, email_to):
-    email_from = settings.EMAIL_HOST_USER
-    code = user.generate_verification_code()
-    send_mail(
-        'Your 2FA Code',
-        f'Your 2FA code is: {code}',
-        email_from,
-        [email_to],
-        fail_silently=False,
-    )
-
-def verifyTwoFactorCode(request, code, username):
-    try:
-        user_exists = MyUser.objects.filter(name=username).exists()
-        if not user_exists:
-            return JsonResponse({'message': 'User not found'}, status=404)
-        user_instance = MyUser.objects.get(name=username)
-        if user_instance.verify_verification_code(code):
-            return JsonResponse({}, status=200)
-        else:
-            return JsonResponse({'message': 'Invalid or expired verification code'}, status=400)
-    except Exception as e:
-        print("in verifyTwoFactorCode: ", e)
-        return JsonResponse({}, status=500)
-
-
-
-from django.core.mail import send_mail
-@csrf_exempt
-@require_POST
-def createAccount(request):#TODO Marie: user user_id to get user
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
-
-        user_exist = MyUser.objects.filter(name=username).exists()
-        if user_exist:
-            return JsonResponse({}, status=409)
-        user_data = {
-            "name": username,
-            "password": password,
-            "age": 69
-        }
-        new_user = MyUser(**user_data)
-        new_user.save()
-        user_instance = MyUser.objects.get(name=username)
-        return JsonResponse({'user_id': user_instance.user_id}, status=200)
-    except Exception as e:
-        print("in createAccount: ", e)
-        return JsonResponse({}, status=500)
+# @csrf_exempt
+# @require_POST
+# def checkUserCredentials(request):#TODO Marie: user user_id to get user
+#     try:
+#         data = json.loads(request.body.decode('utf-8'))
+#         username = data.get('username')
+#         password = data.get('password')
+#
+#         # enable2FA boolean | later get this from db instead of frontend
+#         enable2FA:bool = data.get('enable2FA')
+#         email_to = data.get('email')
+#
+#         user_exist_check = MyUser.objects.filter(name=username).exists()
+#         if not user_exist_check:
+#             return JsonResponse({}, status=404)
+#         user_object = MyUser.objects.get(name=username)
+#         faaa = user_object.twoFactorCode('code')
+#         print("FROM DB 2FA CODE: ", faaa)
+#         if password == user_object.password:
+#             if enable2FA:
+#                 send_email_to_user(user_object, email_to)
+#             return JsonResponse({'user_id': user_object.user_id, 'twoFactorAuth': enable2FA}, status=200)
+#         else:
+#             return JsonResponse({}, status=401)  # wrong credentials
+#     except Exception as e:
+#         print(f"An error occurred: {str(e)}")
+#         return JsonResponse({'message': e}, status=500)
+#
+# def send_email_to_user(user, email_to):
+#     email_from = settings.EMAIL_HOST_USER
+#     code = user.generate_verification_code()
+#     send_mail(
+#         'Your 2FA Code',
+#         f'Your 2FA code is: {code}',
+#         email_from,
+#         [email_to],
+#         fail_silently=False,
+#     )
+#
+# def verifyTwoFactorCode(request, code, username):
+#     try:
+#         user_exists = MyUser.objects.filter(name=username).exists()
+#         if not user_exists:
+#             return JsonResponse({'message': 'User not found'}, status=404)
+#         user_instance = MyUser.objects.get(name=username)
+#         if user_instance.verify_verification_code(code):
+#             return JsonResponse({}, status=200)
+#         else:
+#             return JsonResponse({'message': 'Invalid or expired verification code'}, status=400)
+#     except Exception as e:
+#         print("in verifyTwoFactorCode: ", e)
+#         return JsonResponse({}, status=500)
+#
+#
+#
+# from django.core.mail import send_mail
+# @csrf_exempt
+# @require_POST
+# def createAccount(request):#TODO Marie: user user_id to get user
+#     try:
+#         data = json.loads(request.body.decode('utf-8'))
+#         username = data.get('username')
+#         password = data.get('password')
+#
+#         user_exist = MyUser.objects.filter(name=username).exists()
+#         if user_exist:
+#             return JsonResponse({}, status=409)
+#         user_data = {
+#             "name": username,
+#             "password": password,
+#             "age": 69
+#         }
+#         new_user = MyUser(**user_data)
+#         new_user.save()
+#         user_instance = MyUser.objects.get(name=username)
+#         return JsonResponse({'user_id': user_instance.user_id}, status=200)
+#     except Exception as e:
+#         print("in createAccount: ", e)
+#         return JsonResponse({}, status=500)
 
 
 @require_POST

@@ -8,7 +8,7 @@ urlpatterns = [
 
 
     # tmp endpoint for checking stuff | delete later
-    path('game/verifyTwoFactorCode/<str:code>/<str:username>/', views.verifyTwoFactorCode),
+    # path('game/verifyTwoFactorCode/<str:code>/<str:username>/', views.verifyTwoFactorCode),
 
     # request for ms_auth, updateAvatar and updateAlias not done yet
     path('game/user/<int:user_id>/', views.createUser),
@@ -16,12 +16,12 @@ urlpatterns = [
     path('game/user/<int:user_id>/alias/', views.updateAlias),
 
 
-    # LOGIN/REGISTER
-    # 'login'
-    path('user/login/', views.checkUserCredentials),
-
-    # 'register'
-    path('user/register/', views.createAccount),
+    # # LOGIN/REGISTER
+    # # 'login'
+    # path('user/login/', views.checkUserCredentials),
+    #
+    # # 'register'
+    # path('user/register/', views.createAccount),
 
     # CHAT
     # 'user/avatar'
