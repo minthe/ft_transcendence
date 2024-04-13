@@ -7,6 +7,8 @@ urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
 
 
+    # tmp endpoint for checking stuff | delete later
+    path('game/verifyTwoFactorCode/<str:code>/<str:username>/', views.verifyTwoFactorCode),
 
     # request for ms_auth, updateAvatar and updateAlias not done yet
     path('game/user/<int:user_id>/', views.createUser),

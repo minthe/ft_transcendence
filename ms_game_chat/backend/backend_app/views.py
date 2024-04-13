@@ -75,21 +75,51 @@ def checkUserCredentials(request):#TODO Marie: user user_id to get user
         username = data.get('username')
         password = data.get('password')
 
+        # enable2FA boolean | later get this from db instead of frontend
+        enable2FA:bool = data.get('enable2FA')
+        email_to = data.get('email')
+
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
             return JsonResponse({}, status=404)
         user_object = MyUser.objects.get(name=username)
         if password == user_object.password:
-            return JsonResponse({'user_id': user_object.user_id}, status=200)
+            if enable2FA:
+                send_email_to_user(user_object, email_to)
+            return JsonResponse({'user_id': user_object.user_id, 'twoFactorAuth': enable2FA}, status=200)
         else:
             return JsonResponse({}, status=401)  # wrong credentials
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
 
+def send_email_to_user(user, email_to):
+    email_from = settings.EMAIL_HOST_USER
+    code = user.generate_verification_code()
+    send_mail(
+        'Your 2FA Code',
+        f'Your 2FA code is: {code}',
+        email_from,
+        [email_to],
+        fail_silently=False,
+    )
 
-import random
-import string
+def verifyTwoFactorCode(request, code, username):
+    try:
+        user_exists = MyUser.objects.filter(name=username).exists()
+        if not user_exists:
+            return JsonResponse({'message': 'User not found'}, status=404)
+        user_instance = MyUser.objects.get(name=username)
+        if user_instance.verify_verification_code(code):
+            return JsonResponse({}, status=200)
+        else:
+            return JsonResponse({'message': 'Invalid or expired verification code'}, status=400)
+    except Exception as e:
+        print("in verifyTwoFactorCode: ", e)
+        return JsonResponse({}, status=500)
+
+
+
 from django.core.mail import send_mail
 @csrf_exempt
 @require_POST
@@ -98,11 +128,6 @@ def createAccount(request):#TODO Marie: user user_id to get user
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         password = data.get('password')
-
-        # enable2FA boolean
-        enable2FA = data.get('enable2FA')
-        # print("enable2FA: ", enable2FA)
-        email_to = data.get('email')
 
         user_exist = MyUser.objects.filter(name=username).exists()
         if user_exist:
@@ -115,24 +140,11 @@ def createAccount(request):#TODO Marie: user user_id to get user
         new_user = MyUser(**user_data)
         new_user.save()
         user_instance = MyUser.objects.get(name=username)
-
-        if enable2FA:
-            send_email_to_user(email_to)
         return JsonResponse({'user_id': user_instance.user_id}, status=200)
     except Exception as e:
         print("in createAccount: ", e)
         return JsonResponse({}, status=500)
 
-async def send_email_to_user(email_to):
-    email_from = settings.EMAIL_HOST_USER
-    code = ''.join(random.choices(string.digits, k=6))  # Generate 6-digit random code
-    send_mail(
-        'Your 2FA Code',
-        f'Your 2FA code is: {code}',
-        email_from,
-        [email_to],
-        fail_silently=False,
-    )
 
 @require_POST
 @jwt.token_required
