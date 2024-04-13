@@ -83,8 +83,6 @@ websocket_obj = {
 }
 
 async function establishWebsocketConnection() {
-  // websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/1/`);
-
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
   console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {

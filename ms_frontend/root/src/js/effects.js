@@ -198,115 +198,111 @@ function startCountdownAnimation() {
 
 
 
-async function onRefresh() {
-	if (!getJwtTokenFromCookie()) {
-		console.log('session over!!!!!!!!!!!');
-	
-	   
-		// render(state);
-		location.reload();
-		return ;
-		// console.log('log out this user');
-		// await logoutUser();
-	  }
-		// let stateJson = JSON.stringify(event.state);
-	
+async function updatePage() {
+
+    // if (state.userName === websocket_obj.username) {
+		if (state.currPage === 'homeSite') {
+			showSiteHideOthers('homeSite');
+			document.getElementById('displayUserName').innerHTML = websocket_obj.username;
+		}
+		else if (state.currPage === 'gameSite')
+			gameSiteClicked();
+		else if (state.currPage === 'profileSite')
+			showSiteHideOthers('profileSite')
+		else if (state.currPage === 'creatorsSite')
+			showSiteHideOthers('creatorsSite');
+		else if (state.currPage === 'statsSite')
+			showSiteHideOthers('statsSite');
 		if (state.currPage === 'chat' || state.currPage === 'group_chat') {
 			await sendDataToBackend('get_current_users_chats')
 			await sendDataToBackend('get_blocked_by_user')
 			await sendDataToBackend('get_blocked_user') // NEW since 02.02
-	  }
+		  }
 		if (state.currPage === 'group_chat') {
 		if (state.chatOpen)
-		  state.chatOpen = false;
+		state.chatOpen = false;
 		else
-		  state.chatOpen = true;
-			await handleClickedOnChatElement(state.chatObj);
-	  }
-	  if (state.currPage === 'invites')
-		await requestInvites();
-	
-	  render(state);
-	  if (state.currPage === 'chat') {
+		state.chatOpen = true;
+		await handleClickedOnChatElement(state.chatObj);
+		}
+		if (state.currPage === 'invites')
+			await requestInvites();
+		render(state);
+		if (state.currPage === 'chat') {
 		hideDiv('messageSide');
 		document.getElementById('right-heading-name').textContent = "";
 		chat_avatar.src = "../img/ballWithEye.jpg";
-	  }
+		}
+		// }
+		// else {
+		//   console.log('goes into else of popstate');
+		//   // showSiteHideOthers('homeSite');
+		//   showSiteHideOthersSpa('homeSite')
+		//   state.bodyText = document.body.innerHTML;
+		//   state.userName = websocket_obj.username;
+		//   window.history.replaceState(state, null, "");
+		//   render(state);
+		//   // state.userName = websocket_obj.username;
+		// }
 }
 
 
-// @julien your code
-// function disconnectBeforeUnload() {
-// 	if (websocket_obj.websocket) {
-// 	//   websocket_obj.websocket.send(JSON.stringify({ type: 'disconnect' }));
-// 	//   websocket_obj.websocket.close();
-// 	}
-//   }
-//
-//   // Attach beforeunload event listener to ensure websocket is closed before page refresh
-//   window.addEventListener('beforeunload', disconnectBeforeUnload);
-//
-//   // Attach load event listener to establish websocket connection when page is loaded
-//   window.addEventListener('load', async function() {
-// 	// if (getJwtTokenFromCookie()) {
-// 	//   console.log('found token');
-// 	//   await establishWebsocketConnection();
-// 	//   await onRefresh();
-// 	// }
-//   });
 
+window.addEventListener('beforeunload', function(event) {
+	const myData = {
+		ws_obj: websocket_obj,
+		bodyText: state.bodyText,
+		currPage: state.currPage,
+		chatObj: state.chatObj,
+		chatOpen: state.chatOpen
+	};
+	localStorage.clear();
+	localStorage.setItem('myData', JSON.stringify(myData));
+})
 
+window.addEventListener('load', function() {
+	const myData = JSON.parse(localStorage.getItem('myData'));
+	localStorage.clear();
+	websocket_obj = myData.ws_obj
+	username = myData.ws_obj.username
+	password = myData.ws_obj.password
+	user_id = myData.ws_obj.user_id
 
-  window.addEventListener('beforeunload', function(event) {
-		// using the local storage to safe userdata, makes sure user can login again on 'load'
-		const myData = {
-    ws_obj: websocket_obj
-};
-		console.log(myData)
-		localStorage.clear();
-		localStorage.setItem('myData', JSON.stringify(myData));
-	})
-  // Attach load event listener to establish websocket connection when page is loaded
-  window.addEventListener('load',  function() {
-		const myData = JSON.parse(localStorage.getItem('myData'));
-		localStorage.clear();
-		websocket_obj = myData.ws_obj
-		username = myData.ws_obj.username
-		password = myData.ws_obj.password
-		user_id = myData.ws_obj.user_id
+	state.bodyText = myData.bodyText;
+	state.currPage = myData.currPage;
+	state.chatObj = myData.chatObj;
+	state.chatOpen = myData.chatOpen;
 
-		sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
-
-
-		// if (getJwtTokenFromCookie()) {
-	//   console.log('found token');
-	//   await establishWebsocketConnection();
-	//   await onRefresh();
-	// }
-  });
+	sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+	checkPageState();
+});
 
 
 function sillyLogin(username, password, user_id) {
-			showDiv('userIsAuth')
-			hideDiv('userIsNotAuth')
-			websocket_obj.username = username
-			websocket_obj.password = password
-			websocket_obj.age = 69
-			websocket_obj.user_id = user_id
+	websocket_obj.username = username
+	websocket_obj.password = password
+	websocket_obj.age = 69
+	websocket_obj.user_id = user_id
 
-			// if (getJwtTokenFromCookie()) {
-			// 	console.log('found token');
-			// 	// await establishWebsocketConnection();
-			// }
-
-			// showDiv('showUserProfile')
-
-			state.bodyText = document.body.innerHTML;
-			window.history.replaceState(state, null, "");
-			establishWebsocketConnection()
+	establishWebsocketConnection()
 }
 
-
+function checkPageState() {
+	if (getJwtTokenFromCookie()) {
+		hideDiv('userIsNotAuth');
+		document.getElementById("reloadScreen").style.display = "block";
+		setTimeout(function() {
+			document.getElementById("waitingScreen").style.display = "none";
+				updatePage();				
+		}, 500);
+	}
+	else {
+		state.bodyText = document.body.innerHTML;
+		state.currPage = "homeSite";
+		state.chatObj = {};
+		state.chatOpen= false;
+	}
+}
 
 
 function getJwtTokenFromCookie() {

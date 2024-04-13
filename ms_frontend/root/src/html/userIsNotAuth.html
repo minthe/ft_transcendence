@@ -27,7 +27,7 @@
     <!-- </div>
   </div> -->
   <button type="submit" id="loginUserButton" class="btn btn-outline-warning">Login</button><br><br>
-  <button id="changeToRegisterPageButton" class="btn btn-secondary btn-sm">No Account yet?</button><br><br>
+  <button id="openPopUpWin" class="btn btn-secondary btn-sm">No Account yet?</button><br><br>
   <!-- </div> -->
 </div>
 
@@ -59,9 +59,18 @@
   <!-- <p id="info_register"></p> -->
   <div id="wrong-register" class="hidden" style="color: red;"></div>
 
-  <button type="submit" id="RegisterUserButton" class="btn btn-outline-warning">Register</button><button type="submit" id="Register42Button" class="btn btn-outline-warning">Register with 42</button><br><br>
+  <button type="submit" id="RegisterUserButton" class="btn btn-outline-warning">Register</button><br><br>
   <button id="changeToLoginPageButton" class="btn btn-secondary btn-sm">Have an Account?</button><br><br>
   </div>
+</div>
+
+<div id="loginPagePopUp" class="pop-up hidden">
+  
+  
+  <button type="close" id="closePopUpWin" class="btn btn-danger pop-up-btn-close"><i class="bi bi-x"></i></button>
+  <br><button type="submit" id="RegisterPageButton" class="btn btn-outline-warning pop-up-btn">Register</button>
+  <button type="submit" id="Register42Button" class="btn btn-outline-warning pop-up-btn">Register with 42</button></br>
+ 
 </div>
 
 <img class="login-icon-one" src="../img/icons8NoFace.png" alt="Profile Picture">

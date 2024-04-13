@@ -1,8 +1,8 @@
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
-  loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
+	loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
+	loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
 });
 
 function loadContent(file, targetId) {

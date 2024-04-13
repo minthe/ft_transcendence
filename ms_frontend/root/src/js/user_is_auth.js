@@ -9,10 +9,26 @@ function addEventListenersIsAuth() {
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
   });
+
+
+  document.addEventListener('keypress', async function(event) {
+      if (event.key === 'Enter' || event.keyCode === 13) {
+          if (!document.getElementById('loginPage').classList.contains('hidden')
+            && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+              loginUserButton();
+          else if (!document.getElementById('registerPage').classList.contains('hidden') 
+            && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+              RegisterUserButton();
+          else if (!document.getElementById('chat').classList.contains('hidden') && state.chatOpen)
+            await sendMessage();
+          else if (!document.getElementById('profileSite').classList.contains('hidden')
+            && document.getElementById('saveButton').style.display !== 'none')
+            saveChanges();
+      }
+  });
 }
 
 
-// dont add sidebar to push state
 function showSiteHideOthers(site_to_show) {
   console.log(site_to_show);
 

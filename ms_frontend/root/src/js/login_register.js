@@ -141,21 +141,32 @@ function changeToLoginPageButton() {
     info_register.style.display = 'none';
 }
 
-function changeToRegisterPageButton() {
-
-  console.log("change to register button clickedd");
-
+function openPopUpWin() {
 	hideDiv('loginPage')
-    showDiv('registerPage')
-    document.getElementById("wrong-password").classList.add("hidden");
-    document.getElementById('loginUsername').value = null;
-    document.getElementById('loginPassword').value  = null;
-    document.getElementById("loginUsername").style.border = "";
-    document.getElementById("loginPassword").style.border = "";
-   
-   
-    // const info_login = document.getElementById('info_login')
-    // info_login.style.display = 'none';
+  document.getElementById('loginPagePopUp').classList.remove('hidden');
+}
+
+function showRegisterPage() {
+  document.getElementById('loginPagePopUp').classList.add('hidden');
+  showDiv('registerPage')
+  document.getElementById("wrong-password").classList.add("hidden");
+  document.getElementById('loginUsername').value = null;
+  document.getElementById('loginPassword').value  = null;
+  document.getElementById("loginUsername").style.border = "";
+  document.getElementById("loginPassword").style.border = "";
+  
+  
+  const info_login = document.getElementById('info_login')
+  info_login.style.display = 'none';
+}
+
+function closePopUpWin() {
+  document.getElementById('loginPagePopUp').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+}
+
+function registerWith42() {
+  window.location.href = '/user/oauth2/login';
 }
 
 async function logoutUser() {
