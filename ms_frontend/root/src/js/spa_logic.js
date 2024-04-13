@@ -34,55 +34,37 @@ window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
 
 
-  const url = `${window.location.origin}/user/token/existence`
- fetch(url)
-  .then(async response => {
-    if (!response.ok) {
-      location.reload();
-      throw new Error('Token could not be deleted!');
-    }
+//   const url = `${window.location.origin}/user/token/existence`
+//  fetch(url)
+//   .then(async response => {
+//     if (!response.ok) {
+//       location.reload();
+//       throw new Error('Token could not be deleted!');
+//     }
 
-    if (event.state)
-      state = event.state;
+  if (event.state)
+    state = event.state;
+  updatePage();
 
-    if (state.userName === websocket_obj.username) {
-      if (state.currPage === 'chat' || state.currPage === 'group_chat') {
-        await sendDataToBackend('get_current_users_chats')
-        await sendDataToBackend('get_blocked_by_user')
-        await sendDataToBackend('get_blocked_user') // NEW since 02.02
-      }
-      if (state.currPage === 'group_chat') {
-        if (state.chatOpen)
-        state.chatOpen = false;
-        else
-        state.chatOpen = true;
-        await handleClickedOnChatElement(state.chatObj);
-      }
-      if (state.currPage === 'invites')
-        await requestInvites();
-      
-      render(state);
-      if (state.currPage === 'chat') {
-        hideDiv('messageSide');
-        document.getElementById('right-heading-name').textContent = "";
-        chat_avatar.src = "../img/ballWithEye.jpg";
-      }
-    }
-    else {
-      console.log('goes into else of popstate');
-      // showSiteHideOthers('homeSite');
-      showSiteHideOthersSpa('homeSite')
-      state.bodyText = document.body.innerHTML;
-      state.userName = websocket_obj.username;
-      window.history.replaceState(state, null, "");
-      render(state);
-      // state.userName = websocket_obj.username;
-    }
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error);
-  });
+  // })
+  // .catch(error => {
+  //   console.error('There was a problem with the fetch operation:', error);
+  // });
 };
+
+function showSiteHideOthersSpa(site_to_show) {
+  console.log(site_to_show);
+
+  if (state.currPage === site_to_show)
+    return ;
+
+  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];//gameSiteStart, gameSiteInvite, gameSitePlay, gameSiteEnd
+  sites.forEach(site => {
+    if (site === site_to_show) showDiv(site)
+    else hideDiv(site)
+  });
+  state.currPage = site_to_show;
+}
 
 async function handleClickEvent(event) {
   // console.log(event);
@@ -136,10 +118,13 @@ async function handleClickEvent(event) {
     RegisterUserButton();
   else if (event.target.closest('#changeToLoginPageButton'))
     changeToLoginPageButton();
-  else if (event.target.closest('#changeToRegisterPageButton'))
-    changeToRegisterPageButton();
-
-  else if (event.target.closest('#Register42Button')) {
-    window.location.href = '/user/oauth2/login';
-  }
+  else if (event.target.closest('#openPopUpWin'))
+    openPopUpWin();
+  else if (event.target.closest('#RegisterPageButton'))
+    showRegisterPage();
+  else if (event.target.closest('#closePopUpWin'))
+    closePopUpWin();
+  else if (event.target.closest('#Register42Button'))
+    registerWith42();
 }
+
