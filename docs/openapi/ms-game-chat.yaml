@@ -1,0 +1,132 @@
+openapi: 3.0.2
+info:
+  title: game-chat REST API
+  version: '1.0.1'
+  description: |
+    REST API Documentation for ft_transcendence.
+    Under heavy development. Expect breaking changes.
+
+servers:
+  - url: https://localhost/game
+  - url: https://playpong.duckdns.org/game
+
+paths:
+  /:
+    get:
+      tags:
+        - Status
+      summary: Check Heartbeat Status
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Service is up and running
+        '401':
+          description: Unauthorized
+        '503':
+          description: Service is down or unhealthy
+  /user/{user_id}:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
+    post:
+      summary: add new User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUserRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request (e.g., email or username already taken, or password too weak)
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "User already exists"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /user/{user_id}/avatar:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Update Avatar
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: "https://localhost/static/avatar/abcdef1234567890.png"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: User not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /user/{user_id}/alias:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Update Alias
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: "MoonDog"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Alias already taken
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    NewUserRequest:
+      type: object
+      required:
+        - username
+        - avatar
+      properties:
+        username:
+          type: string
+          example: "username"
+        avatar:
+          type: string
+          example: "https://localhost/static/avatar/abcdef1234567890.png"

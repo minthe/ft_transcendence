@@ -1,0 +1,86 @@
+openapi: 3.0.2
+info:
+  title: api-gateway REST API
+  version: '1.0.13'
+  description: |
+    REST API Documentation for ft_transcendence.
+    Under heavy development. Expect breaking changes.
+
+servers:
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
+paths:
+  /:
+    get:
+      tags:
+        - Frontend
+      summary: Serves the homepage
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Service is up and running
+        '401':
+          description: Missing or invalid JWT token'
+        '503':
+          description: Service is down or unhealthy
+  /static/avatar/{url}:
+    get:
+      tags:
+        - Frontend
+      summary: Serves the avatar image
+      parameters:
+        - in: path
+          name: url
+          required: true
+          schema:
+            type: string
+            example: "https://localhost/static/avatar/abcdef1234567890.png"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /user:
+    get:
+      tags:
+        - Status
+      summary: Heartbeat from Auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '503':
+          description: Service is down or unhealthy'
+  /game:
+    get:
+      tags:
+        - Status
+      summary: Heartbeat from Game-Chat
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '503':
+          description: Service is down or unhealthy'
+  /vault:
+    get:
+      tags:
+        - Status
+      summary: Heartbeat from Vault
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '503':
+          description: Service is down or unhealthy'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
