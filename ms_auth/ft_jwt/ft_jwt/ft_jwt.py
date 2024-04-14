@@ -95,12 +95,12 @@ class FT_JWT:
 				token = request.COOKIES.get('jwt_token')
 
 				if not token:
-					return JsonResponse({'message': "Token does not exist"}, status=404)
+					return JsonResponse({'message': "Unauthorized (token missing)"}, status=401)
 
 				jwt_instance = FT_JWT(self.secret)
 				is_valid, message = jwt_instance.validateToken(token)
 				if not is_valid:
-					return JsonResponse({'message': "invalid JWT token"}, status=401)
+					return JsonResponse({'message': "Unauthorized (token invalid)"}, status=401)
 				user_id = jwt_instance.getUserId(token)
 				request.user_id = user_id
 				return f(request, *args, **kwargs)
