@@ -16,7 +16,8 @@ services:
     volumes:
       - ./docs/openapi:/usr/share/nginx/html/doc
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.2
     expose:
       - 8080
 
@@ -37,7 +38,8 @@ services:
       - 443:443
     restart: always
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.3
     depends_on:
       - auth_backend
       - users_db
@@ -55,7 +57,8 @@ services:
       - ./ms_frontend/root://usr/share/nginx/html
       - ./ms_frontend/nginx.conf.template:/nginx.conf.template
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.4
     depends_on:
       - game_chat_backend
     restart: always
@@ -71,10 +74,11 @@ services:
     volumes:
       - ./ms_auth:/code
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.5
     restart: always
     depends_on:
-      users_db:
+      users-db:
         condition: service_healthy
     ports:
       - 6969:6969 # for admin page, delete later
@@ -94,7 +98,8 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.6
     volumes:
       - users_db:/var/lib/postgresql/data/
     expose:
@@ -109,10 +114,11 @@ services:
     volumes:
       - ./ms_game_chat/backend:/code
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.7
     restart: always
     depends_on:
-      game_chat_db:
+      game-chat-db:
         condition: service_healthy
     expose:
       - 6969
@@ -130,7 +136,8 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - network
+      app_net:
+        ipv4_address: 172.16.10.8
     volumes:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
@@ -141,5 +148,9 @@ volumes:
   users_db:
 
 networks:
-  network:
-    driver: bridge
+  app_net:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.10.0/24
+            gateway: 172.16.10.1
