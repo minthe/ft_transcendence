@@ -11,7 +11,7 @@ servers:
   - url: https://playpong.duckdns.org/vault
 
 paths:
-  /:
+  /status:
     get:
       tags:
         - Status

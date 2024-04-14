@@ -11,7 +11,7 @@ servers:
   - url: https://playpong.duckdns.org/game
 
 paths:
-  /:
+  /status:
     get:
       tags:
         - Status
@@ -100,7 +100,7 @@ paths:
           text/plain:
             schema:
               type: string
-              example: "MoonDog"
+              example: "moon-dog.jpg"
       responses:
         '200':
           description: OK

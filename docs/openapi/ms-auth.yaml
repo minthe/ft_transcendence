@@ -1,17 +1,17 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.1.0'
+  version: '1.4.0'
   description: |
     REST API Documentation for ft_transcendence.
-    Under heavy development. Expect breaking changes.
+    Under heavy development - expect breaking changes.
 
 servers:
   - url: https://localhost/user
   - url: https://playpong.duckdns.org/user
 
 paths:
-  /:
+  /status:
     get:
       tags:
         - Status
@@ -21,10 +21,25 @@ paths:
       responses:
         '200':
           description: Service is up and running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Service is up and running"
         '401':
           description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Missing or invalid JWT token"
         '503':
           description: Service is down or unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Service is down or unhealthy"
   /register:
     post:
       tags:
@@ -48,15 +63,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Bad request (e.g., email or username already taken, or password too weak)
+        '409':
+          description: e.g., email or username already taken, or password too weak
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/JsonResponse'
                 example: "Username already taken"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   /login:
     post:
       tags:
@@ -82,10 +102,25 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           description: Credentials are wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Credentials are wrong"
         '404':
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "User not found"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   /logout:
     post:
       tags:
@@ -103,12 +138,22 @@ paths:
                 example: jwt_token=; Max-Age=0; HttpOnly
         '404':
           description: Token does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Token does not exist"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   /oauth2/login:
     get:
       tags:
-        - Authentication
+        - Account
       summary: Intra42 Login
       responses:
         '200':
@@ -143,10 +188,15 @@ paths:
                 $ref: '#/components/schemas/OAuthError'
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   /token:
     get:
       tags:
-        - User
+        - User Data
       summary: Get JWT Token Payload
       description: Decodes the JWT token and returns the payload. 'sub' is the user ID.
       security:
@@ -160,8 +210,18 @@ paths:
                 $ref: '#/components/schemas/TokenPayload'
         '401':
           description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Missing or invalid JWT token"
         '500':
           description: Error decoding JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   /token/existence:
     get:
       tags:
@@ -173,23 +233,43 @@ paths:
       responses:
         '200':
           description: Token exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Token exists"
         '404':
           description: Token does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Token does not exist"
         '401':
           description: invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "invalid JWT token"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
   
-  /{userId}/avatar:
+  /{user_id}/avatar:
     get:
       tags:
-        - User
+        - User Data
       summary: Get Avatar
       security:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: user_id
           required: true
           schema:
             type: string
@@ -197,21 +277,33 @@ paths:
         '200':
           description: OK
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: "https://example.com/avatar.jpg"
+                $ref: '#/components/schemas/JsonResponse'
+                example: "moon-dog.jpg"
         '401':
           description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Missing or invalid JWT token"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
     put:
       tags:
-        - User
+        - User Data
       summary: Update Avatar
       security:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: user_id
           required: true
           schema:
             type: string
@@ -222,20 +314,85 @@ paths:
             schema:
               type: object
               properties:
-                avatarUrl:
+                avatar:
                   type: string
+      responses:
+        '200':
+          description: Avatar updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Avatar updated successfully"
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Missing or invalid JWT token"
+        '409':
+          description: updating value failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "updating value failed"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
+  /{user_id}/2fa:
+    put:
+      tags:
+        - User Data
+      summary: update 2fa setting
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/second_factor_request'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  avatarUrl:
-                    type: string
+                $ref: '#/components/schemas/JsonResponse'
+                example: "2fa setting updated"
         '401':
           description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Missing or invalid JWT token"
+        '409':
+          description: updating value failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "updating value failed"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+                example: "Server Error"
 
 # COMPONENTS
 components:
@@ -269,13 +426,20 @@ components:
           type: string
         password:
           type: string
+    second_factor_request:
+      type: object
+      properties:
+        second_factor:
+          type: boolean
+          description: true if 2fa is enabled, false if disabled
+          example: true
     AuthResponse:
       type: object
       required:
-        - userId
+        - user_id
         - username
       properties:
-        userId:
+        user_id:
           type: string
         username:
           type: string
@@ -304,3 +468,15 @@ components:
         sub: "1"
         exp: 1672531200
         amr: ["password", "oauth2", "2fa"]
+    HttpError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message (e.g., "Server Error")
+    JsonResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Response message (e.g., "Success")

@@ -41,7 +41,7 @@ paths:
       responses:
         '200':
           description: OK
-  /user:
+  /user/status:
     get:
       tags:
         - Status
@@ -53,7 +53,7 @@ paths:
           description: OK
         '503':
           description: Service is down or unhealthy'
-  /game:
+  /game/status:
     get:
       tags:
         - Status
@@ -65,7 +65,7 @@ paths:
           description: OK
         '503':
           description: Service is down or unhealthy'
-  /vault:
+  /vault/status:
     get:
       tags:
         - Status
