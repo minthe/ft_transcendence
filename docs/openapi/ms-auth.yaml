@@ -136,6 +136,11 @@ paths:
               schema:
                 type: string
                 example: jwt_token=; Max-Age=0; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonResponse'
+                example: "Successful Logout (Token Deleted)"
         '404':
           description: Token does not exist
           content:
