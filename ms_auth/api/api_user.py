@@ -62,6 +62,7 @@ def register(request):
 			return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 	except Exception as e:
 		error_message = str(e)
+		user.delete()
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
