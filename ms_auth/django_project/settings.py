@@ -8,7 +8,7 @@ POSTGRES_ENGINE = os.environ.get('POSTGRES_ENGINE')
 POSTGRES_DB = os.environ.get('POSTGRES_DB')
 POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
-POSTGRES_HOST = 'users-db'
+POSTGRES_HOST = 'users_db'
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 REDIRECT_URI = os.environ.get('REDIRECT_URI')
 CLIENT_ID = os.environ.get('CLIENT_ID')
@@ -51,7 +51,7 @@ DATABASES = {
         'NAME': POSTGRES_DB,
         'USER': POSTGRES_USER,
         'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': 'users-db',
+        'HOST': 'users_db',
         'PORT': POSTGRES_PORT
     }
 }

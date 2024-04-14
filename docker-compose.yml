@@ -78,7 +78,7 @@ services:
         ipv4_address: 172.16.10.5
     restart: always
     depends_on:
-      users-db:
+      users_db:
         condition: service_healthy
     ports:
       - 6969:6969 # for admin page, delete later
@@ -118,7 +118,7 @@ services:
         ipv4_address: 172.16.10.7
     restart: always
     depends_on:
-      game-chat-db:
+      game_chat_db:
         condition: service_healthy
     expose:
       - 6969
