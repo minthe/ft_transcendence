@@ -11,6 +11,8 @@ def send_verification_email(user_id, email_to):
     user = User.objects.get(user_id=user_id)
     email_from = settings.EMAIL_HOST_USER
     code = user.generate_verification_code()
+    email_subject = 'PlayPong - verification code'
+    email_body = f'Hi {user.username},\n\nHere your 2fa code: {code}'
     send_mail(
         'Your 2FA Code',
         f'Your 2FA code is: {code}',
@@ -18,18 +20,26 @@ def send_verification_email(user_id, email_to):
         [email_to],
         fail_silently=False,
     )
-    
+
 def send_welcome_email(user_id, email_to):
     user = User.objects.get(user_id=user_id)
     email_from = settings.EMAIL_HOST_USER
-    send_mail(
-        f'Hi {user.username}',
-        f'Your password is: {user.password}',
-        f'you can login with your username and password at: https://{settings.CURRENT_HOST}/login',
-        email_from,
-        [email_to],
-        fail_silently=False,
-    )
+    login_url = f'https://{settings.CURRENT_HOST}'
+
+    email_subject = 'Welcome to PlayPong'
+    email_body = f'Hi {user.username},\n\nYou can log in to our platform at: {login_url}'
+
+    try:
+        send_mail(
+            email_subject,
+            email_body,
+            email_from,
+            [email_to],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f'Error sending welcome email: {e}')
+        return JsonResponse({'message': 'Failed sending welcome Email'}, status=500)
 
 @jwt.token_required
 def verify_two_factor_code(request, user_id, code, username):
