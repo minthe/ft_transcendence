@@ -102,7 +102,8 @@ class FT_JWT:
 				if not is_valid:
 					return JsonResponse({'message': "invalid JWT token"}, status=401)
 				user_id = jwt_instance.getUserId(token)
-				return f(request, user_id, *args, **kwargs)
+				request.user_id = user_id
+				return f(request, *args, **kwargs)
 			except Exception as e:
 				error_message = str(e)
 				print(f"An error occurred: {error_message}")

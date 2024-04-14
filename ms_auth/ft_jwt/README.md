@@ -4,6 +4,9 @@ A Python implementation of JSON Web Tokens (JWT) for authentication and authoriz
 
 ## Changelog
 
+### 0.0.21
+  - does not return the 'user_id' as additional argument anymore.
+  - 'user_id' is now added to the request object.
 ### 0.0.20
   - returns JsonResponse with {'message': "string"} and the status-code
 
