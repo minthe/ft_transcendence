@@ -76,6 +76,8 @@ services:
     depends_on:
       users_db:
         condition: service_healthy
+    ports:
+      - 6969:6969 # for admin page, delete later
     expose:
       - 8000
   users_db:

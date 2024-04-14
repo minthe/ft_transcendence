@@ -410,7 +410,7 @@ class _Game:
     @database_sync_to_async
     def get_host(self, game_id, user_id):
         game_instance = Game.objects.get(id=game_id)
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         if user_instance.name == game_instance.hostId:
             self.is_host = True
             check_host = 'True'
@@ -421,7 +421,7 @@ class _Game:
     
     @database_sync_to_async
     def get_mathces(self, user_id):
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         game_sessions = user_instance.new_matches.all()
 
         match_data = []
@@ -460,11 +460,10 @@ class _Game:
             print("user_id")
 
             print(user_id)
-            user1 = MyUser.objects.get(id=user_id)
+            user1 = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             game_instance = Game.objects.get(id=game_id)
             user1.new_matches.remove(game_instance)
             game_instance.delete()
         except MyUser.DoesNotExist:
             return None
-
 
