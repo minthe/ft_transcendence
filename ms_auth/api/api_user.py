@@ -146,7 +146,9 @@ def second_factor(request, user_id):
 
 		data = json.loads(request.body.decode('utf-8'))
 		second_factor = data.get('second_factor')
-		user_views.updateValue(user_id, 'avatar', second_factor)
+		user_views.updateValue(user_id, 'two_factor_enabled', second_factor)
+		check = user_views.getValue(user_id, 'two_factor_enabled')
+		print(f"second_factor: {check}")
 		return JsonResponse({'message': '2fa updated successfully'}, status=200)
 
 	except Exception as e:
