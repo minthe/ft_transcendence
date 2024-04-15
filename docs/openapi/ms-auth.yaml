@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.1'
+  version: '1.6.2'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -338,8 +338,6 @@ paths:
       tags:
         - 2FA
       summary: send 2fa code for verification
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
