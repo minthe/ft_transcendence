@@ -17,10 +17,10 @@ jobs:
     - name: Generate HTML Documentation and Commit Changes
       run: |
         npm i api2html -g
-        api2html -o ./docs/openapi/ms-auth.html -c ./ms_frontend/root/public/images/moon-dog.jpg -l javascript,python ./docs/openapi/ms-auth.yaml
+        api2html -o ./docs/ms-auth.html -c ./ms_frontend/root/public/images/moon-dog.jpg -l javascript,python ./docs/openapi/ms-auth.yaml
 
         # Create the index.html file
-        cat > ./docs/openapi/index.html <<EOL
+        cat > ./docs/index.html <<EOL
         <!DOCTYPE html>
         <html>
         <head>
@@ -88,8 +88,8 @@ jobs:
 
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'github-actions@github.com'
-        git add ./docs/openapi/ms-auth.html
-        git add ./docs/openapi/index.html
+        git add ./docs/ms-auth.html
+        git add ./docs/index.html
         git commit -m 'Update OpenAPI documentation for ms-auth'
         git push
 
@@ -97,4 +97,4 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/openapi/
+        publish_dir: ./docs/
