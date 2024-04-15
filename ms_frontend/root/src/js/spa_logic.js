@@ -69,17 +69,17 @@ function showSiteHideOthersSpa(site_to_show) {
 async function handleClickEvent(event) {
   // console.log(event);
 	if (event.target.closest('#homeButton'))
-		showSiteHideOthers('homeSite');
+		showSiteHideOthers('homeSite', 'homeButton');
   else if (event.target.closest('#gameButton'))
       gameSiteClicked();
   else if (event.target.closest('#statsButton'))
-		showSiteHideOthers('statsSite');
+		showSiteHideOthers('statsSite', 'statsButton');
   else if (event.target.closest('#showChatButton'))
 		await chatSiteClicked();
   else if (event.target.closest('#profileButton'))
-		showSiteHideOthers('profileSite');
+		showSiteHideOthers('profileSite', 'profileButton');
   else if (event.target.closest('#creatorsButton'))
-		showSiteHideOthers('creatorsSite');
+		showSiteHideOthers('creatorsSite', 'creatorsButton');
   else if (event.target.closest('#logoutButton'))
 		await logoutUser();
   else if (event.target.closest('#renderInv'))
@@ -126,5 +126,14 @@ async function handleClickEvent(event) {
     closePopUpWin();
   else if (event.target.closest('#Register42Button'))
     registerWith42();
+
+  else if (event.target.closest('#twoFAButtonE')) {
+    document.getElementById('twoFAButtonE').classList.add('hidden');
+    document.getElementById('twoFAButtonD').classList.remove('hidden');
+  }
+  else if (event.target.closest('#twoFAButtonD')) {
+    document.getElementById('twoFAButtonD').classList.add('hidden');
+    document.getElementById('twoFAButtonE').classList.remove('hidden');
+  }
 }
 

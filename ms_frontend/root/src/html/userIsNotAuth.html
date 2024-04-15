@@ -45,8 +45,8 @@
   <!-- Age Input -->
   <!-- <div class="row">
     <div class="col-md-3 mb-3"> -->
-      <label for="registerAge" class="form-label">Age</label>
-      <input type="text" class="form-control" id="registerAge"placeholder="age">
+      <label for="registerMail" class="form-label">E-Mail</label>
+      <input type="text" class="form-control" id="registerMail"placeholder="e-mail">
     <!-- </div>
   </div> -->
   <!-- Password Input -->
@@ -72,6 +72,26 @@
   <button type="submit" id="Register42Button" class="btn btn-outline-warning pop-up-btn">Register with 42</button></br>
  
 </div>
+
+
+
+<div id="twoFA" class="pop-up-two-fa hidden">
+  
+  <h2 class="header-two-fa">Enter the code send to your E-Mail</h2>
+  <form id="authForm" class="centered-form">
+
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <input type="digit" maxlength="1" oninput="moveToNextIfNumber(this, event)">
+    <br>
+    <br>
+  </form>
+  <button type="submit" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
+</div>
+
 
 <img class="login-icon-one" src="../img/icons8NoFace.png" alt="Profile Picture">
 <img class="login-icon-two" src="../img/icons8.png" alt="Profile Picture">

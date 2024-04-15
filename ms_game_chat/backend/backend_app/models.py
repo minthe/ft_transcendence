@@ -20,6 +20,7 @@ class MyUser(models.Model):
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
+    # gameAlias = models.CharField("gameAlias", max_length=100) #Julien changed
 
     def generate_verification_code(self):
         code = ''.join(random.choices(string.digits, k=6))
@@ -58,6 +59,8 @@ class Message(models.Model):
 class Game(models.Model):
     hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)
+    # hostName = models.CharField("hostName", max_length=100) #Julien changed
+    # guestName = models.CharField("guestName", max_length=100) #Julien changed
 
 class Tournament(models.Model):
     # quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)

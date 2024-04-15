@@ -202,17 +202,17 @@ async function updatePage() {
 
     // if (state.userName === websocket_obj.username) {
 		if (state.currPage === 'homeSite') {
-			showSiteHideOthers('homeSite');
+			showSiteHideOthers('homeSite', 'homeButton');
 			document.getElementById('displayUserName').innerHTML = websocket_obj.username;
 		}
 		else if (state.currPage === 'gameSite')
 			gameSiteClicked();
 		else if (state.currPage === 'profileSite')
-			showSiteHideOthers('profileSite')
+			showSiteHideOthers('profileSite', 'profileButton')
 		else if (state.currPage === 'creatorsSite')
-			showSiteHideOthers('creatorsSite');
+			showSiteHideOthers('creatorsSite', 'creatorsButton');
 		else if (state.currPage === 'statsSite')
-			showSiteHideOthers('statsSite');
+			showSiteHideOthers('statsSite', 'statsButton');
 		if (state.currPage === 'chat' || state.currPage === 'group_chat') {
 			await sendDataToBackend('get_current_users_chats')
 			await sendDataToBackend('get_blocked_by_user')
@@ -273,7 +273,7 @@ window.addEventListener('load', function() {
 	state.chatObj = myData.chatObj;
 	state.chatOpen = myData.chatOpen;
 
-	sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+	// sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
 	checkPageState();
 });
 
@@ -288,20 +288,52 @@ function sillyLogin(username, password, user_id) {
 }
 
 function checkPageState() {
-	if (getJwtTokenFromCookie()) {
-		hideDiv('userIsNotAuth');
-		document.getElementById("reloadScreen").style.display = "block";
-		setTimeout(function() {
-			document.getElementById("waitingScreen").style.display = "none";
-				updatePage();				
-		}, 500);
-	}
-	else {
+	const url = `${window.location.origin}/token/existence/`
+fetch(url, {
+  method: 'GET',
+  headers: {
+	'Content-Type': 'application/json',
+	'Authorization':'Bearer {access-token}'
+	// 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
+  },
+//   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
+})
+  .then(async response => {
+	if (!response.ok) {
+		await logoutUser();
 		state.bodyText = document.body.innerHTML;
 		state.currPage = "homeSite";
 		state.chatObj = {};
 		state.chatOpen= false;
-	}
+		throw new Error('User has no token');
+	  }
+	  sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+	  hideDiv('userIsNotAuth');
+	  document.getElementById("reloadScreen").style.display = "block";
+	  setTimeout(function() {
+		  document.getElementById("waitingScreen").style.display = "none";
+			  updatePage();
+	  }, 500);
+  })
+  .catch(error => {
+	console.log('Error during login:', error);
+  });
+
+
+	// if (getJwtTokenFromCookie()) {
+	// 	hideDiv('userIsNotAuth');
+	// 	document.getElementById("reloadScreen").style.display = "block";
+	// 	setTimeout(function() {
+	// 		document.getElementById("waitingScreen").style.display = "none";
+	// 			updatePage();				
+	// 	}, 500);
+	// }
+	// else {
+	// 	state.bodyText = document.body.innerHTML;
+	// 	state.currPage = "homeSite";
+	// 	state.chatObj = {};
+	// 	state.chatOpen= false;
+	// }
 }
 
 

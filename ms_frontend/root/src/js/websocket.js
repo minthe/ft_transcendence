@@ -65,8 +65,9 @@ websocket_obj = {
       host_score: 0,
       guest_score: 0,
 
+      // game_joined: false,
       // hostName: null,
-      // guestName: null
+      guestName: null
     }
   ],
   userInCurrentChat: [
@@ -166,17 +167,23 @@ async function establishWebsocketConnection() {
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
         {
+          document.getElementById('playerOne').textContent = websocket_obj.username;
+          document.getElementById('playerTwo').textContent = data.guest_id;
           websocket_obj.game.is_host = true
           console.log("game.is_host = true");
           console.log(websocket_obj.game.is_host);
         }
-        else
+        else  {
+          document.getElementById('playerOne').textContent = data.host_id;
+          document.getElementById('playerTwo').textContent = websocket_obj.username;
           websocket_obj.game.is_host = false
+        }
+        // websocket_obj.game.game_joined = true;
         break
       case 'game_start':
+         
         console.log("GAME START");
-        document.getElementById('playerOne').textContent = websocket_obj.username;
-        document.getElementById('playerTwo').textContent = "test";
+        
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
         startCountdownAnimation();
@@ -260,9 +267,13 @@ async function establishWebsocketConnection() {
       case 'recieve_invites':
       // websocket_obj.game.invites = data.matches
         websocket_obj.game.invites = JSON.parse(data.matches);
-
+  
         console.log('DATA: ', websocket_obj.game.invites)
-        renderInvites();
+        console.log('joined value: ', data.joined_game);
+        if (data.joined_game)
+          console.log('already in a game+#++##+##+#+#+#++#+#');
+        else
+          renderInvites();
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')

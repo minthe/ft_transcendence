@@ -4,13 +4,12 @@ function initUserData(data, username, password, age) {
 	hideDiv('userIsNotAuth')
 	websocket_obj.username = username
 	websocket_obj.password = password
-	websocket_obj.age = age
+	// websocket_obj.age = age
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
 
 
   document.getElementById('profileName').textContent = websocket_obj.username;
-  document.getElementById('age').value = websocket_obj.age;
   // if (websocket_obj.game_alias)
   document.getElementById('gameAlias').value = websocket_obj.username;
 
@@ -57,8 +56,33 @@ function submitText(text) {
 function loginUserButton() {
 	const usernameElement = document.getElementById('loginUsername')
   const passwordElement = document.getElementById('loginPassword')
-    usernameElement.style.border = ""
-    passwordElement.style.border = ""
+
+  if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)) {
+    usernameElement.value = "";
+    passwordElement.value = "";
+    document.getElementById("wrong-password").innerHTML = "Entered not allowed input!";
+    return;
+  }
+
+  usernameElement.style.border = ""
+  passwordElement.style.border = ""
+
+  const inputBody = {
+    "username": usernameElement.value,
+    "password": passwordElement.value
+  };
+  const headers = {
+    'Content-Type':'application/json',
+    'Accept':'application/json'
+  };
+    
+    // fetch(`${window.location.origin}/user/login/`,
+    // {
+    //   method: 'POST',
+    //   body: inputBody,
+    //   headers: headers
+    // })
+  
 
     // for testing purposes | delete later
     const email = 'marie.a.mensing@gmail.com'
@@ -67,11 +91,8 @@ function loginUserButton() {
     const url = `${window.location.origin}/user/login/`
     fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
-      },
-      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value , email: email , enable2FA: enable2FA})
+      headers: headers,
+      body: JSON.stringify(inputBody)
     })
       .then(response => {
         if (!response.ok) {
@@ -154,12 +175,33 @@ function RegisterUserButton() {
     usernameElement.style.border = ""
     passwordElement.style.border = ""
 
-    const age = document.getElementById('registerAge').value;
+    const mail = document.getElementById('registerMail');
 
-    const url = `${window.location.origin}/user/register/`
-    fetch(url, {
+
+    if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)
+      || containsSQLInjection(mail.value)) {
+      usernameElement.value = "";
+      passwordElement.value = "";
+      mail.value = "";
+      document.getElementById("wrong-password").innerHTML = "Entered not allowed input!";
+      return;
+    }
+    const inputBody = {
+      "username": usernameElement.value,
+      "password": passwordElement.value,
+      "email": mail.value
+    };
+    const headers = {
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    };
+    
+    const url = `${window.location.origin}/user/register/`;
+    fetch(url,
+    {
       method: 'POST',
-      body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value})
+      headers: headers,
+      body: JSON.stringify(inputBody)
     })
       .then(response => {
         if (!response.ok) {
@@ -189,12 +231,12 @@ function RegisterUserButton() {
         window.history.replaceState(state, null, "");
         usernameElement.value = "";
         passwordElement.value = "";
-        age.value = "";
+        mail.value = "";
       })
       .catch(error => {
         usernameElement.value = "";
         passwordElement.value = "";
-        age.value = "";
+        mail.value = "";
         // setErrorWithTimout('info_register', error, 9999999)
         console.log('Error during login:', error);
       });
@@ -209,8 +251,6 @@ function changeToLoginPageButton() {
     document.getElementById('registerPassword').value  = null;
     document.getElementById("registerUsername").style.border = "";
     document.getElementById("registerPassword").style.border = "";
-    const info_register = document.getElementById('info_register')
-    info_register.style.display = 'none';
 }
 
 function openPopUpWin() {
@@ -226,10 +266,6 @@ function showRegisterPage() {
   document.getElementById('loginPassword').value  = null;
   document.getElementById("loginUsername").style.border = "";
   document.getElementById("loginPassword").style.border = "";
-  
-  
-  const info_login = document.getElementById('info_login')
-  info_login.style.display = 'none';
 }
 
 function closePopUpWin() {
@@ -239,6 +275,12 @@ function closePopUpWin() {
 
 function registerWith42() {
   window.location.href = '/user/oauth2/login';
+  //window.location.href = ''; redirect back
+  // if token true
+  //   sillyLogin();
+  //   establishWebsocketConnection();
+  //   hideDiv('userIsNotAuth'); with delay if dom content needs to load
+  //   showDiv('userIsAuth');
 }
 
 async function logoutUser() {
@@ -263,4 +305,22 @@ async function logoutUser() {
   // .then(data => {
   //   console.log(data); // Here you can handle the JSON data returned by the endpoint
   // })
+}
+
+let codeTwoFa = "";
+
+function moveToNextIfNumber(input, event) {
+  // Remove non-numeric characters
+  input.value = input.value.replace(/\D/g, '');
+
+  // Check if the input value is a number
+  if (!isNaN(parseInt(input.value))) {
+    // Move focus to the next input field
+    // codeTwoFa += input.stringify();
+    codeTwoFa += input.value;
+    console.log(codeTwoFa);
+    if (input.nextElementSibling) {
+      input.nextElementSibling.focus();
+    }
+  }
 }
