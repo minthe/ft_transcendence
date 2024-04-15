@@ -152,26 +152,3 @@ def avatar(request, user_id):
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
-
-@jwt.token_required
-@require_http_methods(["PUT"])
-def second_factor(request, user_id):
-	'''
-	This function is used to enable or disable 2fa
-	API Endpoint: /user/{user_id}/second_factor
-	'''
-	try:
-		if not user_views.checkUserExists('user_id', user_id):
-			return JsonResponse({'message': 'User not found'}, status=404)
-
-		data = json.loads(request.body.decode('utf-8'))
-		second_factor = data.get('second_factor')
-		user_views.updateValue(user_id, 'two_factor_enabled', second_factor)
-		check = user_views.getValue(user_id, 'two_factor_enabled')
-		print(f"second_factor: {check}")
-		return JsonResponse({'message': '2fa updated successfully'}, status=200)
-
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
