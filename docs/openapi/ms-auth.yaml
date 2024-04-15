@@ -345,7 +345,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HttpError'
                 example: "Server Error"
-  /{user_id}/2fa:
+  /{user_id}/2fa/update:
     put:
       tags:
         - User Data
