@@ -173,17 +173,20 @@ class _Game:
 
 
     async def send_init_game(self, event):
+        game_instance = await self.get_game_instance(self.game_id)
         await self.send(text_data=json.dumps({
             'type': 'init_game',
             'is_host': event['data']['is_host'],
+            'guest_id': game_instance.guestId,
+            'host_id': game_instance.hostId#julien edited
 
         }))
 
-
     async def send_game_start(self, event):
+        # game_info = Game.objects.get(id=self.guestId)
         await self.send(text_data=json.dumps({
             'type': 'game_start',
-
+            
         }))
 
 
@@ -465,6 +468,14 @@ class _Game:
             user1.new_matches.remove(game_instance)
             game_instance.delete()
         except MyUser.DoesNotExist:
+            return None
+
+    @database_sync_to_async#julien edited
+    def get_game_instance(self, game_id):
+        try:
+            game_instance = Game.objects.get(id=game_id)
+            return game_instance
+        except Game.DoesNotExist:
             return None
 
 

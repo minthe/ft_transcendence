@@ -5,20 +5,12 @@ function gameDom() {
     document.getElementById('createGameButton').addEventListener('click', createGame);
 }
 
-// HERE FUNCTIONS FOR GAME:
-
 
 async function joinGame(gameId) {
 
   console.log('In JoinGame');
-  // document.getElementById("showGameField").style.display = "block";
-  // const startScreen = document.getElementById("start-screen");
-
-  // const startScreenBtn = document.getElementById("renderInv");
 
   const gameScreen = document.getElementById("game-screen");
-
-  // const waitingScreen = document.getElementById("waitingScreen");
 
   const canvas = document.getElementById("pongCanvas");
   const ctx = canvas.getContext("2d");
@@ -57,11 +49,6 @@ async function joinGame(gameId) {
   // window.addEventListener("load", updateCanvasSize);
 
   document.getElementById("invites-screen").classList.add("hidden");
-  // document.getElementById("game-session-container").style.display = "none";
-  // waitingScreen.classList.add("show");
-  // console.log("waitingScreen show");
-  // waitingScreen.classList.remove("show");
-  // console.log("waitingScreen remove show");
 
   document.getElementById("pongCanvas").classList.remove("hidden");
   gameScreen.classList.add('show');
@@ -96,6 +83,8 @@ async function requestInvites() {
 
 
 async function renderInvites() {
+  // console.log(websocket_obj.game);
+
   if (websocket_obj.game.invites != 0)
   {
     // const htmlContent = await response.text();
@@ -107,49 +96,10 @@ async function renderInvites() {
     const matches = websocket_obj.game.invites;
     console.log(matches);
     const container = document.getElementById('game-session-container');
-    container.innerHTML = generateHTMLContent(matches);
-
-  //   <ul style="justify-content: center; margin-left: 30vw;">
-  //   <li style="color: #ecc85d; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>
-  //   <button class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>
-  // </ul>
-
-  function generateHTMLContent(matches) {
-    let htmlContent = '';
-    if (matches.length > 0) {
-      htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
-      matches.forEach(match => {
-        htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
-        htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button></li>`;
-
-      });
-      htmlContent += '</ul>';
-    } else {
-      htmlContent = '<p>No matches found.</p>';
-    }
-    return htmlContent;
-  }
-
-    // function generateHTMLContent(matches) {
-    //   let htmlContent = '';
-    //   if (matches.length > 0) {
-    //     htmlContent += '<ul>';
-    //     matches.forEach(match => {
-    //       htmlContent += `<li>Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
-    //       htmlContent += `<button class="join-game-btn" data-gameid="${match.game_id}">Join Game</button></li>`;
-
-    //     });
-    //     htmlContent += '</ul>';
-    //   } else {
-    //     htmlContent = '<p>No matches found.</p>';
-    //   }
-    //   return htmlContent;
-    // }
+    container.innerHTML = generateHTMLContentInv(matches);
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
       // let userName = '';
-
-
       button.addEventListener('click', async function() {
 
         const gameId = this.getAttribute('data-gameid');
@@ -159,6 +109,23 @@ async function renderInvites() {
     });
   }
 }
+
+function generateHTMLContentInv(matches) {
+  let htmlContent = '';
+  if (matches.length > 0) {
+    htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
+    matches.forEach(match => {
+      htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
+      htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button></li>`;
+
+    });
+    htmlContent += '</ul>';
+  } else {
+    htmlContent = '<p>No matches found.</p>';
+  }
+  return htmlContent;
+}
+
 
 // async function renderInvites() {
 
@@ -202,19 +169,19 @@ async function sendGameInvitation() {
 
   console.log('In invite user to game');
 
-  var userNameInput = document.getElementById("guestUser");
+  let userNameInput = document.getElementById("guestUser");
 
   // Access the value property to get the entered data
-  var guestUser = userNameInput.value;
+  let guestUser = userNameInput.value;
 
   console.log("User Name: " + guestUser);
 
 
-  var theButton = document.getElementById('createGameButton');
+  let theButton = document.getElementById('createGameButton');
   theButton.style.display = 'none';
-  var username = websocket_obj.username
-  var game_id = websocket_obj.active_game;
-  var guest_user_name = guestUser;
+  let username = websocket_obj.username
+  let game_id = websocket_obj.active_game;
+  let guest_user_name = guestUser;
   try {
     const response = await fetch(`${window.location.origin}/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
@@ -242,12 +209,12 @@ async function createGame() {
   console.log("IN CREATEGAME");
 
 
-  var element = document.getElementById('createGameButton');
+  let element = document.getElementById('createGameButton');
   console.log(element);
 
 
 
-var theButton = document.getElementById('createGameButton');
+let theButton = document.getElementById('createGameButton');
 theButton.style.display = 'none';
 try {
   const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/`);
@@ -292,17 +259,25 @@ function drawPaddles() {
   right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
 
 
-  // console.log("left pedal: ", left_pedal);
-  // console.log("right pedal: ", right_pedal);
+  const paddleHeight = canvas.height / 4;
 
-  // console.log ("canvas.width: ", canvas.width);
-  // console.log ("canvas.height: ", canvas.height);
-  // console.log ("canvas.width / 80: ", canvas.width / 80);
-  // console.log ("canvas.height / 8: ", canvas.height / 8);
-  // console.log ("canvas.height / 4: ", canvas.height / 4);
+  // Ensure paddles stay within canvas boundaries
+  if (left_pedal < 0) {
+    left_pedal = 0;
+    websocket_obj.game.left_pedal = 0;
+  } else if (left_pedal + paddleHeight > canvas.height) {
+    left_pedal = canvas.height - paddleHeight;
+    websocket_obj.game.left_pedal = left_pedal * 2 / canvas.height;
+  }
 
+  if (right_pedal < 0) {
+    right_pedal = 0;
+    websocket_obj.game.right_pedal = 0;
+  } else if (right_pedal + paddleHeight > canvas.height) {
+    right_pedal = canvas.height - paddleHeight;
+    websocket_obj.game.right_pedal = right_pedal * 2 / canvas.height;
+  }
 
-  // ctx.fillStyle = "black";
   ctx.fillStyle = "#131615";
 
   ctx.fillRect(
@@ -348,11 +323,25 @@ async  function update() {
   // moveBall();
   drawPaddles();
   drawBall();
+
+  drawDashedLine(canvas, ctx);
+}
+
+async function drawDashedLine(canvas, ctx){
+  const lineWidth = 5;
+
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = lineWidth;
+  ctx.setLineDash([13, 13]); // Dashed pattern
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, 0);
+  ctx.lineTo(canvas.width / 2, canvas.height);
+  ctx.stroke();
 }
 
 async function updateScore() {
-  var hostScoreElem = document.getElementById('score1');
-  var guestScoreElem = document.getElementById('score2');
+  let hostScoreElem = document.getElementById('score1');
+  let guestScoreElem = document.getElementById('score2');
   hostScoreElem.textContent = websocket_obj.game.host_score;
   guestScoreElem.textContent = websocket_obj.game.guest_score;
 
@@ -420,55 +409,6 @@ async function launchGame()
 // }
 
 
-
-function handleDOMChangesGame() {
-
-}
-
-
-const observerGame = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    // Check if the desired elements are added or modified
-    handleDOMChangesGame();
-  });
-});
-
-// Start observing the DOM
-observerGame.observe(document.body, { childList: true, subtree: true });
-
-
-
-
-
-
-// function drawStripedLine() {
-//   var canvas = document.getElementById("gameCanvas");
-//     var ctx = canvas.getContext("2d");
-
-//     // Set line properties
-//     ctx.strokeStyle = "blue"; // Line color
-//     ctx.lineWidth = 5; // Line width
-
-//     // Draw the striped line
-//     var numStripes = 20; // Number of stripes
-//     var stripeWidth = 10; // Width of each stripe
-//     var spaceWidth = 5; // Width of space between stripes
-
-//     var totalWidth = stripeWidth + spaceWidth;
-
-//     for (var i = 0; i < numStripes; i++) {
-//         var startX = i * totalWidth;
-//         var endX = startX + stripeWidth;
-
-//         ctx.beginPath();
-//         ctx.moveTo(startX, canvas.height / 2);
-//         ctx.lineTo(endX, canvas.height / 2);
-//         ctx.stroke();
-//     }
-// }
-
-
-
 function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('invites-screen').classList.add('hidden');
@@ -476,5 +416,5 @@ function gameSiteClicked() {
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('winningScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
-  showSiteHideOthers('gameSite');
+  showSiteHideOthers('gameSite', 'gameButton');
 }

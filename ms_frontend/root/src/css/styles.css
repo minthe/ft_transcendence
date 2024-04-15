@@ -75,6 +75,44 @@ body, html {
 
 /* login page */
 
+.header-two-fa {
+  color: #131615;
+  margin-bottom: 20px;
+}
+
+.centered-form {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="digit"] {
+  width: 40px;
+  text-align: center;
+  margin: 5px;
+}
+
+.verify-btn {
+  margin-left: 16vw;
+  margin-top: 20px;
+}
+
+.pop-up-two-fa {
+
+  max-width: 600px;
+  max-height: 800px;
+  margin: 50px auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #ecc85d;
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 40vw;
+  position: relative;
+  margin-top: 30vh;
+}
+
 .pop-up {
 
   max-width: 600px;
@@ -872,8 +910,8 @@ body, html {
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  bottom: 20px;
+  right: 20px;
 }
 
 .profile-page {

@@ -122,7 +122,8 @@ def createGame(request, username, invited_username):
         print(f"new_matches")
         print(user.new_matches.all())
 
-        return JsonResponse({"message": "Gameroom was created successfully", "id": new_gameroom.id})
+        return JsonResponse({"message": "Gameroom was created successfully", "id": new_gameroom.id,})
+        # "host_name": new_gameroom.hostId, "guest_name": new_gameroom.guestId
     except MyUser.DoesNotExist:
         return JsonResponse({"error": "Invalid username"}, status=400)
     except Exception as e:
@@ -191,3 +192,4 @@ def renderInvites(request, username):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+# def renderDisplay(request, game_id)
