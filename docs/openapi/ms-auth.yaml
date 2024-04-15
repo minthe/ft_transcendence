@@ -352,7 +352,7 @@ paths:
             application/json:
               example: {"message": "2fa setting updated"}
         '401':
-          description: Missing or invalid JWT token
+          description: Wrong code
           content:
             application/json:
               example: {"message": "Wrong code"}
