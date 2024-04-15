@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.0'
+  version: '1.6.1'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -344,6 +344,16 @@ paths:
         required: true
         content:
           application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - code
+              properties:
+                user_id:
+                  type: integer
+                code:
+                  type: string
             example: {"user_id": 1, "code": "123456"}
       responses:
         '200':
