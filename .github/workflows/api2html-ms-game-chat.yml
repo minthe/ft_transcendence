@@ -1,0 +1,32 @@
+name: ms-game-chat2html
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'docs/openapi/ms-game-chat.yaml'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Generate HTML Documentation and Commit Changes
+      run: |
+        npm i api2html -g
+        api2html -o ./docs/ms-game-chat.html -c ./ms_frontend/root/public/images/moon-dog.jpg -l javascript,python ./docs/openapi/ms-game-chat.yaml
+
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'github-actions@github.com'
+        git add ./docs/ms-game-chat.html
+        git commit -m 'Update OpenAPI documentation for ms-game-chat'
+        git push
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/

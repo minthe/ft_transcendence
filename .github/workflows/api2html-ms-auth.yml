@@ -71,9 +71,9 @@ jobs:
           <div class="wrapper">
             <div class="top-frame">
               <a href="ms-auth.html">ms-auth</a>
-              <a href="game-chat.html">game-chat</a>
-              <a href="vault.html">vault</a>
-              <a href="api-gateway.html">api-gateway</a>
+              <a href="ms-game-chat.html">game-chat</a>
+              <a href="ms-vault.html">vault</a>
+              <a href="ms-api-gateway.html">api-gateway</a>
             </div>
         
             <div class="content">
