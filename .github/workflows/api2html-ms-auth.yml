@@ -17,7 +17,7 @@ jobs:
     - name: Generate HTML Documentation and Commit Changes
       run: |
         npm i api2html -g
-        api2html -o ./docs/ms-auth.html -c ./ms_frontend/root/public/images/moon-dog.jpg -l javascript,python ./docs/openapi/ms-auth.yaml
+        api2html -o ./docs/ms-auth.html -c ./ms_frontend/root/public/images/moon_dog.jpg -l javascript,python ./docs/openapi/ms-auth.yaml
 
         # Create the index.html file
         cat > ./docs/index.html <<EOL
