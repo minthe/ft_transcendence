@@ -7,6 +7,12 @@ dist/
 build/
 *.egg-info/
 
+# Django
+migrations/
+
+# GH Pages
+*.html.gz
+
 # Virtual environment
 venv/
 env/

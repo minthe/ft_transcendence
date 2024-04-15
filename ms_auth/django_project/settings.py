@@ -1,4 +1,4 @@
-import os
+import os, logging
 from pathlib import Path
 
 CURRENT_HOST = os.environ.get('CURRENT_HOST')
@@ -15,22 +15,30 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
 OAUTH_TOKEN = os.environ.get('OAUTH_TOKEN')
+# email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
+EMAIL_PORT = 587  # Outlook SMTP port
+EMAIL_USE_TLS = True  # Use TLS for security
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-ALLOWED_HOSTS = [CURRENT_HOST, 'localhost']
+ALLOWED_HOSTS = ['*']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = DJANGO_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 INSTALLED_APPS = [
-    "authManager",
+    "api",
     "user",
     "oauth2",
     "intra42",
     "ft_jwt",
+    "two_factor",
 ]
 
 MIDDLEWARE = []

@@ -21,6 +21,38 @@ function initUserData(data, username, password, age) {
 	}
 }
 
+
+
+
+
+// Function to open the popup | short prototype to test 2FA
+function openPopup() {
+    var textInput = prompt("Enter text:");
+
+    if (textInput !== null) {
+        // User clicked OK in the prompt
+        return (submitText(textInput));
+    } else {
+        // User clicked Cancel in the prompt
+        alert("No text entered.");
+        return ""
+    }
+}
+// Function to submit the text from the input field
+function submitText(text) {
+    if (text.trim() === "") {
+        alert("Text cannot be empty.");
+        return ""
+    } else {
+        // You can perform further actions with the submitted text here
+        console.log("Submitted text:", text);
+        return text
+    }
+}
+
+
+
+
 function loginUserButton() {
 	const usernameElement = document.getElementById('loginUsername')
   const passwordElement = document.getElementById('loginPassword')
@@ -52,6 +84,10 @@ function loginUserButton() {
     // })
   
 
+    // for testing purposes | delete later
+    const email = 'marie.a.mensing@gmail.com'
+    const enable2FA = true
+
     const url = `${window.location.origin}/user/login/`
     fetch(url, {
       method: 'POST',
@@ -79,6 +115,42 @@ function loginUserButton() {
         return response.json();
       })
       .then(data => {
+        // if 2FA enabled, render digit pop-up
+        if (data.twoFactorAuth)
+        {
+          const code = openPopup();
+          if (code.trim() !== "")
+          {
+            // verify in backend
+            const url = `${window.location.origin}/game/verifyTwoFactorCode/${code}/${usernameElement.value}/`
+            fetch(url)
+            .then(async response => {
+              if (!response.ok) {
+                // location.reload();
+                throw new Error('2FA Code was not correct!');
+              }
+              console.log("CORRECT 2FA CODE")
+              initUserData(data, usernameElement.value, passwordElement.value, 69)
+              showDiv('showUserProfile')
+              document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
+              establishWebsocketConnection()
+              state.bodyText = document.body.innerHTML;
+              window.history.replaceState(state, null, "");
+              usernameElement.value = "";
+              passwordElement.value = "";
+            })
+            .catch(error => {
+              console.error('There was a problem with the fetch operation:', error);
+            });
+          }
+          else
+          {
+            throw new Error('Unexpected Error: Wrong 2FA Code')
+          }
+          return
+        }
+
+
         initUserData(data, usernameElement.value, passwordElement.value, 69)
         showDiv('showUserProfile')
         document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
