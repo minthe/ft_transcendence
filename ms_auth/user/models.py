@@ -2,9 +2,8 @@ from django.db import models
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
+from django.utils.crypto import get_random_string
 from exceptions import RateLimitExceeded, InvalidVerificationCode, ExpiredVerificationCode
-import random
-import string
 
 class User(models.Model):
 	user_id = models.BigIntegerField(primary_key=True)
@@ -36,9 +35,9 @@ class User(models.Model):
   
 	def generate_verification_code(self):
 		try:
-			code = ''.join(random.choices(string.digits, k=6))
+			code = get_random_string(length=6, allowed_chars='0123456789')
 			timestamp = timezone.now().isoformat()
-			self.twoFactorCode = {'code': self.set_password(code), 'timestamp': timestamp, 'last_retry': timestamp}
+			self.twoFactorCode = {'code': make_password(code), 'timestamp': timestamp, 'last_retry': timestamp}
 			self.save()
 			return code
 		except Exception as e:
