@@ -1,7 +1,8 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.5.3'
+  version: '1.6.0'
+
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development - expect breaking changes.
@@ -299,7 +300,6 @@ paths:
             application/json:
               example: {"message": "Server Error"}
   /2fa/update:
-
     put:
       tags:
         - 2FA
@@ -333,11 +333,11 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /2fa/code:
+  /2fa/verify:
     post:
       tags:
         - 2FA
-      summary: send 2fa code
+      summary: send 2fa code for verification
       security:
         - bearerAuth: []
       requestBody:
@@ -355,7 +355,7 @@ paths:
           description: Missing or invalid JWT token
           content:
             application/json:
-              example: {"message": "Missing or invalid JWT token"}
+              example: {"message": "Wrong code"}
         '409':
           description: updating value failed
           content:
