@@ -48,8 +48,14 @@ async function leaveChat() {
 
 async function createPublicChat() {
   let chat_name = document.getElementById('new_chat_name').value
+
+  
   if (chat_name.trim() === '') {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
+    return;
+  }
+  if (containsSQLInjection(chat_name)) {
+    setErrorWithTimout('info_create_chat', 'Invalid Characters for Chat name!',  5000)
     return;
   }
   
@@ -61,10 +67,16 @@ async function createPublicChat() {
 
 async function createPrivateChat() {
   let chat_name = document.getElementById('new_private_chat_name').value
+
   if (chat_name.trim() === '') {
     setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;
   }
+  if (containsSQLInjection(chat_name)) {
+    setErrorWithTimout('info_create_private_chat', 'Invalid Characters for Chat name!',  5000)
+    return;
+  }
+
   websocket_obj.new_private_chat_name = chat_name
   await sendDataToBackend('set_new_private_chat')
   await sendDataToBackend('get_current_users_chats')
@@ -366,7 +378,7 @@ async function chatSiteClicked() {
   await sendDataToBackend('get_current_users_chats')
   await sendDataToBackend('get_blocked_by_user')
   await sendDataToBackend('get_blocked_user') // NEW since 02.02
-  showSiteHideOthers('chat')
+  showSiteHideOthers('chat', 'showChatButton')
   hideDiv('messageSide');
   document.getElementById('right-heading-name').textContent = "";
   chat_avatar.src = "../img/ballWithEye.jpg";
@@ -385,7 +397,24 @@ async function sendMessage() {
       $('#userBlockedYouWarning').modal('show');
       return
     }
+  const messageInput = document.getElementById('messageInput');
+    if (containsSQLInjection(messageInput.value)) {
+      setTimeout(function () {
+        messageInput.value = '';
+        messageInput.style.color = 'white';
+        messageInput.removeAttribute('readonly')
+        document.getElementById('sendMessageButton').disabled = false;
+      }, 2000);
+      document.getElementById('sendMessageButton').disabled = true;
+      messageInput.setAttribute('readonly', true);
+      messageInput.style.color = 'red';
+      messageInput.value = 'Message contains invalid characters';
+      return;
+    }
     websocket_obj.message = document.getElementById('messageInput').value
+
+
+
     websocket_obj.sender = websocket_obj.username
     document.getElementById('messageInput').value = ''
     await sendDataToBackend('send_chat_message')
@@ -431,7 +460,6 @@ async function challengeUserClicked() {
     displayError(null);
     websocket_obj.active_game = data.id;
     // console.log(data.id); // Check the console for the result
-
     // Perform actions on successful login, e.g., set isLoggedIn and userData
         console.log(data);
     } else {

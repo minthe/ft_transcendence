@@ -107,9 +107,19 @@ function toggleEdit() {
 }
 
 function saveChanges() {
-  document.getElementById("email").setAttribute('readonly', true);
-  document.getElementById("gameAlias").setAttribute('readonly', true);
-  document.getElementById("age").setAttribute('readonly', true);
+  const mail = document.getElementById("email");
+  const gameAlias = document.getElementById("gameAlias");
+  if (containsSQLInjection(mail.value) || containsSQLInjection(gameAlias.value)) {
+    console.log('are malicious for user profile')
+    setTimeout(function () {
+      document.getElementById('wrongSavedInput').classList.add('hidden');
+    }, 3000);
+    document.getElementById('wrongSavedInput').classList.remove('hidden');
+    //mail.value = websocket_obj.mail;
+    //gameAlias = websocket_obj.gameAlias;
+  }
+  mail.setAttribute('readonly', true);
+  gameAlias.setAttribute('readonly', true);
 
   //sendNewDataToBackend
   editButton.style.display = 'block';

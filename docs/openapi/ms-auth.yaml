@@ -299,6 +299,7 @@ paths:
             application/json:
               example: {"message": "Server Error"}
   /2fa/update:
+
     put:
       tags:
         - 2FA

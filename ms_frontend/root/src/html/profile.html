@@ -5,7 +5,8 @@
         <input type="file" style="display: none;" accept="image/*">
         <img id="profilePicture" src="https://www.course-api.com/images/people/person-1.jpeg" class="profile-picture" alt="Profile Picture">
       </label>
-      <button id="2FAButton" class="change-profile-btn btn btn-outline-dark two-fa">Enable 2FA</button>
+      <button id="twoFAButtonE" class="change-profile-btn btn btn-outline-dark two-fa">Enable 2FA</button>
+      <button id="twoFAButtonD" class="change-profile-btn btn btn-outline-secondary two-fa hidden">Disable 2FA</button>
       <div id="fileError" class="error-message" style="color: red; display: none;">Invalid file type. Please select an image file.</div>
     
       <h1 id="profileName" class="profile-name"></h1>
@@ -20,11 +21,13 @@
         <ul class="details-list">
           <li class="input-field"><strong style="color: #124457;">Email:</strong> <input id="email" class="input-field" value="john@example.com" readonly autocomplete="email"></li>
           <li class="input-field"><strong style="color: #124457;">Game-Alias:</strong> <input id="gameAlias" class="input-field" value="" readonly></li>
-          <li class="input-field"><strong style="color: #124457;">Age:</strong> <input id="age" class="input-field" value="30" readonly></li>
+          <!-- <li class="input-field"><strong style="color: #124457;">Age:</strong> <input id="age" class="input-field" value="30" readonly></li> -->
         </ul>
-        <button id="saveButton" class="change-profile-btn btn btn-outline-secondary" style="display: none;">Save</button>
-        <button id="editButton" class="change-profile-btn btn btn-outline-dark">Edit</button>
+        <button id="saveButton" class="btn btn-outline-secondary" style="display: none;">Save</button>
+        <button id="editButton" class="btn btn-outline-dark">Edit</button>
+        <div id="wrongSavedInput" class="hidden" style="color: red; margin-top: 10px;">Malicious characters entered!</div>
       </div>
     </div>
+
   <!-- </div> -->
 </div>
