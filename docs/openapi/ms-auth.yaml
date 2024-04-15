@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.5.0'
+  version: '1.5.1'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development - expect breaking changes.
@@ -100,7 +100,7 @@ paths:
           description: 2fa verficication required
           content:
             application/json:
-              example: {"message": "2fa verficication required"}
+              example: {"user_id": 1, "2fa": true}
         '409':
           description: Credentials are wrong
           content:
@@ -343,7 +343,7 @@ paths:
         required: true
         content:
           application/json:
-            example: {"code": "123456"}
+            example: {"user_id": 1, "code": "123456"}
       responses:
         '200':
           description: OK
