@@ -24,7 +24,7 @@ urlpatterns = [
 	# /user/verifyTwoFactorCode
 
 	# User
-	path('me', user_views.getId, name="getId"),
+	path('me', user_views.getId, name="getId"), # TODO @valentin return all user data and change function name to me
 	path('<int:user_id>/avatar', api_user.avatar, name="avatar"),
 	path('<int:user_id>/2fa', api_user.second_factor, name="second_factor"),
 ]

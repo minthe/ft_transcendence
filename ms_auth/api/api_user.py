@@ -13,6 +13,10 @@ jwt = FT_JWT(settings.JWT_SECRET)
 
 @require_http_methods(["POST"])
 def register(request):
+	'''
+	This function is used to register a new user
+	API Endpoint: /user/register
+	'''
 	try:
 		data =json.loads(request.body)
 		username = data.get('username')
@@ -68,6 +72,10 @@ def register(request):
 
 @require_http_methods(["POST"])
 def login(request):
+	'''
+	This function is used to log in a user
+	API Endpoint: /user/login
+	'''
 	try:
 		data =json.loads(request.body)
 		username = data.get('username')
@@ -97,6 +105,10 @@ def login(request):
 
 @require_http_methods(["POST"])
 def logout(request):
+	'''
+	This function is used to log out a user
+	API Endpoint: /user/logout
+	'''
 	try:
 		jwt_token = request.COOKIES.get('jwt_token')
 
@@ -117,6 +129,10 @@ def logout(request):
 
 @jwt.token_required
 def avatar(request, user_id):
+	'''
+	This function is used to get or update the avatar of a user
+	API Endpoint: /user/{user_id}/avatar
+	'''
 	try:
 		if not user_views.checkUserExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
@@ -140,6 +156,10 @@ def avatar(request, user_id):
 @jwt.token_required
 @require_http_methods(["PUT"])
 def second_factor(request, user_id):
+	'''
+	This function is used to enable or disable 2fa
+	API Endpoint: /user/{user_id}/second_factor
+	'''
 	try:
 		if not user_views.checkUserExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
