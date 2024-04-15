@@ -7,6 +7,10 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 jwt = FT_JWT(settings.JWT_SECRET)
 
 def getId(request):
+	'''
+	This function is used to get the user id
+	API Endpoint: /user/me
+	'''
 	try:
 		jwt_token = request.COOKIES.get('jwt_token')
 		if jwt_token == None:

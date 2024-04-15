@@ -46,9 +46,9 @@ http {
             proxy_set_header Connection "upgrade";
         }
 
-	location ~ ^/user/ {
-	proxy_pass http://auth_backend:8000;
-	proxy_set_header Host $host;
-	}
+        location ~ ^/user/ {
+        proxy_pass http://auth_backend:8000;
+        proxy_set_header Host $host;
+        }
     }
 }

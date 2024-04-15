@@ -7,6 +7,10 @@ redirect_uri = f"https://{settings.CURRENT_HOST}{settings.REDIRECT_URI}"
 
 # request authorization code
 def oauth2_login(request):
+	'''
+	This function is used to request an authorization code
+	API Endpoint: user/oauth2/login
+	'''
 	try:
 		data = {
 			"client_id": settings.CLIENT_ID,

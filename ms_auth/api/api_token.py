@@ -7,7 +7,11 @@ jwt = FT_JWT(settings.JWT_SECRET)
 
 @jwt.token_required
 @require_http_methods(["GET"])
-def token_existence(request, user_id):
+def token_existence(request):
+	'''
+	This function is used to check if a token exists
+	API Endpoint: /user/token-existence
+	'''
 	try:
 		jwt_token = request.COOKIES.get('jwt_token')
 
