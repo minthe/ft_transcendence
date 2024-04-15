@@ -55,59 +55,33 @@ jobs:
               padding: 5px 10px;
               border-radius: 5px;
               transition: background-color 0.3s;
-              font-size: 18px;
-              font-weight: bold;
-              background-color: #555; /* default background color */
             }
         
             .top-frame a:hover {
-              background-color: #777; /* lighter background on hover */
-            }
-        
-            .top-frame a:not(:last-child) {
-              <!-- border-right: 2px solid #0e0e0e; /* visually dividing links */ -->
+              background-color: #555;
             }
         
             .content {
               flex-grow: 1;
               padding: 20px;
-              font-size: 16px; /* default font size for content */
-            }
-        
-            h1, h2, h3, h4, h5, h6 {
-              font-weight: bold;
             }
           </style>
         </head>
         <body>
           <div class="wrapper">
             <div class="top-frame">
-              <a href="#" onclick="loadContent('ms-auth')">ms-auth</a>
-              <a href="#" onclick="loadContent('game-chat')">game-chat</a>
-              <a href="#" onclick="loadContent('vault')">vault</a>
-              <a href="#" onclick="loadContent('api-gateway')">api-gateway</a>
+              <a href="ms-auth.html">ms-auth</a>
+              <a href="game-chat.html">game-chat</a>
+              <a href="vault.html">vault</a>
+              <a href="api-gateway.html">api-gateway</a>
             </div>
         
-            <div class="content" id="content">
-              <!-- Content will be loaded dynamically here -->
+            <div class="content">
+              <h1>OpenAPI Documentation</h1>
+              <p>Welcome to the OpenAPI documentation for our project. Please click on the links above to view the documentation for each module.</p>
+              <!-- Add more content here -->
             </div>
           </div>
-        
-          <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              loadContent('ms-auth');
-            });
-        
-            function loadContent(moduleName) {
-              var url = moduleName + '.html';
-              fetch(url)
-                .then(response => response.text())
-                .then(data => {
-                  document.getElementById('content').innerHTML = data;
-                })
-                .catch(error => console.error('Error:', error));
-            }
-          </script>
         </body>
         </html>
         EOL
