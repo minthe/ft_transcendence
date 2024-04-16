@@ -360,7 +360,7 @@ paths:
             application/json:
               example: {"message": "Sucessfully verified"}
         '401':
-          description: Unauthorized
+          description: Wrong code
           content:
             application/json:
               example: {"message": "Wrong code"}
