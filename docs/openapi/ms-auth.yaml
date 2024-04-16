@@ -98,7 +98,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: 2fa verficication required
+          description: 2fa verification required
           content:
             application/json:
               example: {"user_id": 1, "2fa": true}
