@@ -44,7 +44,7 @@ def createIntraUser(user_data):
 		user.email = user_data['email']
 		user.image = user_data['image']
 		user.set_password('') # TODO valentin: change before production
-		user.two_factor_enabled = False
+		user.second_factor_enabled = False
 		user.save()
 	except Exception as e:
 		error_message = str(e)
@@ -57,20 +57,13 @@ def createUser(data):
 		user.username = data['username']
 		user.email = data['email']
 		user.set_password(data['password'])
-		user.two_factor_enabled = False
+		user.second_factor_enabled = False
 		user.save()
 		return user
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
-
-def returnUserPassword(username):
-	try:
-		user = User.objects.get(username=username)
-		return user.password
-	except User.DoesNotExist:
-		return ''
 
 def updateValue(user_id, key, value):
 	try:
@@ -95,3 +88,4 @@ def getValue(user_id, key):
         error_message = str(e)
         print(f"An error occurred: {error_message}")
         return JsonResponse({'message': 'An error occurred while retrieving the value'}, status=500)
+
