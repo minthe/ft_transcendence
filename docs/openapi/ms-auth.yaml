@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.2'
+  version: '1.6.3'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -337,7 +337,7 @@ paths:
     post:
       tags:
         - 2FA
-      summary: send 2fa code for verification
+      summary: send 2fa code for verification. Code must be exact 6 random digits.
       requestBody:
         required: true
         content:
@@ -352,28 +352,23 @@ paths:
                   type: integer
                 code:
                   type: string
-            example: {"user_id": 1, "code": "123456"}
+            example: {"user_id": 1, "code": "163907"}
       responses:
         '200':
           description: OK
           content:
             application/json:
-              example: {"message": "2fa setting updated"}
+              example: {"message": "Sucessfully verified"}
         '401':
-          description: Missing or invalid JWT token
+          description: Unauthorized
           content:
             application/json:
               example: {"message": "Wrong code"}
-        '409':
-          description: updating value failed
-          content:
-            application/json:
-              example: {"message": "updating value failed"}
         '500':
           description: Internal server error
           content:
             application/json:
-              example: {"message": "Server Error"}
+              example: {"message": "Verification failed"}
 
 components:
   securitySchemes:
