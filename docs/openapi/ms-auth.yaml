@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.3'
+  version: '1.6.4'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -342,8 +342,7 @@ paths:
       description: |
         - Code must be exact 6 random digits.
         - possible 401 responses:
-          - 'Rate limit exceeded'
-          - 'Maximum retries of 3 reached'
+          - 'Rate limit exceeded (3 seconds)'
           - 'Invalid code'
           - 'Code expired'
       requestBody:
