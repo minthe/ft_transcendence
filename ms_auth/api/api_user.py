@@ -120,8 +120,8 @@ def logout(request):
 			response.delete_cookie('jwt_token')
 			status_code = 200
 		else:
-			response = JsonResponse({'message': 'No token to delete'})
-			status_code = 404
+			response = JsonResponse({'message': 'User was not logged in'})
+			status_code = 200
 
 		response.status_code = status_code
 		return response
