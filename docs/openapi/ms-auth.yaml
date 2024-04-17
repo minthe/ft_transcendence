@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.4'
+  version: '1.6.5'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -64,11 +64,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
-        '409':
-          description: e.g., email or username already taken, or password too weak
+        '400':
+          description: Bad request
           content:
             application/json:
-              example: {"message": "Username already taken"}
+              examples:
+                email_invalid:
+                  value: {"message": "Email invalid"}
+        '409':
+          description: e.g., email or username already taken
+          content:
+            application/json:
+              examples:
+                email_taken:
+                  value: {"message": "Email already taken"}
+                username_taken:
+                  value: {"message": "Username already taken"}
         '500':
           description: Internal server error
           content:
