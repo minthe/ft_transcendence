@@ -130,6 +130,26 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#twoFAButtonE')) {
     document.getElementById('twoFAButtonE').classList.add('hidden');
     document.getElementById('twoFAButtonD').classList.remove('hidden');
+    const inputBody = {
+      "second_factor": true
+    };
+    const headers = {
+      'Content-Type':'application/json',
+      'Accept':'application/json',
+      'Authorization':'Bearer {access-token}'
+    };
+    const url = `${window.location.origin}/user/2fa/update`
+    fetch(url,
+    {
+      method: 'PUT',
+      body:  JSON.stringify(inputBody),
+      headers: headers
+    })
+    .then(function(res) {
+        return res.json();
+    }).then(function(body) {
+        console.log(body);
+    });
   }
   else if (event.target.closest('#twoFAButtonD')) {
     //make check with 2fa first before disabling
