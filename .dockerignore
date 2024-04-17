@@ -3,8 +3,6 @@
 *.py[cod]
 *$py.class
 postgres/
-migrations/*
-!migrations/__init__.py
 
 # certs and secrets
 .env
