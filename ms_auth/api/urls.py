@@ -22,8 +22,8 @@ urlpatterns = [
   	path('oauth2/redirect', oauth2_views.oauth2_redirect, name="oauth2_redirect"),
 
 	# 2fa
-	path('<int:user_id>/2fa/update', api_second_factor.second_factor_update, name="second_factor_update"),
- 	path('<int:user_id>/2fa/verify', api_second_factor.second_factor_verify, name="second_factor_verify"),
+	path('2fa/update', api_second_factor.second_factor_update, name="second_factor_update"),
+ 	path('2fa/verify', api_second_factor.second_factor_verify, name="second_factor_verify"),
 
 	# User
 	path('me', user_views.getId, name="getId"), # TODO @valentin return all user data and change function name to me
