@@ -1,9 +1,9 @@
 import json
 from django.conf import settings
-from django.shortcuts import redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from mail import views as mail_views
 from user import views as user_views
 from intra42 import views as intra42_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
@@ -43,6 +43,7 @@ def oauth2_redirect(request):
 		user_data = intra42_views.getUserData(access_token)
 
 		if not user_views.checkUserExists('intra_id', user_data['intra_id']):
+			mail_views.send_welcome_email(user_data['username'], user_data['email'])
 			user_views.createIntraUser(user_data)
 
 		user_id = user_views.returnUserId(user_data['username'])
@@ -53,10 +54,11 @@ def oauth2_redirect(request):
 			response.status_code = 401
 			return response
 
-		response = JsonResponse({'message': 'Logged in successfully'})
-		response.status_code = 200
+		redirect_url = f"https://{settings.CURRENT_HOST}"
+		response = HttpResponseRedirect(redirect_url)
 		response.set_cookie('jwt_token', jwt_token, httponly=True)
 		return response
+
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")

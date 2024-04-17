@@ -7,11 +7,11 @@ info:
     Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://localhost/game
-  - url: https://playpong.duckdns.org/game
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
 
 paths:
-  /status:
+  /game/status:
     get:
       tags:
         - Status
@@ -25,7 +25,7 @@ paths:
           description: Unauthorized
         '503':
           description: Service is down or unhealthy
-  /user/{user_id}:
+  /game/user/{user_id}:
     parameters:
       - in: path
         name: user_id
@@ -56,7 +56,7 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
-  /user/{user_id}/avatar:
+  /game/user/{user_id}/avatar:
     parameters:
       - in: path
         name: user_id
@@ -83,7 +83,7 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
-  /user/{user_id}/alias:
+  /game/user/{user_id}/alias:
     parameters:
       - in: path
         name: user_id

@@ -3,12 +3,14 @@
 *.py[cod]
 *$py.class
 postgres/
-migrations/*
-!migrations/__init__.py
 
 # certs and secrets
 .env
 .cert/
+
+# Django
+**/migrations/*
+!**/migrations/__init__.py
 
 # temp docs and notes
 .venv

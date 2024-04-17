@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password, check_password
 
 class User(models.Model):
 	user_id = models.BigIntegerField(primary_key=True)
-	second_factor_enabled = models.BooleanField(null=True)
+	second_factor_enabled = models.BooleanField(default=False)
 	second_factor_dict = models.JSONField(db_column='second_factor_dict', default=dict)
 	intra_id = models.CharField(max_length=12, unique=True, null=True)
 	username = models.CharField(max_length=255, unique=True, null=True)

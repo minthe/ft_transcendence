@@ -3,8 +3,9 @@ version: '3.8'
 services:
 # REST API DOCUMENTATION
   swagger:
-    image: swaggerapi/swagger-ui
     container_name: swagger
+    build:
+      context: swagger
     environment:
       URLS_PRIMARY_NAME: "API Gateway"
       URLS: "[{ url: './doc/ms-api-gateway.yaml', name: 'API Gateway'},

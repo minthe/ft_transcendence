@@ -1,15 +1,15 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.6.3'
+  version: '1.7.0'
 
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development - expect breaking changes.
 
 servers:
-  - url: https://localhost/user
-  - url: https://playpong.duckdns.org/user
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
 
 tags:
   - name: Status
@@ -18,7 +18,7 @@ tags:
   - name: User Data
 
 paths:
-  /status:
+  /user/status:
     get:
       tags:
         - Status
@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               example: {"message": "Service is down or unhealthy"}
-  /register:
+  /user/register:
     post:
       tags:
         - Account
@@ -64,17 +64,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
-        '409':
-          description: e.g., email or username already taken, or password too weak
+        '400':
+          description: Bad request
           content:
             application/json:
-              example: {"message": "Username already taken"}
+              examples:
+                email_invalid:
+                  value: {"message": "Email invalid"}
+        '409':
+          description: e.g., email or username already taken
+          content:
+            application/json:
+              examples:
+                email_taken:
+                  value: {"message": "Email already taken"}
+                username_taken:
+                  value: {"message": "Username already taken"}
         '500':
           description: Internal server error
           content:
             application/json:
               example: {"message": "Server Error"}
-  /login:
+  /user/login:
     post:
       tags:
         - Account
@@ -117,7 +128,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /logout:
+  /user/logout:
     post:
       tags:
         - Account
@@ -142,7 +153,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /oauth2/login:
+  /user/oauth2/login:
     get:
       tags:
         - Account
@@ -183,7 +194,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /token:
+  /user/token:
     get:
       tags:
         - User Data
@@ -208,7 +219,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /token/existence:
+  /user/token/existence:
     get:
       tags:
         - Status
@@ -237,7 +248,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /avatar:
+  /user/avatar:
     get:
       tags:
         - User Data
@@ -296,7 +307,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /2fa/update:
+  /user/2fa/update:
     put:
       tags:
         - 2FA
@@ -334,7 +345,7 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /2fa/verify:
+  /user/2fa/verify:
     post:
       tags:
         - 2FA
@@ -342,8 +353,7 @@ paths:
       description: |
         - Code must be exact 6 random digits.
         - possible 401 responses:
-          - 'Rate limit exceeded'
-          - 'Maximum retries of 3 reached'
+          - 'Rate limit exceeded (3 seconds)'
           - 'Invalid code'
           - 'Code expired'
       requestBody:

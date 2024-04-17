@@ -1,9 +1,9 @@
 import json
 from django.conf import settings
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.hashers import check_password
 from django.views.decorators.http import require_http_methods
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from user import views as user_views
 from second_factor import views as second_factor_views
@@ -11,6 +11,14 @@ from mail import views as mail_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
+
+def email_validator(email):
+	email_validator = EmailValidator(message='Email invalid')
+	try:
+		email_validator(email)
+		return True
+	except ValidationError as e:
+		return False
 
 @require_http_methods(["POST"])
 def register(request):
@@ -25,16 +33,24 @@ def register(request):
 		email = data.get('email')
 		avatar = 'moon-dog.jpg'
 
+		''' TODO valentin:
+		Input validation
+		- refactor later into deserialize function
+		- add password validation
+		'''
+		if email_validator(email) == False:
+			return JsonResponse({'message': 'Email invalid'}, status=400)
+
 		if user_views.checkUserExists('username', username):
-			return JsonResponse({'message': "username already taken"}, status=409)
+			return JsonResponse({'message': "Username already taken"}, status=409)
 		if user_views.checkUserExists('email', email):
-			return JsonResponse({'message': "email already taken"}, status=409)
+			return JsonResponse({'message': "Email already taken"}, status=409)
 
 		user = user_views.createUser(data)
 		user_id = user_views.returnUserId(username)
 		jwt_token = jwt.createToken(user_id)
 
-		# request an game-chat
+		# request to game-chat
 		game_chat_headers = {
 			"Content-Type": 'application/json',
 			"Set-Cookie": f"jwt_token={jwt_token}; HttpOnly"
@@ -81,10 +97,9 @@ def login(request):
 		data =json.loads(request.body)
 		username = data.get('username')
 		password = data.get('password')
-
 		if not user_views.checkUserExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
-		if not check_password(password, user_views.getValue(username, 'password')):
+		if not user_views.check_password(username, password):
 			return JsonResponse({'message': "Credentials are wrong"}, status=401)
 
 		user_id = user_views.returnUserId(username)
