@@ -5,22 +5,6 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def getId(request):
-	'''
-	This function is used to get the user id
-	API Endpoint: /user/me
-	'''
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-		jwt_token = request.COOKIES.get('jwt_token')
-		if jwt_token == None:
-				return JsonResponse({'message': "Unauthorized"}, status=401)
-		user_id = jwt.getUserId(jwt_token)
-		return JsonResponse({'user_id': user_id}, status=200)
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
-
 def checkUserExists(key, value):
 	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User.objects.get(**{key: value})
@@ -28,12 +12,19 @@ def checkUserExists(key, value):
 	except User.DoesNotExist:
 		return False
 
-def returnUserId(key):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-		user = User.objects.get(username=key)
+def returnUserId(username):
+	user = User.objects.get(username=username)
+	if user:
 		return user.user_id
-	except User.DoesNotExist:
+	else:
 		return 0
+
+def check_password(username, password):
+	user = User.objects.get(username=username)
+	if user.check_password(password):
+		return True
+	else:
+		return False
 
 def createIntraUser(user_data):
 	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)

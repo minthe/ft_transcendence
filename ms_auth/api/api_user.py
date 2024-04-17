@@ -1,9 +1,7 @@
 import json
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.hashers import check_password
 from django.views.decorators.http import require_http_methods
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from user import views as user_views
 from second_factor import views as second_factor_views
@@ -34,7 +32,7 @@ def register(request):
 		user_id = user_views.returnUserId(username)
 		jwt_token = jwt.createToken(user_id)
 
-		# request an game-chat
+		# request to game-chat
 		game_chat_headers = {
 			"Content-Type": 'application/json',
 			"Set-Cookie": f"jwt_token={jwt_token}; HttpOnly"
@@ -81,10 +79,9 @@ def login(request):
 		data =json.loads(request.body)
 		username = data.get('username')
 		password = data.get('password')
-
 		if not user_views.checkUserExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
-		if not check_password(password, user_views.getValue(username, 'password')):
+		if not user_views.check_password(username, password):
 			return JsonResponse({'message': "Credentials are wrong"}, status=401)
 
 		user_id = user_views.returnUserId(username)
