@@ -17,7 +17,7 @@ class FT_JWT:
 		- token contains user_id and expiration date (1 day)
 		"""
 		try:
-			current_time = datetime.utcnow() # TODO @valentin
+			current_time = datetime.utcnow() # TODO valentin
 			expire_time = current_time + timedelta(days=1)
 			expire_timestamp = int(expire_time.timestamp())
 
@@ -59,7 +59,7 @@ class FT_JWT:
 				return False, "Signature mismatch"
 
 			if 'exp' in payload:
-				expiration_time = datetime.utcfromtimestamp(payload['exp']) # TODO @valentin
+				expiration_time = datetime.utcfromtimestamp(payload['exp']) # TODO valentin
 				if expiration_time < datetime.now():
 					print ("Token expired")
 					return False, "Token expired"

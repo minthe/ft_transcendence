@@ -16,7 +16,7 @@ def second_factor_update(request):
 	API Endpoint: /user/2fa/update
 	'''
 	try:
-		# TODO @valentin: Input Validation
+		# TODO valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
 		user_id = data.get('user_id')
 		second_factor = data.get('second_factor')
@@ -48,7 +48,7 @@ def second_factor_verify(request):
 		if not user_views.checkUserExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
 
-		# TODO @valentin: Input Validation
+		# TODO valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
 		user_id = data.get('user_id')
 		code = data.get('code')
