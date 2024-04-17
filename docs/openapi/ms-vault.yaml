@@ -7,11 +7,11 @@ info:
     Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://localhost/vault
-  - url: https://playpong.duckdns.org/vault
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
 
 paths:
-  /status:
+  /vault/status:
     get:
       tags:
         - Status
