@@ -1,7 +1,6 @@
 import json
 from django.conf import settings
-from django.shortcuts import redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from user import views as user_views
@@ -53,10 +52,11 @@ def oauth2_redirect(request):
 			response.status_code = 401
 			return response
 
-		response = JsonResponse({'message': 'Logged in successfully'})
-		response.status_code = 200
+		redirect_url = f"https://{settings.CURRENT_HOST}"
+		response = HttpResponseRedirect(redirect_url)
 		response.set_cookie('jwt_token', jwt_token, httponly=True)
 		return response
+
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
