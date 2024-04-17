@@ -98,7 +98,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: 2fa verification required
+          description: 2fa verification necessary
           content:
             application/json:
               example: {"user_id": 1, "2fa": true}
@@ -319,7 +319,11 @@ paths:
           description: Missing or invalid JWT token
           content:
             application/json:
-              example: {"message": "Missing or invalid JWT token"}
+              examples: 
+                missing_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
+                2fa_verification_necessary:
+                  value: {"message": "2fa verification necessary"}
         '409':
           description: updating value failed
           content:
