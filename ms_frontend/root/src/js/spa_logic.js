@@ -132,8 +132,16 @@ async function handleClickEvent(event) {
     document.getElementById('twoFAButtonD').classList.remove('hidden');
   }
   else if (event.target.closest('#twoFAButtonD')) {
+    //make check with 2fa first before disabling
+    showDiv('userIsNotAuth');
+    hideDiv('userIsAuth');
+    document.getElementById('twoFA').classList.remove('hidden');
+    //fetch
     document.getElementById('twoFAButtonD').classList.add('hidden');
     document.getElementById('twoFAButtonE').classList.remove('hidden');
+    document.getElementById('twoFA').classList.add('hidden');
+    showDiv('userIsAuth');
+    hideDiv('userIsNotAuth');
   }
 }
 

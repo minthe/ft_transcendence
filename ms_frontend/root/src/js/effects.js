@@ -288,7 +288,7 @@ function sillyLogin(username, password, user_id) {
 }
 
 function checkPageState() {
-	const url = `${window.location.origin}/token/existence/`
+	const url = `${window.location.origin}/user/token/existence`
 fetch(url, {
   method: 'GET',
   headers: {
@@ -311,7 +311,7 @@ fetch(url, {
 	  hideDiv('userIsNotAuth');
 	  document.getElementById("reloadScreen").style.display = "block";
 	  setTimeout(function() {
-		  document.getElementById("waitingScreen").style.display = "none";
+		  document.getElementById("reloadScreen").style.display = "none";
 			  updatePage();
 	  }, 500);
   })

@@ -25,7 +25,7 @@ async function enterKeyEvent() {
     && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
       RegisterUserButton();
   else if (!document.getElementById('chat').classList.contains('hidden')
-  && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
+    && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
     await sendMessage();
   else if (!document.getElementById('profileSite').classList.contains('hidden')
     && document.getElementById('saveButton').style.display !== 'none')
