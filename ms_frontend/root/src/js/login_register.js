@@ -285,7 +285,8 @@ function registerWith42() {
 
 async function logoutUser() {
   const url = `${window.location.origin}/user/logout`
-  fetch(url)
+  const options = {method: 'POST'}
+  fetch(url, options)
   .then(response => {
     // if (!response.ok) { // Marie commented this cause it threw errors all the time lol
     //   throw new Error('Token could not be deleted!');
