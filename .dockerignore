@@ -1,5 +1,18 @@
+# python & django
+**/__pycache__/
+*.py[cod]
+*$py.class
+migrations/
+postgres/
+
+# certs and secrets
+.env
+.cert/
+
+# temp docs and notes
 .venv
+_notes/
+_temp/
+docs/
 .git
 .gitignore
-.env
-notes.md

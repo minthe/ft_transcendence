@@ -57,7 +57,7 @@ def register(request):
 			json_response = json.dumps(response)
 			response = HttpResponse(json_response, content_type='application/json', status=200)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
-			mail_views.send_welcome_email(user_id, user_views.getValue(user_id, 'email'))
+			mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
 			return response
 		elif game_chat_response.getcode() == 409:
 			user.delete()
@@ -91,7 +91,9 @@ def login(request):
   
 		#2fa
 		if user_views.getValue(user_id, 'second_factor_enabled'):
-			mail_views.send_verification_email(user_id, user_views.getValue(user_id, 'email'))
+			second_factor_dict = second_factor_views.generate_second_factor_dict()
+			user_views.updateValue(user_id, 'second_factor_code', second_factor_dict)
+			mail_views.send_verification_email(username, user_views.getValue(user_id, 'email'))
 			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
   
 		jwt_token = jwt.createToken(user_id)

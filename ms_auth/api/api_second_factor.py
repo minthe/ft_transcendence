@@ -40,17 +40,22 @@ def second_factor_verify(request):
 	'''
 	This function is used to verify the 2fa code
 	API Endpoint: /user/2fa/verify
- 	'''
+	'''
 	try:
+		if not user_views.checkUserExists('user_id', user_id):
+			return JsonResponse({'message': 'User not found'}, status=404)
+
 		# TODO @valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
 		user_id = data.get('user_id')
 		code = data.get('code')
 
-		if second_factor_views.verify_verification_code(user_id, code):
-			return JsonResponse({'message': "Sucessfully verified"}, status=200)
+		is_verified, error_message = second_factor_views.verify_verification_code(user_id, code)
+		if is_verified:
+			return JsonResponse({'message': "Successfully verified"}, status=200)
 		else:
-			return JsonResponse({'message': 'Wrong code'}, status=401)
+			return JsonResponse({'message': error_message}, status=401)
+
 	except Exception as e:
 		print("in verify second_factor_code: ", e)
 		return JsonResponse({'message': 'Verification failed'}, status=500)

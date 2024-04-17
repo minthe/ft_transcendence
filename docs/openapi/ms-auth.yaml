@@ -337,7 +337,14 @@ paths:
     post:
       tags:
         - 2FA
-      summary: send 2fa code for verification. Code must be exact 6 random digits.
+      summary: send 2fa code for verification.
+      description: |
+        - Code must be exact 6 random digits.
+        - possible 401 responses:
+          - 'Rate limit exceeded'
+          - 'Maximum retries of 3 reached'
+          - 'Invalid code'
+          - 'Code expired'
       requestBody:
         required: true
         content:
@@ -360,10 +367,10 @@ paths:
             application/json:
               example: {"message": "Sucessfully verified"}
         '401':
-          description: Wrong code
+          description: Verification failed
           content:
             application/json:
-              example: {"message": "Wrong code"}
+              example: {"message": "Rate limit exceeded"}
         '500':
           description: Internal server error
           content:

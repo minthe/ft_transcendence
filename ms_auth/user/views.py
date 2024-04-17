@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.shortcuts import render
 from django.http import JsonResponse
 from .models import User
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
@@ -11,7 +10,7 @@ def getId(request):
 	This function is used to get the user id
 	API Endpoint: /user/me
 	'''
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		jwt_token = request.COOKIES.get('jwt_token')
 		if jwt_token == None:
 				return JsonResponse({'message': "Unauthorized"}, status=401)
@@ -23,21 +22,21 @@ def getId(request):
 		return JsonResponse({'message': error_message}, status=500)
 
 def checkUserExists(key, value):
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User.objects.get(**{key: value})
 		return True
 	except User.DoesNotExist:
 		return False
 
 def returnUserId(key):
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User.objects.get(username=key)
 		return user.user_id
 	except User.DoesNotExist:
 		return 0
 
 def createIntraUser(user_data):
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User()
 		user.intra_id = user_data['intra_id']
 		user.username = user_data['username']
@@ -52,7 +51,7 @@ def createIntraUser(user_data):
 		return JsonResponse({'message': error_message}, status=500)
 
 def createUser(data):
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User()
 		user.username = data['username']
 		user.email = data['email']
@@ -66,7 +65,7 @@ def createUser(data):
 		return JsonResponse({'message': error_message}, status=500)
 
 def updateValue(user_id, key, value):
-	try:
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
 		user = User.objects.get(user_id=user_id)
 		setattr(user, key, value)
 		user.save()
@@ -76,7 +75,7 @@ def updateValue(user_id, key, value):
 		return JsonResponse({'message': "updating value failed"}, status=409)
 
 def getValue(user_id, key):
-    try:
+    try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
         user = User.objects.get(user_id=user_id)
         value = getattr(user, key, None)
         return value
