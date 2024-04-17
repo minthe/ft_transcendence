@@ -22,6 +22,8 @@ clean: down
 		echo "clean: no images to remove"; \
 	fi
 fclean: clean
+	chmod +x delete_migrations.sh
+	bash delete_migrations.sh
 	$(eval volumes := $(shell docker volume ls -q --filter name=$(project)*))
 	@if [ -n "$(volumes)" ]; then \
 		docker volume rm $(volumes); \
