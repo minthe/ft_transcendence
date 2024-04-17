@@ -2,8 +2,9 @@
 **/__pycache__/
 *.py[cod]
 *$py.class
-migrations/
 postgres/
+migrations/*
+!migrations/__init__.py
 
 # certs and secrets
 .env
