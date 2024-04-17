@@ -1,8 +1,5 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from ft_jwt.ft_jwt.ft_jwt import FT_JWT
-
-jwt = FT_JWT(settings.JWT_SECRET)
 
 def send_welcome_email(username, email_to):
     email_from = settings.EMAIL_HOST_USER
