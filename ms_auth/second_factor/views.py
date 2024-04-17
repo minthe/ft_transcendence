@@ -19,7 +19,7 @@ def verify_verification_code(user_id, submitted_code):
 	timestamp = timezone.datetime.fromisoformat(second_factor_dict.get('timestamp', '2000-01-01T00:00:00'))
 	second_factor_retry_count = second_factor_dict.get('second_factor_retry_count', 0)
 
-	if last_retry + timezone.timedelta(seconds=5) > current_time:
+	if last_retry + timezone.timedelta(seconds=3) > current_time:
 		second_factor_dict['last_retry'] = current_time.isoformat()
 		second_factor_dict['second_factor_retry_count'] = second_factor_retry_count + 1
 		user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
