@@ -81,6 +81,11 @@ websocket_obj = {
   message: null,
   sender: null,
   websocket: null,
+
+  // user_id,
+  two_fa_code: null
+  // game_alias: 
+  // mail
 }
 
 async function establishWebsocketConnection() {
