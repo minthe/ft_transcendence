@@ -8,6 +8,10 @@ postgres/
 .env
 .cert/
 
+# Django
+**/migrations/*
+!**/migrations/__init__.py
+
 # temp docs and notes
 .venv
 _notes/

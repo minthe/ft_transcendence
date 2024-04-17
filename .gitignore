@@ -7,6 +7,10 @@ dist/
 build/
 *.egg-info/
 
+# Django
+**/migrations/*
+!**/migrations/__init__.py
+
 # GH Pages
 *.html.gz
 
