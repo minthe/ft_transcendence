@@ -288,7 +288,7 @@ function sillyLogin(username, password, user_id) {
 }
 
 function checkPageState() {
-	const url = `${window.location.origin}/token/existence/`
+	const url = `${window.location.origin}/user/token/existence`
 fetch(url, {
   method: 'GET',
   headers: {

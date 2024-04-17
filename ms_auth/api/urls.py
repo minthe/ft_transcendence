@@ -3,6 +3,7 @@ from . import api_status as api_status
 from . import api_user as api_user
 from . import api_token as api_token
 from . import api_oauth2 as api_oauth2
+from . import api_second_factor as api_second_factor 
 from user import views as user_views
 from oauth2 import views as oauth2_views
 
@@ -21,9 +22,8 @@ urlpatterns = [
   	path('oauth2/redirect', oauth2_views.oauth2_redirect, name="oauth2_redirect"),
 
 	# 2fa
-	# /user/verifyTwoFactorCode
-	path('<int:user_id>/2fa/update', api_user.second_factor_update, name="second_factor"),
- 	path('<int:user_id>/2fa/code', api_user.second_factor_code, name="second_factor"),
+	path('<int:user_id>/2fa/update', api_second_factor.second_factor_update, name="second_factor_update"),
+ 	path('<int:user_id>/2fa/verify', api_second_factor.second_factor_verify, name="second_factor_verify"),
 
 	# User
 	path('me', user_views.getId, name="getId"), # TODO @valentin return all user data and change function name to me

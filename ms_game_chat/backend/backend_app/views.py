@@ -32,6 +32,7 @@ def createUser(request, user_id):
         new_user.user_id = user_id
         new_user.name = username
         new_user.avatar = avatar
+        new_user.age = 69
         new_user.save()
 
         return JsonResponse({}, status=200)

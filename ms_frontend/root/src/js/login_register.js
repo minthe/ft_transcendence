@@ -88,7 +88,7 @@ function loginUserButton() {
     const email = 'marie.a.mensing@gmail.com'
     const enable2FA = true
 
-    const url = `${window.location.origin}/user/login/`
+    const url = `${window.location.origin}/user/login`
     fetch(url, {
       method: 'POST',
       headers: headers,
@@ -196,7 +196,7 @@ function RegisterUserButton() {
       'Accept':'application/json'
     };
     
-    const url = `${window.location.origin}/user/register/`;
+    const url = `${window.location.origin}/user/register`;
     fetch(url,
     {
       method: 'POST',
@@ -284,8 +284,9 @@ function registerWith42() {
 }
 
 async function logoutUser() {
-  const url = `${window.location.origin}/user/logout/`
-  fetch(url)
+  const url = `${window.location.origin}/user/logout`
+  const options = {method: 'POST'}
+  fetch(url, options)
   .then(response => {
     // if (!response.ok) { // Marie commented this cause it threw errors all the time lol
     //   throw new Error('Token could not be deleted!');
