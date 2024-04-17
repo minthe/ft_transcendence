@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "oauth2",
     "intra42",
     "ft_jwt",
-    "two_factor",
+    "second_factor",
+    "mail",
 ]
 
 MIDDLEWARE = []

@@ -1,12 +1,13 @@
 import json
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 from django.contrib.auth.hashers import check_password
 from django.views.decorators.http import require_http_methods
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 from user import views as user_views
-from two_factor import views as two_factor_views
+from second_factor import views as second_factor_views
+from mail import views as mail_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
@@ -56,7 +57,7 @@ def register(request):
 			json_response = json.dumps(response)
 			response = HttpResponse(json_response, content_type='application/json', status=200)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
-			two_factor_views.send_welcome_email(user_id, user_views.getValue(user_id, 'email'))
+			mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
 			return response
 		elif game_chat_response.getcode() == 409:
 			user.delete()
@@ -83,15 +84,17 @@ def login(request):
 
 		if not user_views.checkUserExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
-		if not check_password(password, user_views.returnUserPassword(username)):
+		if not check_password(password, user_views.getValue(username, 'password')):
 			return JsonResponse({'message': "Credentials are wrong"}, status=401)
 
 		user_id = user_views.returnUserId(username)
   
 		#2fa
-		if user_views.getValue(user_id, 'two_factor_enabled'):
-			two_factor_views.send_verification_email(user_id, user_views.getValue(user_id, 'email'))
-			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200) # TODO: @valentin @julien review flow
+		if user_views.getValue(user_id, 'second_factor_enabled'):
+			second_factor_dict = second_factor_views.generate_second_factor_dict()
+			user_views.updateValue(user_id, 'second_factor_code', second_factor_dict)
+			mail_views.send_verification_email(username, user_views.getValue(user_id, 'email'))
+			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
   
 		jwt_token = jwt.createToken(user_id)
 		response = JsonResponse({'user_id': user_id, 'username': username})
@@ -117,8 +120,8 @@ def logout(request):
 			response.delete_cookie('jwt_token')
 			status_code = 200
 		else:
-			response = JsonResponse({'message': 'No token to delete'})
-			status_code = 404
+			response = JsonResponse({'message': 'User was not logged in'})
+			status_code = 200
 
 		response.status_code = status_code
 		return response

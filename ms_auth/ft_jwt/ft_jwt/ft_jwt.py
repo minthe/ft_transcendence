@@ -17,7 +17,7 @@ class FT_JWT:
 		- token contains user_id and expiration date (1 day)
 		"""
 		try:
-			current_time = datetime.utcnow()
+			current_time = datetime.utcnow() # TODO @valentin
 			expire_time = current_time + timedelta(days=1)
 			expire_timestamp = int(expire_time.timestamp())
 
@@ -49,7 +49,6 @@ class FT_JWT:
 		"""
 		try:
 			encoded_header, encoded_payload, encoded_signature = token.split('.')
-
 			header = json.loads(base64.urlsafe_b64decode(encoded_header + '=' * (4 - len(encoded_header) % 4)))
 			payload = json.loads(base64.urlsafe_b64decode(encoded_payload + '=' * (4 - len(encoded_payload) % 4)))
 			signature = base64.urlsafe_b64decode(encoded_signature + '=' * (4 - len(encoded_signature) % 4))
@@ -60,7 +59,7 @@ class FT_JWT:
 				return False, "Signature mismatch"
 
 			if 'exp' in payload:
-				expiration_time = datetime.utcfromtimestamp(payload['exp'])
+				expiration_time = datetime.utcfromtimestamp(payload['exp']) # TODO @valentin
 				if expiration_time < datetime.now():
 					print ("Token expired")
 					return False, "Token expired"

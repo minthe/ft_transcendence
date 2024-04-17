@@ -240,6 +240,7 @@ function registerWith42() {
 // value: {"message": "User was not logged in"}
 async function logoutUser() {
   const url = `${window.location.origin}/user/logout`
+
   fetch(url,
   {
     method: 'POST',
