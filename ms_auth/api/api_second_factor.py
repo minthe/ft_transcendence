@@ -18,19 +18,18 @@ def second_factor_update(request):
 	try:
 		# TODO valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
-		user_id = data.get('user_id')
+		user_id = request.user_id
 		second_factor = data.get('second_factor')
 
 		if user_views.getValue(user_id, 'second_factor_enabled') and not second_factor:
 			return JsonResponse({'message': '2fa verification necessary'}, status=401)
-  
+
 		user_views.updateValue(user_id, 'second_factor_enabled', second_factor)
 		updated_value = user_views.getValue(user_id, 'second_factor_enabled')
 
 		if updated_value != second_factor:
 			return JsonResponse({'message': 'updating value failed'}, status=409)
 
-		print(f"second_factor: {updated_value}")
 		return JsonResponse({'message': '2fa updated successfully'}, status=200)
 
 	except Exception as e:
