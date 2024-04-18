@@ -72,8 +72,6 @@ services:
     container_name: auth_backend
     build: 
       context: ms_auth
-      args:
-        DEBUG: ${DEBUG}
     volumes:
       - ./ms_auth:/code
     networks:
@@ -112,8 +110,6 @@ services:
     container_name: game_chat_backend
     build: 
       context: ms_game_chat/backend
-      args:
-        DEBUG: ${DEBUG}
     volumes:
       - ./ms_game_chat/backend:/code
     networks:
