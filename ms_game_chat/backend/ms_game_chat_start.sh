@@ -2,7 +2,7 @@
 
 echo "DEBUG is set to: $DEBUG"
 
-if [ "$DEBUG" = "true" ]; then
+if [ "$DEBUG" = "True" ]; then
     echo "Debug mode is on"
 	echo "Starting with django runserver"
 	WEBSERVER='python manage.py runserver 0.0.0.0:6969'
