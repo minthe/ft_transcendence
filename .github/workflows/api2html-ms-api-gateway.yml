@@ -1,0 +1,32 @@
+name: ms-api-gateway2html
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'docs/openapi/ms-api-gateway.yaml'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Generate HTML Documentation and Commit Changes
+      run: |
+        npm i api2html -g
+        api2html -o ./docs/ms-api-gateway.html -c ./ms_frontend/root/public/images/moon-dog.jpg -l javascript,python ./docs/openapi/ms-api-gateway.yaml
+
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'github-actions@github.com'
+        git add ./docs/ms-api-gateway.html
+        git commit -m 'Update OpenAPI documentation for ms-api-gateway'
+        git push
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/

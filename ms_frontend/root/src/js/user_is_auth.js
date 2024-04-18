@@ -12,38 +12,54 @@ function addEventListenersIsAuth() {
 
 
   document.addEventListener('keypress', async function(event) {
-      if (event.key === 'Enter' || event.keyCode === 13) {
-          if (!document.getElementById('loginPage').classList.contains('hidden')
-            && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
-              loginUserButton();
-          else if (!document.getElementById('registerPage').classList.contains('hidden') 
-            && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
-              RegisterUserButton();
-          else if (!document.getElementById('chat').classList.contains('hidden') && state.chatOpen)
-            await sendMessage();
-          else if (!document.getElementById('profileSite').classList.contains('hidden')
-            && document.getElementById('saveButton').style.display !== 'none')
-            saveChanges();
-      }
+      if (event.key === 'Enter' || event.keyCode === 13)
+          await enterKeyEvent();
   });
 }
 
+async function enterKeyEvent() {
+  if (!document.getElementById('loginPage').classList.contains('hidden')
+    && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+      loginUserButton();
+  else if (!document.getElementById('registerPage').classList.contains('hidden') 
+    && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+      RegisterUserButton();
+  else if (!document.getElementById('chat').classList.contains('hidden')
+    && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
+    await sendMessage();
+  else if (!document.getElementById('profileSite').classList.contains('hidden')
+    && document.getElementById('saveButton').style.display !== 'none')
+    saveChanges();
+}
 
-function showSiteHideOthers(site_to_show) {
-  console.log(site_to_show);
 
+function showSiteHideOthers(site_to_show, btnToColor) {
   if (state.currPage === site_to_show)
     return ;
+  
+  // state.bodyText = document.body.innerHTML;
+  changeCurrSite(site_to_show);
+  changeCurrBtn(btnToColor);
+  handleButtonClick("");
+}
 
+function changeCurrSite(site_to_show) {
   const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];//gameSiteStart, gameSiteInvite, gameSitePlay, gameSiteEnd
   sites.forEach(site => {
     if (site === site_to_show) showDiv(site)
     else hideDiv(site)
   });
   state.currPage = site_to_show;
-  // state.bodyText = document.body.innerHTML;
+}
 
-  handleButtonClick("");
+function changeCurrBtn(btnToColor) {  
+  const buttons = ['profileButton', 'homeButton', 'showChatButton', 'statsButton', 'gameButton', 'creatorsButton'];
+  buttons.forEach( button => {
+    if (button === btnToColor)
+      document.getElementById(button).style.backgroundColor = '#ef7267';
+    else
+      document.getElementById(button).style.backgroundColor = '#f8efb5';
+  })
 }
 
 

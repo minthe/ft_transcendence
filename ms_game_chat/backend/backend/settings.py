@@ -14,6 +14,13 @@ from pathlib import Path
 
 JWT_SECRET = os.environ.get('JWT_SECRET')
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
+EMAIL_PORT = 587  # Outlook SMTP port
+EMAIL_USE_TLS = True  # Use TLS for security
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # == /Users/mmensing/Desktop/CODE/TRANSCENDENCE/TEST_ENVIRONMENT/backend
@@ -33,7 +40,7 @@ DEBUG = True
 
 APPEND_SLASH = False
 
-ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost']
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost', '172.16.10.7']
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,7 +70,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware'

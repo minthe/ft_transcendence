@@ -173,17 +173,20 @@ class _Game:
 
 
     async def send_init_game(self, event):
+        game_instance = await self.get_game_instance(self.game_id)
         await self.send(text_data=json.dumps({
             'type': 'init_game',
             'is_host': event['data']['is_host'],
+            'guest_id': game_instance.guestId,
+            'host_id': game_instance.hostId#julien edited
 
         }))
 
-
     async def send_game_start(self, event):
+        # game_info = Game.objects.get(id=self.guestId)
         await self.send(text_data=json.dumps({
             'type': 'game_start',
-
+            
         }))
 
 
@@ -410,7 +413,7 @@ class _Game:
     @database_sync_to_async
     def get_host(self, game_id, user_id):
         game_instance = Game.objects.get(id=game_id)
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         if user_instance.name == game_instance.hostId:
             self.is_host = True
             check_host = 'True'
@@ -421,7 +424,7 @@ class _Game:
     
     @database_sync_to_async
     def get_mathces(self, user_id):
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         game_sessions = user_instance.new_matches.all()
 
         match_data = []
@@ -460,11 +463,17 @@ class _Game:
             print("user_id")
 
             print(user_id)
-            user1 = MyUser.objects.get(id=user_id)
+            user1 = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             game_instance = Game.objects.get(id=game_id)
             user1.new_matches.remove(game_instance)
             game_instance.delete()
         except MyUser.DoesNotExist:
             return None
 
-
+    @database_sync_to_async#julien edited
+    def get_game_instance(self, game_id):
+        try:
+            game_instance = Game.objects.get(id=game_id)
+            return game_instance
+        except Game.DoesNotExist:
+            return None

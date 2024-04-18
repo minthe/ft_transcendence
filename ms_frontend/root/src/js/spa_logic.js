@@ -69,17 +69,17 @@ function showSiteHideOthersSpa(site_to_show) {
 async function handleClickEvent(event) {
   // console.log(event);
 	if (event.target.closest('#homeButton'))
-		showSiteHideOthers('homeSite');
+		showSiteHideOthers('homeSite', 'homeButton');
   else if (event.target.closest('#gameButton'))
       gameSiteClicked();
   else if (event.target.closest('#statsButton'))
-		showSiteHideOthers('statsSite');
+		showSiteHideOthers('statsSite', 'statsButton');
   else if (event.target.closest('#showChatButton'))
 		await chatSiteClicked();
   else if (event.target.closest('#profileButton'))
-		showSiteHideOthers('profileSite');
+		showSiteHideOthers('profileSite', 'profileButton');
   else if (event.target.closest('#creatorsButton'))
-		showSiteHideOthers('creatorsSite');
+		showSiteHideOthers('creatorsSite', 'creatorsButton');
   else if (event.target.closest('#logoutButton'))
 		await logoutUser();
   else if (event.target.closest('#renderInv'))
@@ -126,5 +126,42 @@ async function handleClickEvent(event) {
     closePopUpWin();
   else if (event.target.closest('#Register42Button'))
     registerWith42();
+
+  else if (event.target.closest('#twoFAButtonE')) {
+    document.getElementById('twoFAButtonE').classList.add('hidden');
+    document.getElementById('twoFAButtonD').classList.remove('hidden');
+    const inputBody = {
+      "second_factor": true
+    };
+    const headers = {
+      'Content-Type':'application/json',
+      'Accept':'application/json',
+      'Authorization':'Bearer {access-token}'
+    };
+    const url = `${window.location.origin}/user/2fa/update`
+    fetch(url,
+    {
+      method: 'PUT',
+      body:  JSON.stringify(inputBody),
+      headers: headers
+    })
+    .then(function(res) {
+        return res.json();
+    }).then(function(body) {
+        console.log(body);
+    });
+  }
+  else if (event.target.closest('#twoFAButtonD')) {
+    //make check with 2fa first before disabling
+    showDiv('userIsNotAuth');
+    hideDiv('userIsAuth');
+    document.getElementById('twoFA').classList.remove('hidden');
+    //fetch
+    document.getElementById('twoFAButtonD').classList.add('hidden');
+    document.getElementById('twoFAButtonE').classList.remove('hidden');
+    document.getElementById('twoFA').classList.add('hidden');
+    showDiv('userIsAuth');
+    hideDiv('userIsNotAuth');
+  }
 }
 

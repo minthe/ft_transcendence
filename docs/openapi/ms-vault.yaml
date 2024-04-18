@@ -1,17 +1,17 @@
 openapi: 3.0.2
 info:
   title: vault REST API
-  version: '1.0.13'
+  version: '1.1.0'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development. Expect breaking changes.
 
 servers:
-  - url: https://localhost/vault
-  - url: https://playpong.duckdns.org/vault
+  - url: https://localhost
+  - url: https://playpong.duckdns.org
 
 paths:
-  /:
+  /vault/status:
     get:
       tags:
         - Status

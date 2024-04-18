@@ -103,7 +103,7 @@ class _Message:
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):
         try:
-            user_instance = MyUser.objects.get(id=user_id)
+            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             specific_timestamp = timezone.now()
             new_message = Message.objects.create(senderId=user_id, sender=user_instance.name, text=text,
                                                  timestamp=specific_timestamp)

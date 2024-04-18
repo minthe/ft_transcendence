@@ -207,7 +207,7 @@ class _Chat:
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         all_chats = user_instance.chats.all()
         user_chats = []
         for chat in all_chats:
@@ -229,7 +229,7 @@ class _Chat:
             if chat_exists:
                 return {'chat_id': -1, 'message': 'Chat already exists'}
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=is_private)
-            user_instance = MyUser.objects.get(id=user_id)
+            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             user_instance.chats.add(new_chat.id)
             new_chat.save()
             user_instance.save()
@@ -248,16 +248,16 @@ class _Chat:
             user_exists = MyUser.objects.filter(name=chat_name).exists()
             if not user_exists:
                 return 'User does not exist'
-            user_instance = MyUser.objects.get(id=user_id)
+            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             if chat_name == user_instance.name:
                 return 'Sorry, you can not be in a chat with yourself :('
             # Filter all private chats that the user is part of
-            private_chats = Chat.objects.filter(isPrivate=True, myuser__id=user_id)
+            private_chats = Chat.objects.filter(isPrivate=True, myuser__user_id=user_id)  # changed id to user_id
             chat_already_exists = private_chats.filter(myuser__name=chat_name)
             if chat_already_exists:
                 return "You are already in a private chat with this user"
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
-            current_user_instance = MyUser.objects.get(id=user_id)
+            current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             other_user_instance = MyUser.objects.get(name=chat_name)
             current_user_instance.chats.add(new_chat.id)
             current_user_instance.save()
@@ -274,7 +274,7 @@ class _Chat:
     def get_id_with_name(self, user_name):
         try:
             user_instance = MyUser.objects.get(name=user_name)
-            user_id = user_instance.id
+            user_id = user_instance.user_id  # changed id to user_id
             return user_id
         except Exception as e:
             return -1
@@ -285,7 +285,7 @@ class _Chat:
             invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
             if not invited_user_exists:
                 return 'User you want to invite doesnt exists'
-            inviting_user = MyUser.objects.get(id=user_id)
+            inviting_user = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             invited_user = MyUser.objects.get(name=invited_user)
             chat = inviting_user.chats.get(id=chat_id)
             invited_user.chats.add(chat)
@@ -297,11 +297,11 @@ class _Chat:
 
     @database_sync_to_async
     def block_user(self, user_id, user_to_block):
-        current_user_exists = MyUser.objects.filter(id=user_id)
+        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
         other_user_exists = MyUser.objects.filter(name=user_to_block)
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'blocked_by': None}
-        current_user_instance = MyUser.objects.get(id=user_id)
+        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         other_user_instance = MyUser.objects.get(name=user_to_block)
         # create blocked_by field in instance of user_to_block and add there the name of instance user_id
         # Check if the other user is already blocked
@@ -315,11 +315,11 @@ class _Chat:
 
     @database_sync_to_async
     def unblock_user(self, user_id, user_to_unblock):
-        current_user_exists = MyUser.objects.filter(id=user_id)
+        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
         other_user_exists = MyUser.objects.filter(name=user_to_unblock)
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'unblocked_by': None}
-        current_user_instance = MyUser.objects.get(id=user_id)
+        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         other_user_instance = MyUser.objects.get(name=user_to_unblock)
 
         if current_user_instance in other_user_instance.blockedBy.all():
@@ -331,14 +331,14 @@ class _Chat:
 
     @database_sync_to_async
     def get_blocked_by_user(self, user_id):
-        user_instance = MyUser.objects.get(id=user_id)
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_names)
         return {'status': 200, 'blocked_by': blocked_by_names_list}
 
     @database_sync_to_async
     def get_blocked_user(self, user_id):
-        current_user = MyUser.objects.get(id=user_id)
+        current_user = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         users_blocking_current_user = MyUser.objects.filter(blockedBy=current_user)
         blocked_by_current_user_names = users_blocking_current_user.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_current_user_names)
@@ -352,7 +352,7 @@ class _Chat:
         # if chat is private, need to figure out name of chat user that is not current user
         chat_id = chat_instance.id
         users_in_chat = MyUser.objects.filter(chats__id=chat_id)
-        current_user_instance = MyUser.objects.get(id=user_id)
+        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         current_user = current_user_instance.name
         # get other users name
         for user in users_in_chat:
@@ -367,7 +367,6 @@ class _Chat:
         chat_id = chat_instance.id
         users_in_chat = MyUser.objects.filter(chats__id=chat_id)
         chat_names_list = [user.name for user in users_in_chat]
-
         return chat_names_list
 
     def get_last_message_in_chat(self, chat_id):
