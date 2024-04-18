@@ -2,8 +2,6 @@ name: ms-vault2html
 
 on:
   push:
-    branches:
-      - dev
     paths:
       - 'docs/openapi/ms-vault.yaml'
 

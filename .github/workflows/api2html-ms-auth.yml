@@ -2,8 +2,6 @@ name: ms-auth2html
 
 on:
   push:
-    branches:
-      - dev
     paths:
       - 'docs/openapi/ms-auth.yaml'
 
