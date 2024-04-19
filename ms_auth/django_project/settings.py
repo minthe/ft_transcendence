@@ -29,6 +29,8 @@ ALLOWED_HOSTS = ['*']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ASGI_APPLICATION = 'django_project.asgi.application'
+
 SECRET_KEY = DJANGO_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
