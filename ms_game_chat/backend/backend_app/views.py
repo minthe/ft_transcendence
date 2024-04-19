@@ -17,8 +17,10 @@ def goToFrontend(request):
 # - Method:   POST
 # - Payload:  username:string, avatar:string
 @require_POST
+@jwt.token_required
 def createUser(request, user_id):
     try:
+        # jwt_user_id = request.user_id
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
@@ -45,9 +47,10 @@ def createUser(request, user_id):
 # - Method:   PUT
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
+@jwt.token_required
 def updateAvatar(request, user_id):
     try:
-        return JsonResponse({}, status=501)
+        return JsonResponse({'message': 'Not implemented yet'}, status=501)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
@@ -58,91 +61,27 @@ def updateAvatar(request, user_id):
 # - Method:   PUT
 # - Payload:  alias:string
 @require_http_methods(["PUT"])
+@jwt.token_required
 def updateAlias(request, user_id):
     try:
-        return JsonResponse({}, status=501)
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-
-
-@csrf_exempt
-@require_POST
-def checkUserCredentials(request):#TODO Marie: user user_id to get user
-    try:
+        return JsonResponse({'message': 'Not implemented yet'}, status=501)
         data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
+        alias = data.get('alias')
 
-        # enable2FA boolean | later get this from db instead of frontend
-        enable2FA:bool = data.get('enable2FA')
-        email_to = data.get('email')
-
-        user_exist_check = MyUser.objects.filter(name=username).exists()
-        if not user_exist_check:
-            return JsonResponse({}, status=404)
-        user_object = MyUser.objects.get(name=username)
-        if password == user_object.password:
-            if enable2FA:
-                send_email_to_user(user_object, email_to)
-            return JsonResponse({'user_id': user_object.user_id, 'twoFactorAuth': enable2FA}, status=200)
-        else:
-            return JsonResponse({}, status=401)  # wrong credentials
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-def send_email_to_user(user, email_to):
-    email_from = settings.EMAIL_HOST_USER
-    code = user.generate_verification_code()
-    send_mail(
-        'Your 2FA Code',
-        f'Your 2FA code is: {code}',
-        email_from,
-        [email_to],
-        fail_silently=False,
-    )
-
-def verifyTwoFactorCode(request, code, username):
-    try:
-        user_exists = MyUser.objects.filter(name=username).exists()
+        user_exists = MyUser.objects.filter(user_id=user_id).exists()
         if not user_exists:
-            return JsonResponse({'message': 'User not found'}, status=404)
-        user_instance = MyUser.objects.get(name=username)
-        if user_instance.verify_verification_code(code):
-            return JsonResponse({}, status=200)
-        else:
-            return JsonResponse({'message': 'Invalid or expired verification code'}, status=400)
+            return JsonResponse({'message': 'user does not exist'}, status=404)
+
+        user_instance = MyUser.objects.get(user_id=user_id)
+        return
+
     except Exception as e:
-        print("in verifyTwoFactorCode: ", e)
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
 
 
 
-from django.core.mail import send_mail
-@csrf_exempt
-@require_POST
-def createAccount(request):#TODO Marie: user user_id to get user
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
 
-        user_exist = MyUser.objects.filter(name=username).exists()
-        if user_exist:
-            return JsonResponse({}, status=409)
-        user_data = {
-            "name": username,
-            "password": password,
-        }
-        new_user = MyUser(**user_data)
-        new_user.save()
-        user_instance = MyUser.objects.get(name=username)
-        return JsonResponse({'user_id': user_instance.user_id}, status=200)
-    except Exception as e:
-        print("in createAccount: ", e)
-        return JsonResponse({}, status=500)
 
 
 @require_POST
