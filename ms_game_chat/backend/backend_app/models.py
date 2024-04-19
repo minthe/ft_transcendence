@@ -15,7 +15,6 @@ class MyUser(models.Model):
     twoFactorCode = models.JSONField(db_column='twoFactorCode', default=dict)
     name = models.CharField("name", max_length=100)
     password = models.CharField("password", max_length=100)
-    age = models.IntegerField("age")
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
