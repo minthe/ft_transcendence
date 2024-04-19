@@ -147,12 +147,13 @@ def logout(request):
 		return JsonResponse({'message': error_message}, status=500)
 
 @jwt.token_required
-def avatar(request, user_id):
+def avatar(request):
 	'''
 	This function is used to get or update the avatar of a user
-	API Endpoint: /user/{user_id}/avatar
+	API Endpoint: /user/avatar
 	'''
 	try:
+		user_id = request.user_id
 		if not user_views.checkUserExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
 
