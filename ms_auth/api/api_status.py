@@ -7,7 +7,7 @@ jwt = FT_JWT(settings.JWT_SECRET)
 
 @jwt.token_required
 @require_http_methods(["GET"])
-def heartbeat(request, user_id):
+def heartbeat(request):
 	'''
 	This function is used to check if the service is up and running
 	API Endpoint: /user/heartbeat
