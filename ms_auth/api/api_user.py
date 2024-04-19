@@ -73,7 +73,7 @@ def register(request):
 			json_response = json.dumps(response)
 			response = HttpResponse(json_response, content_type='application/json', status=200)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
-			if settings.DEBUG == False:
+			if settings.WELCOME_MAIL == True:
 				mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
 			return response
 		elif game_chat_response.getcode() == 409:
