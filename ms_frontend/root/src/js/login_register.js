@@ -1,10 +1,9 @@
 
-function initUserData(data, username, password, age) {
+function initUserData(data, username, password) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
 	websocket_obj.username = username
 	websocket_obj.password = password
-	// websocket_obj.age = age
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
 
@@ -135,7 +134,7 @@ function loginUserButton() {
           });
         }
       }
-      initUserData(data, usernameElement.value, passwordElement.value, 69)
+      initUserData(data, usernameElement.value, passwordElement.value)
       authSucces();
       clearLoginInput(usernameElement, passwordElement);
     })
@@ -180,7 +179,7 @@ function RegisterUserButton() {
     return response.json();
   })
   .then(data => {
-    initUserData(data, usernameElement.value, passwordElement.value, 69)
+    initUserData(data, usernameElement.value, passwordElement.value)
     authSucces();
     clearRegisterInput(usernameElement, passwordElement, mail);
   })
@@ -196,7 +195,6 @@ function changeToLoginPageButton() {
   hideDiv('registerPage')
   document.getElementById("wrong-register").classList.add("hidden");
   document.getElementById('registerUsername').value = null;
-  document.getElementById('registerAge').value  = null;
   document.getElementById('registerPassword').value  = null;
   document.getElementById("registerUsername").style.border = "";
   document.getElementById("registerPassword").style.border = "";

@@ -54,9 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'channels',
-    # my created apps:
     'backend_app',
-    'ft_jwt',
 
     # 'channels_redis'
     ]
