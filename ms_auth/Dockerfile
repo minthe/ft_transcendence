@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /code
 COPY . .
 
-CMD ["sh", "-c", "python manage.py makemigrations; python manage.py migrate; python manage.py runserver 0.0.0.0:8000"]
+CMD ["./ms_auth_start.sh"]
