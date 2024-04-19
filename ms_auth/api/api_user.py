@@ -53,13 +53,13 @@ def register(request):
 		# request to game-chat
 		game_chat_headers = {
 			"Content-Type": 'application/json',
-			"Set-Cookie": f"jwt_token={jwt_token}; HttpOnly"
+			"Cookie": f"jwt_token={jwt_token}; HttpOnly"
 		}
 		game_chat_data = {
 			'username': username,
 			'avatar': avatar,
 		}
-		game_chat_request_url = f"http://172.16.10.7:6969/game/user/{user_id}"
+		game_chat_request_url = f"http://172.16.10.7:6969/game/user"
 		encoded_data = json.dumps(game_chat_data).encode("utf-8")
 
 		print(f"request_to_game_chat url: {game_chat_request_url}")
@@ -109,6 +109,7 @@ def login(request):
 		if user_views.getValue(user_id, 'second_factor_enabled'):
 			second_factor_dict = second_factor_views.generate_second_factor_dict()
 			user_views.updateValue(user_id, 'second_factor_code', second_factor_dict)
+			# generate code and send email
 			mail_views.send_verification_email(username, user_views.getValue(user_id, 'email'))
 			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
   
