@@ -18,7 +18,7 @@ def second_factor_update(request):
 	try:
 		# TODO valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
-		user_id = data.get('user_id')
+		user_id = request.user_id
 		second_factor = data.get('second_factor')
 
 		if user_views.getValue(user_id, 'second_factor_enabled') and not second_factor:
