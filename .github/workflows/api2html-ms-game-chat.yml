@@ -2,8 +2,6 @@ name: ms-game-chat2html
 
 on:
   push:
-    branches:
-      - dev
     paths:
       - 'docs/openapi/ms-game-chat.yaml'
 
