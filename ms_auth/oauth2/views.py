@@ -54,9 +54,13 @@ def oauth2_redirect(request):
 			response.status_code = 401
 			return response
 
-		redirect_url = f"https://{settings.CURRENT_HOST}"
-		response = HttpResponseRedirect(redirect_url)
+		response_data = {
+			'user_id': user_id,
+			'username': user_data['username']
+		}
+		response = JsonResponse(response_data)
 		response.set_cookie('jwt_token', jwt_token, httponly=True)
+		response.status_code = 200
 		return response
 
 	except Exception as e:
