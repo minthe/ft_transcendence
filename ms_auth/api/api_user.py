@@ -73,7 +73,8 @@ def register(request):
 			json_response = json.dumps(response)
 			response = HttpResponse(json_response, content_type='application/json', status=200)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
-			mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
+			if settings.WELCOME_MAIL == True:
+				mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
 			return response
 		elif game_chat_response.getcode() == 409:
 			user.delete()
@@ -146,12 +147,13 @@ def logout(request):
 		return JsonResponse({'message': error_message}, status=500)
 
 @jwt.token_required
-def avatar(request, user_id):
+def avatar(request):
 	'''
 	This function is used to get or update the avatar of a user
-	API Endpoint: /user/{user_id}/avatar
+	API Endpoint: /user/avatar
 	'''
 	try:
+		user_id = request.user_id
 		if not user_views.checkUserExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
 

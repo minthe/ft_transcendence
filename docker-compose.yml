@@ -137,8 +137,6 @@ services:
     networks:
       app_net:
         ipv4_address: 172.16.10.8
-    ports:
-      - 6969:6969 # for admin page, delete later
     volumes:
       - game_chat_db:/var/lib/postgresql/data/
     expose:

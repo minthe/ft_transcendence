@@ -22,6 +22,8 @@ EMAIL_PORT = 587  # Outlook SMTP port
 EMAIL_USE_TLS = True  # Use TLS for security
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# Feature Flags
+WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
 
 ALLOWED_HOSTS = ['*']
 

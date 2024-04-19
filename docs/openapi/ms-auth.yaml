@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.7.0'
+  version: '1.7.1'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -456,12 +456,6 @@ components:
         exp:
           type: integer
           description: Expiration timestamp
-        amr:
-          type: array
-          items:
-            type: string
-          description: Authentication methods references
       example:
         sub: "1"
         exp: 1672531200
-        amr: ["password", "oauth2", "2fa"]
