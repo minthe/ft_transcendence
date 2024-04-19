@@ -8,7 +8,6 @@ websocket_obj = {
   password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
   // avatar: null,
-  age: null,
   blocked_by: [],
   blocked_user: [],
   new_private_chat_name: null,
