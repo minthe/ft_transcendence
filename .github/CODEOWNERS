@@ -1,11 +1,11 @@
 # Code Review Assignment
 
-* @minthe @cryptoclown132 @mariekart42 @NULL-Term1nat0r @kris-bo
-
-/ms_api_gateway/* @NULL-Term1nat0r
-
 /ms_auth/* @minthe
 
 /ms_frontend/* @cryptoclown132
 
 /ms_game_chat/* @kris-bo @mariekart42
+
+/ms_vault/* @NULL-Term1nat0r
+
+/ms_modsec/* @NULL-Term1nat0r
