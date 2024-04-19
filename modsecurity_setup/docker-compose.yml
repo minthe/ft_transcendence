@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+# REST API DOCUMENTATION
+
+# MICROSERVICE FRONTEND
+  modsecurity:
+    container_name: modsecurity
+    build: 
+      context: .
+    networks:
+      - network
+    restart: always
+    ports:
+      - "8081:80"
+    expose:
+      - 8081
+
+
+networks:
+  network:
+    driver: bridge
