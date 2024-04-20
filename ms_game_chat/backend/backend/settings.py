@@ -179,7 +179,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 # for frontend later:
-STATIC_URL = 'static/'
+STATIC_URL = 'game/static/'
 
 
 MEDIA_URL = '/media/'

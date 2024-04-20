@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.7.0'
+  version: '1.7.3'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -112,7 +112,7 @@ paths:
           description: 2fa verification necessary
           content:
             application/json:
-              example: {"user_id": 1, "2fa": true}
+              example: {"user_id": 1, "second_factor": true}
         '409':
           description: Credentials are wrong
           content:
@@ -431,13 +431,13 @@ components:
       required:
         - user_id
         - username
-        - 2fa
+        - second_factor
       properties:
         user_id:
           type: string
         username:
           type: string
-        2fa:
+        second_factor:
           type: boolean
           example: false
     OAuthError:
@@ -456,12 +456,6 @@ components:
         exp:
           type: integer
           description: Expiration timestamp
-        amr:
-          type: array
-          items:
-            type: string
-          description: Authentication methods references
       example:
         sub: "1"
         exp: 1672531200
-        amr: ["password", "oauth2", "2fa"]

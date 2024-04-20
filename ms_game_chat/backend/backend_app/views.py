@@ -11,7 +11,6 @@ jwt = FT_JWT(settings.JWT_SECRET)
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
-
 # Create new user:
 # - Endpoint: game/user/
 # - Method:   POST
@@ -24,6 +23,7 @@ def createUser(request):
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
+        user_id = request.user_id
 
         # check if user already exists
         user_exist = MyUser.objects.filter(user_id=jwt_user_id).exists()
