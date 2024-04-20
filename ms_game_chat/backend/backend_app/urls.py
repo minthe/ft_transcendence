@@ -11,9 +11,9 @@ urlpatterns = [
     path('game/verifyTwoFactorCode/<str:code>/<str:username>', views.verifyTwoFactorCode),
 
     # request for ms_auth, updateAvatar and updateAlias not done yet
-    path('game/user/<int:user_id>', views.createUser),
-    path('game/user/<int:user_id>/avatar', views.updateAvatar),
-    path('game/user/<int:user_id>/alias', views.updateAlias),
+    path('game/user', views.createUser),
+    path('game/user/avatar', views.updateAvatar),
+    path('game/user/alias', views.updateAlias),
 
 
     # LOGIN/REGISTER

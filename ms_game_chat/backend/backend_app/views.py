@@ -13,25 +13,25 @@ def goToFrontend(request):
 
 
 # Create new user:
-# - Endpoint: game/user/{user_id}/
+# - Endpoint: game/user/
 # - Method:   POST
 # - Payload:  username:string, avatar:string
 @require_POST
 @jwt.token_required
-def createUser(request, user_id):
+def createUser(request):
     try:
-        # jwt_user_id = request.user_id
+        jwt_user_id = request.user_id
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
 
         # check if user already exists
-        user_exist = MyUser.objects.filter(user_id=user_id).exists()
+        user_exist = MyUser.objects.filter(user_id=jwt_user_id).exists()
         if user_exist:
             return JsonResponse({}, status=409)
 
         new_user = MyUser()
-        new_user.user_id = user_id
+        new_user.user_id = jwt_user_id
         new_user.name = username
         new_user.avatar = avatar
         new_user.save()
@@ -48,8 +48,9 @@ def createUser(request, user_id):
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
 @jwt.token_required
-def updateAvatar(request, user_id):
+def updateAvatar(request):
     try:
+        jwt_user_id = request.user_id
         return JsonResponse({'message': 'Not implemented yet'}, status=501)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
@@ -62,17 +63,18 @@ def updateAvatar(request, user_id):
 # - Payload:  alias:string
 @require_http_methods(["PUT"])
 @jwt.token_required
-def updateAlias(request, user_id):
+def updateAlias(request):
     try:
+        jwt_user_id = request.user_id
         return JsonResponse({'message': 'Not implemented yet'}, status=501)
         data = json.loads(request.body.decode('utf-8'))
         alias = data.get('alias')
 
-        user_exists = MyUser.objects.filter(user_id=user_id).exists()
+        user_exists = MyUser.objects.filter(user_id=jwt_user_id).exists()
         if not user_exists:
             return JsonResponse({'message': 'user does not exist'}, status=404)
 
-        user_instance = MyUser.objects.get(user_id=user_id)
+        user_instance = MyUser.objects.get(user_id=jwt_user_id)
         return
 
     except Exception as e:
