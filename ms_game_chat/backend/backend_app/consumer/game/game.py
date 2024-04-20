@@ -371,6 +371,8 @@ class _Game:
 
     async def handle_send_tourns(self):
         return_data = await self.get_tourns(self.user['user_id'])
+        print("return_data 0")
+        print(return_data[0])
         await self.channel_layer.send(
         self.channel_name,
         {
@@ -548,25 +550,35 @@ class _Game:
 
     @database_sync_to_async
     def get_tourns(self, user_id):
+        print("in get_tourns")
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         tourn_instances = user_instance.tourns.all()
 
         match_data = []
         for tourns in tourn_instances:
-            game_sessions = tourn_instances.active_matches.all()
+            game_sessions = tourns.active_matches.all()
+            unit = []
+            tourn_entry = []
             tourn_host = tourns.hostId
+            tourn_entry.append({
+                'tourn_host': tourn_host
+            })
+            unit.append(tourn_entry)
             for game_session in game_sessions:
+                game_entry = []
                 player_one = game_session.hostId
                 player_two = game_session.guestId
                 game_id = game_session.id
                 
                 # Append data to the match_data list
-                match_data.append({
+                game_entry.append({
                     'player_one': player_one,
                     'player_two': player_two,
-                    'game_id': game_id,
-                    'tourn_host': tourn_host
+                    'game_id': game_id
                 })
+                unit.append(game_entry)
+            match_data.append(unit)
+
         json_data = json.dumps(match_data)
         return json_data
 
@@ -591,13 +603,6 @@ class _Game:
         json_data = json.dumps(match_data)
         return json_data
 
-        if user_instance.name == game_instance.hostId:
-            self.is_host = True
-            check_host = 'True'
-        else:
-            self.is_host = False
-            check_host = 'False'
-        return check_host
 
     @database_sync_to_async
     def remove_ended_match(self, user_id, game_id):
