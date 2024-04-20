@@ -33,7 +33,7 @@ def register(request):
 		email = data.get('email')
 		avatar = 'moon-dog.jpg'
 
-		''' TODO valentin:
+		''' TODO valentin
 		Input validation
 		- refactor later into deserialize function
 		- add password validation
@@ -106,11 +106,11 @@ def login(request):
 		user_id = user_views.returnUserId(username)
   
 		#2fa
-		if user_views.getValue(user_id, 'second_factor_enabled'):
+		if user_views.getValue(user_id, 'second_factor_enabled') == True:
 			second_factor_dict = second_factor_views.generate_second_factor_dict()
-			user_views.updateValue(user_id, 'second_factor_code', second_factor_dict)
-			# generate code and send email
-			mail_views.send_verification_email(username, user_views.getValue(user_id, 'email'))
+			user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
+			code = second_factor_dict['code']
+			mail_views.send_verification_email(username, code, user_views.getValue(user_id, 'email'))
 			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
   
 		jwt_token = jwt.createToken(user_id)

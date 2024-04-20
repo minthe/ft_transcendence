@@ -44,13 +44,14 @@ def second_factor_verify(request):
 	API Endpoint: /user/2fa/verify
 	'''
 	try:
-		if not user_views.checkUserExists('user_id', user_id):
-			return JsonResponse({'message': 'User not found'}, status=404)
-
 		# TODO valentin: Input Validation
 		data = json.loads(request.body.decode('utf-8'))
 		user_id = data.get('user_id')
 		code = data.get('code')
+
+		if not user_views.checkUserExists('user_id', user_id):
+			return JsonResponse({'message': 'User not found'}, status=404)
+
 
 		is_verified, error_message = second_factor_views.verify_verification_code(user_id, code)
 		if is_verified:
