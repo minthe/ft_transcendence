@@ -48,6 +48,7 @@ def register(request):
 
 		user = user_views.createUser(data)
 		user_id = user_views.returnUserId(username)
+		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 		jwt_token = jwt.createToken(user_id)
 
 		# request to game-chat
@@ -68,7 +69,8 @@ def register(request):
 		if game_chat_response.getcode() == 200:
 			response = {
 				'user_id': user_id,
-				'username': username
+				'username': username,
+				'second_factor': second_factor_status
 			}
 			json_response = json.dumps(response)
 			response = HttpResponse(json_response, content_type='application/json', status=200)
