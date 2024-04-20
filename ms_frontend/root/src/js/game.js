@@ -82,6 +82,14 @@ async function requestInvites() {
 }
 
 
+async function requestTourns() {
+  console.log('In requestTourns');
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("invites-screen").classList.remove("hidden");
+  await sendDataToBackend('request_tourns');
+}
+
+
 async function renderInvites() {
   // console.log(websocket_obj.game);
 

@@ -51,6 +51,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.is_host = 0
         self.game_id = 0
         self.game_group_id = None
+        self.invited_id = 0
 
     async def connect(self):
         # token = self.scope['cookies'].get('jwt_token')
@@ -98,7 +99,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         what_type = text_data_json["type"]
 
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_join_tournament']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             print("In else ----\n")
@@ -170,7 +171,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         elif what_type == 'send_request_invites':
             self.game_id = game_id
             await self.handle_send_invites()
+        elif what_type == 'send_request_tourns':
+            self.game_id = game_id
+            await self.handle_send_tourns()
         elif what_type == 'send_join_tournament':
+            self.invited_id = text_data_json["data"]["invited_id"]
             await self.handle_send_join_tournament()   
         else:
             print('IS SOMETHING ELSE')

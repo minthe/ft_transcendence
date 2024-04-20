@@ -12,8 +12,11 @@ class MyUser(models.Model):
     password = models.CharField("password", max_length=100)
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
     chats = models.ManyToManyField('Chat', blank=True)
-    new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
+    new_matches = models.ManyToManyField('Game', related_name='new_matches', blank=True)
+    old_matches = models.ManyToManyField('Game', related_name='old_matches', blank=True)
+    tourns = models.ManyToManyField('Tournament', blank=True)
+
     # gameAlias = models.CharField("gameAlias", max_length=100) #Julien changed
 
 
@@ -35,11 +38,14 @@ class Message(models.Model):
 class Game(models.Model):
     hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)
+    winnerId = models.CharField("winnerId", max_length=69, default=None, blank=True, null=True)
+    loserId = models.CharField("loserId", max_length=69, default=None, blank=True, null=True)
+    tournId = models.IntegerField("tournId", default=None, blank=True, null=True)
     # hostName = models.CharField("hostName", max_length=100) #Julien changed
     # guestName = models.CharField("guestName", max_length=100) #Julien changed
 
 class Tournament(models.Model):
-    # quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    quarterMatch = ArrayField(models.IntegerField(), blank=True, default=list)
     semiMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     finalMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
+    active_matches = models.ManyToManyField('Game', blank=True)

@@ -109,6 +109,9 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#right-heading-name')) {
       await rightHeadingClicked();
 	}
+  else if (event.target.closest('#challengeUserToTourn')) {
+    await challengeTournClicked();
+  }
   else if (event.target.closest('#challengeUserToGame')) {
     await challengeUserClicked();
   }

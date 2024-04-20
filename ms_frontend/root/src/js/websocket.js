@@ -279,6 +279,10 @@ async function establishWebsocketConnection() {
         else
           renderInvites();
         break
+      case 'recieve_tourns':
+        console.log('recieve_tourns');
+        websocket_obj.game.invites = JSON.parse(data.matches)
+        console.log('DATA: ', websocket_obj.game.invites)
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
         console.log('DATA: ', data)
@@ -462,11 +466,32 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'request_invites':
+          console.log('request_invites')
           type = 'send_request_invites'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 1,
 
+          }
+          break
+        case 'join_tournament':
+          console.log('join_tournamentttttttt')
+          console.log(websocket_obj.user_id)
+          type = 'send_join_tournament'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'invited_id': websocket_obj.invited_id,
+            'game_id': 1,
+          }
+          break
+        case 'request_tourns':
+          console.log('request_tournssss')
+          console.log(websocket_obj.user_id)
+          type = 'send_request_tourns'
+          data = {
+            'user_id': websocket_obj.user_id,
+          //   'invited_id': websocket_obj.invited_id,
+            'game_id': 1,
           }
           break
         // case 'new_profile_picture':

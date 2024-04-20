@@ -4,6 +4,8 @@ from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game, Tournament
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+import random
+
 
 
 
@@ -232,6 +234,14 @@ class _Game:
 
         }))
 
+    async def send_request_tourns(self, event):
+        print("in send_request_tourns")
+        await self.send(text_data=json.dumps({
+            'type': 'recieve_tourns',
+            'matches': event['data'],
+
+        }))
+
 
 
     async def handle_send_game_scene(self):
@@ -359,11 +369,17 @@ class _Game:
         except Exception as e:
             print(f"Error in handle_send_score: {e}")
 
-    async def handle_send_invites(self):
-        return_data = await self.get_mathces(self.user['user_id'])
+    async def handle_send_tourns(self):
+        return_data = await self.get_tourns(self.user['user_id'])
+        await self.channel_layer.send(
+        self.channel_name,
+        {
+            'type': 'send.request.tourns',
+            'data': return_data,
+        })
 
-        # matches_data = await self.get_mathces(self.user['user_id'])
-        # return_data = render(self, 'openGameSessions.html', {'game_sessions': matches_data})
+    async def handle_send_invites(self):
+        return_data = await self.get_matches(self.user['user_id'])
         await self.channel_layer.send(
         self.channel_name,
         {
@@ -372,7 +388,10 @@ class _Game:
         })
 
     async def handle_send_join_tournament(self):
-        await self.add_to_tourn(self.game_id, self.user['user_id'])
+        print("in handle_send_join_tournament")
+        tourn_id = await self.add_to_tourn(self.user['user_id'], self.invited_id)
+        if tourn_id != None:
+            await self.semiFull(tourn_id)
 
 
 
@@ -380,35 +399,140 @@ class _Game:
 
 
     @database_sync_to_async
-    def add_to_tourn(self, game_id, user_id):
-        tourn_instance = Tournament.objects.order_by('-id').first()
-        print("tourn_instance")
-        print(tourn_instance)
-        if tourn_instance is not None:
-            if len(tourn_instance.quarterMatch) == 8:
-                tourn_instance = Tournament.objects.create()
-            # elif user_id in tourn_instance.quarterMatch:
-            for i in range(len(tourn_instance.quarterMatch)):
-                # print("tourn_instance.quarterMatch[i]")
-                # print(tourn_instance.quarterMatch[i])
-                # print("user_id")
-                # print(user_id)
-                # data_type = type(tourn_instance.quarterMatch[i])
-                # print(data_type)
-                # data_type = type(user_id)
-                # print(data_type)
+    def matchResults(self, game_struct):
+        game_instance = Game.objects.get(id=self.game_id)
+        if game_struct['host_score'] == game_struct['score_limit']:
+            game_instance.winner = game_instance.hostId
+            game_instance.loser = game_instance.guestId
+        elif game_struct['guest_score'] == game_struct['score_limit']:
+            game_instance.winner = game_instance.guestId
+            game_instance.loser = game_instance.hostId
+        if game_instance.tournId != 0:
+            tourn_instance = Tournament.objects.get(id=game_instance.tournId)
+            tourn_instance.active_matches.remove(game_instance)
+            return tourn_instance.id
+            tourn_instance.finalMatch.append(MyUser.objects.get(name=game_instance.winnerId))
+            tourn_instance.save()
+            if len(tourn_instance.finalMatch) == 2:
+                game_instance = Game.objects.create()
+                game_instance.hostId = tourn_instance.finalMatch[0]
+                game_instance.guestId = tourn_instance.finalMatch[1]
+                tourn_instance.active_matches.add(game_instance)
+                game_instance.tournId = tourn_instance.id
+                game_instance.save()
+                tourn_instance.save()
 
-                if tourn_instance.quarterMatch[i] == int(user_id):
-                    print("user already in tourn")
-                    tourn_instance = Tournament.objects.create()
-                    break
+    @database_sync_to_async
+    def semiFull(self, invited_id):
+        print("in semiFull")
+
+        tourn_instance = Tournament.objects.get(id=invited_id)
+        if len(tourn_instance.semiMatch) == 4:
+            # print("semiMatch is full")
+            # print("semiMatch")
+            # print(tourn_instance.semiMatch)
+            print("creating gamerooms")
+
+            semi_match = tourn_instance.semiMatch
+            random.shuffle(semi_match)
+            tourn_instance.semiMatch = semi_match
+            tourn_instance.save()
+
+            print("tourn_instance.semiMatch SHUFFLED")
+            print(tourn_instance.semiMatch)
+
+
+            for i in range(0, 4, 2):
+                print("i")
+                print(i)
+                game_instance = Game.objects.create()
+                game_instance.hostId = tourn_instance.semiMatch[i]
+                game_instance.guestId = tourn_instance.semiMatch[i + 1]
+                tourn_instance.active_matches.add(game_instance)
+                game_instance.tournId = tourn_instance.id
+                game_instance.save()
+            tourn_instance.save()
+            print("tourn_instance.active_matches")
+            print(tourn_instance.active_matches)
+            print("tourn_instance.active_matches")
+            print(tourn_instance.active_matches.all())
         else:
-            tourn_instance = Tournament.objects.create()
+            print("semiMatch is not full")
 
-        tourn_instance.quarterMatch.append(user_id)
-        tourn_instance.save()
-        print("tourn_instance.quarterMatch")
-        print(tourn_instance.quarterMatch)
+    @database_sync_to_async
+    def add_to_tourn(self, user_id, invited_id):
+        # user_id = 3
+        print("user_id!!!!! tournament")
+        print(user_id)
+        print("invited_id")
+        print(invited_id)
+        host_instance = MyUser.objects.get(user_id=user_id)
+        invited_instance = MyUser.objects.get(name=invited_id)
+
+        print("invited_name!!!!! tournament")
+        print(invited_instance)
+
+        print("host_instance")
+        print(host_instance)
+
+        tourn_sessions = host_instance.tourns.all()
+        exists = False
+        if len(tourn_sessions) != 0:
+            for tourn_session in tourn_sessions:
+                print("tourn_session.hostId")
+                print(tourn_session.hostId)
+                if tourn_session.hostId == user_id:
+                    print("---MATCH FOUND---")
+                    already_inv = False
+                    if len(tourn_session.semiMatch) < 4:
+                        for id in tourn_session.semiMatch:
+                            # print("id")
+                            # print(type(id))
+                            # print("invited_instance.id")
+                            # print(type(invited_instance.id))
+                            if int(id) == invited_instance.user_id:
+                                print("[X] User is already in semiMatch")
+                                already_inv = True
+                                break
+                        if already_inv == False:
+                            print("adding to EXISTING tourn")
+                            tourn_session.semiMatch.append(invited_instance.user_id)
+                            invited_instance.tourns.add(tourn_session)
+
+                            tourn_session.save()
+                            print("USERS in SEMI:")
+                            for value in tourn_session.semiMatch:
+                                print(value)
+                            if len(tourn_session.semiMatch) == 4:
+                                print("semiMatch is FULL")
+                                return tourn_session.id
+                                # self.semiFull(tourn_session.id)
+                                # try:
+                                #     await self.semiFull(tourn_session.id)
+                                # except Exception as e:
+                                #     print(f"An exception occurred: {e}")
+                    else:
+                        print("DENIED invitation: finish your tournament first")
+                    exists = True
+        if not exists:
+            print("creating a NEW tourn")
+            tourn_instance = Tournament.objects.create()
+            tourn_instance.semiMatch.append(user_id)
+            tourn_instance.semiMatch.append(invited_instance.user_id)
+            host_instance.tourns.add(tourn_instance)
+            host_instance.save()
+
+            invited_instance.tourns.add(tourn_instance)
+            invited_instance.save()
+
+            tourn_instance.hostId = user_id
+            tourn_instance.save()
+
+            print("USERS in SEMI:")
+
+            for value in tourn_instance.semiMatch:
+                print(value)
+
 
     @database_sync_to_async
     def get_host(self, game_id, user_id):
@@ -421,9 +545,33 @@ class _Game:
             self.is_host = False
             check_host = 'False'
         return check_host
-    
+
     @database_sync_to_async
-    def get_mathces(self, user_id):
+    def get_tourns(self, user_id):
+        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        tourn_instances = user_instance.tourns.all()
+
+        match_data = []
+        for tourns in tourn_instances:
+            game_sessions = tourn_instances.active_matches.all()
+            tourn_host = tourns.hostId
+            for game_session in game_sessions:
+                player_one = game_session.hostId
+                player_two = game_session.guestId
+                game_id = game_session.id
+                
+                # Append data to the match_data list
+                match_data.append({
+                    'player_one': player_one,
+                    'player_two': player_two,
+                    'game_id': game_id,
+                    'tourn_host': tourn_host
+                })
+        json_data = json.dumps(match_data)
+        return json_data
+
+    @database_sync_to_async
+    def get_matches(self, user_id):
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         game_sessions = user_instance.new_matches.all()
 
@@ -440,13 +588,8 @@ class _Game:
                 'opponent_name': opponent_name,
                 'game_id': game_id
             })
-
-
         json_data = json.dumps(match_data)
-
-
         return json_data
-
 
         if user_instance.name == game_instance.hostId:
             self.is_host = True
