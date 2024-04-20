@@ -48,6 +48,8 @@ def oauth2_redirect(request):
 			user_views.createIntraUser(user_data)
 
 		user_id = user_views.returnUserId(user_data['username'])
+		username = user_views.getValue(user_id, 'username')
+		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 		jwt_token = jwt.createToken(user_id)
 
 		if not jwt.validateToken(jwt_token):
@@ -57,7 +59,8 @@ def oauth2_redirect(request):
 
 		response_data = {
 			'user_id': user_id,
-			'username': user_data['username']
+			'username': username,
+			'second_factor': second_factor_status
 		}
 		response = JsonResponse(response_data)
 		response.set_cookie('jwt_token', jwt_token, httponly=True)

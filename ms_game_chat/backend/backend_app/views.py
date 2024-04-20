@@ -11,19 +11,19 @@ jwt = FT_JWT(settings.JWT_SECRET)
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
-
 # Create new user:
 # - Endpoint: game/user/{user_id}/
 # - Method:   POST
 # - Payload:  username:string, avatar:string
 @require_POST
 @jwt.token_required
-def createUser(request, user_id):
+def createUser(request):
     try:
         # jwt_user_id = request.user_id
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
+        user_id = request.user_id
 
         # check if user already exists
         user_exist = MyUser.objects.filter(user_id=user_id).exists()
@@ -48,7 +48,7 @@ def createUser(request, user_id):
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
 @jwt.token_required
-def updateAvatar(request, user_id):
+def updateAvatar(request):
     try:
         return JsonResponse({'message': 'Not implemented yet'}, status=501)
     except Exception as e:
@@ -62,7 +62,7 @@ def updateAvatar(request, user_id):
 # - Payload:  alias:string
 @require_http_methods(["PUT"])
 @jwt.token_required
-def updateAlias(request, user_id):
+def updateAlias(request):
     try:
         return JsonResponse({'message': 'Not implemented yet'}, status=501)
         data = json.loads(request.body.decode('utf-8'))
