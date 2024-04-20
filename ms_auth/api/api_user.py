@@ -112,9 +112,10 @@ def login(request):
 			code = second_factor_dict['code']
 			mail_views.send_verification_email(username, code, user_views.getValue(user_id, 'email'))
 			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
-  
+
+		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 		jwt_token = jwt.createToken(user_id)
-		response = JsonResponse({'user_id': user_id, 'username': username})
+		response = JsonResponse({'user_id': user_id, 'username': username, 'second_factor': second_factor_status})
 		response.set_cookie('jwt_token', jwt_token, httponly=True)
 		response.status_code = 200
 		return response

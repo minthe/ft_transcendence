@@ -112,7 +112,7 @@ paths:
           description: 2fa verification necessary
           content:
             application/json:
-              example: {"user_id": 1, "2fa": true}
+              example: {"user_id": 1, "second_factor": True}
         '409':
           description: Credentials are wrong
           content:
@@ -425,21 +425,21 @@ components:
         second_factor:
           type: boolean
           description: true if 2fa is enabled, false if disabled
-          example: true
+          example: True
     AuthResponse:
       type: object
       required:
         - user_id
         - username
-        - 2fa
+        - second_factor
       properties:
         user_id:
           type: string
         username:
           type: string
-        2fa:
+        second_factor:
           type: boolean
-          example: false
+          example: False
     OAuthError:
         type: object
         properties:
