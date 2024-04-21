@@ -103,7 +103,7 @@ def login(request):
 		if not user_views.checkUserExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
 		if not user_views.check_password(username, password):
-			return JsonResponse({'message': "Credentials are wrong"}, status=401)
+			return JsonResponse({'message': "Credentials are wrong"}, status=409)
 
 		user_id = user_views.returnUserId(username)
   
@@ -113,7 +113,7 @@ def login(request):
 			user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
 			code = second_factor_dict['code']
 			mail_views.send_verification_email(username, code, user_views.getValue(user_id, 'email'))
-			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
+			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=401)
 
 		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 		jwt_token = jwt.createToken(user_id)
