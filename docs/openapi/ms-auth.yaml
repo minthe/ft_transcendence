@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.4'
+  version: '1.8.6'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -141,6 +141,7 @@ paths:
             Set-Cookie:
               schema:
                 type: string
+                description: jwt_token cookie is deleted
                 example: jwt_token=; Max-Age=0; HttpOnly
           content:
             application/json:
@@ -370,6 +371,8 @@ paths:
               example: {"second_factor": false}
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -384,10 +387,18 @@ paths:
       responses:
         '200':
           description: 2fa activated
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: jwt_token cookie is deleted
+                example: jwt_token=; Max-Age=0; HttpOnly
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '409':
-          description: 2fa verification necessary
+          description: already activated
         '500':
           description: Internal server error
           content:
@@ -402,10 +413,18 @@ paths:
       responses:
         '200':
           description: 2fa deactivated
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: jwt_token cookie is deleted
+                example: jwt_token=; Max-Age=0; HttpOnly
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '409':
-          description: 2fa verification necessary
+          description: already deactivated
         '500':
           description: Internal server error
           content:

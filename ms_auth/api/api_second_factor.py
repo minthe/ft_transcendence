@@ -45,27 +45,33 @@ def second_factor_verify(request):
 @require_http_methods(["GET"])
 @jwt.token_required
 def second_factor_status(request):
+	if not user_views.checkUserExists('user_id', request.user_id):
+		return HttpResponse(status=404)
 	second_factor_status = user_views.getValue(request.user_id, 'second_factor_enabled')
 	return JsonResponse({'second_factor': second_factor_status}, status=200)
 
 @require_http_methods(["PUT"])
 @jwt.token_required
 def second_factor_activate(request):
+	if not user_views.checkUserExists('user_id', request.user_id):
+		return HttpResponse(status=404)
 	if user_views.getValue(request.user_id, 'second_factor_enabled') == True:
-		return HttpResponse(status=200)
+		return HttpResponse(status=409)
 	second_factor_views.create_2fa(request.user_id)
 	user_views.updateValue(request.user_id, 'second_factor_enabled', True)
-	response = HttpResponse(status=409)
+	response = HttpResponse(status=200)
 	response.delete_cookie('jwt_token')
 	return response
 
 @require_http_methods(["DELETE"])
 @jwt.token_required
 def second_factor_deactivate(request):
+	if not user_views.checkUserExists('user_id', request.user_id):
+		return HttpResponse(status=404)
 	if user_views.getValue(request.user_id, 'second_factor_enabled') == False:
-		return HttpResponse(status=200)
+		return HttpResponse(status=409)
 	second_factor_views.create_2fa(request.user_id)
 	user_views.updateValue(request.user_id, 'second_factor_enabled', False)
-	response = HttpResponse(status=409)
+	response = HttpResponse(status=200)
 	response.delete_cookie('jwt_token')
 	return response

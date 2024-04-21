@@ -1,4 +1,4 @@
-import os, logging
+import os
 from pathlib import Path
 
 CURRENT_HOST = os.environ.get('CURRENT_HOST')
@@ -15,6 +15,10 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
 OAUTH_TOKEN = os.environ.get('OAUTH_TOKEN')
+# network
+MS_GAME_CHAT = os.environ.get('MS_GAME_CHAT')
+# user
+AVATAR_DEFAULT = os.environ.get('AVATAR_DEFAULT')
 # email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
