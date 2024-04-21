@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.7.3'
+  version: '1.8.0'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -15,7 +15,8 @@ tags:
   - name: Status
   - name: Account
   - name: 2FA
-  - name: User Data
+  - name: Token
+  - name: Avatar
 
 paths:
   /user/status:
@@ -197,7 +198,7 @@ paths:
   /user/token:
     get:
       tags:
-        - User Data
+        - Token
       summary: Get JWT Token Payload
       description: Decodes the JWT token and returns the payload. 'sub' is the user ID.
       security:
@@ -222,7 +223,7 @@ paths:
   /user/token/existence:
     get:
       tags:
-        - Status
+        - Token
       summary: Check if Token Exists
       description: Checking if the JWT is stored in the cookie with the name 'jwt_token'
       security:
@@ -251,7 +252,7 @@ paths:
   /user/avatar:
     get:
       tags:
-        - User Data
+        - Avatar
       summary: Get Avatar
       security:
         - bearerAuth: []
@@ -273,7 +274,7 @@ paths:
               example: {"message": "Server Error"}
     put:
       tags:
-        - User Data
+        - Avatar
       summary: Update Avatar
       security:
         - bearerAuth: []
@@ -307,49 +308,11 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-  /user/2fa/update:
-    put:
-      tags:
-        - 2FA
-      summary: update 2fa setting
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/second_factor_request'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              example: {"message": "2fa setting updated"}
-        '401':
-          description: Missing or invalid JWT token
-          content:
-            application/json:
-              examples: 
-                missing_jwt_token:
-                  value: {"message": "Missing or invalid JWT token"}
-                2fa_verification_necessary:
-                  value: {"message": "2fa verification necessary"}
-        '409':
-          description: updating value failed
-          content:
-            application/json:
-              example: {"message": "updating value failed"}
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              example: {"message": "Server Error"}
-  /user/2fa/verify:
+  /user/2fa:
     post:
       tags:
         - 2FA
-      summary: send 2fa code for verification.
+      summary: verify 2fa code
       description: |
         - Code must be exact 6 random digits.
         - possible 401 responses:
@@ -387,6 +350,90 @@ paths:
           content:
             application/json:
               example: {"message": "Verification failed"}
+    get:
+      tags:
+        - 2FA
+      summary: get 2fa status
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example: {"second_factor": false}
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
+    put:
+      tags:
+        - 2FA
+      summary: activate 2fa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example: {"second_factor": true}
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              examples: 
+                missing_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
+                2fa_verification_necessary:
+                  value: {"message": "2fa verification necessary"}
+        '409':
+          description: updating value failed
+          content:
+            application/json:
+              example: {"message": "updating value failed"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
+    delete:
+      tags:
+        - 2FA
+      summary: deactivate 2fa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example: {"second_factor": false}
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              examples: 
+                missing_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
+                2fa_verification_necessary:
+                  value: {"message": "2fa verification necessary"}
+        '409':
+          description: updating value failed
+          content:
+            application/json:
+              example: {"message": "updating value failed"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
 
 components:
   securitySchemes:
@@ -419,13 +466,6 @@ components:
           type: string
         password:
           type: string
-    second_factor_request:
-      type: object
-      properties:
-        second_factor:
-          type: boolean
-          description: true if 2fa is enabled, false if disabled
-          example: true
     AuthResponse:
       type: object
       required:
