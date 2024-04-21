@@ -81,8 +81,7 @@ websocket_obj = {
   sender: null,
   websocket: null,
 
-  // user_id,
-  two_fa_code: null
+  user_id: -1
   // game_alias: 
   // mail
 }

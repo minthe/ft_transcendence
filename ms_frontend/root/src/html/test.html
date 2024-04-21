@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Input 2FA Simulation</title>
+    <style>
+        .centered-form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #codeInput {
+            font-size: 32px;
+            letter-spacing: 10px; /* Creates space between characters */
+            width: 200px; /* Adjust width as needed */
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <form id="authForm" class="centered-form">
+        <input type="text" id="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+    </form>
+
+    <script>
+        const input = document.getElementById('codeInput');
+
+        input.addEventListener('input', function(e) {
+            const value = input.value;
+            input.value = value.replace(/[^0-9]/g, ''); // Allow only numbers
+            if (value.length === 6) {
+                // Optionally trigger any action when all 6 digits are entered
+                console.log('Complete code:', value);
+            }
+        });
+
+        // Optional: Automatically focus the input on page load
+        window.onload = function() {
+            input.focus();
+        };
+    </script>
+</body>
+</html>

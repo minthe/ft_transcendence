@@ -10,7 +10,7 @@ class MyUser(models.Model):
     user_id = models.AutoField(primary_key=True, db_column='user_id')
     name = models.CharField("name", max_length=100)
     password = models.CharField("password", max_length=100)
-    avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.CharField(max_length=1000, null=True)
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
