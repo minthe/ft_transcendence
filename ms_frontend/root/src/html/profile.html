@@ -1,6 +1,6 @@
 <div class="profile-page">
   <!-- <div class="profile"> -->
-    <div class="profile-header">
+    <div id="profilePanel" class="profile-header">
       <label id="changeProfileImage" class="change-profile-image">
         <input type="file" style="display: none;" accept="image/*">
         <img id="profilePicture" src="https://www.course-api.com/images/people/person-1.jpeg" class="profile-picture" alt="Profile Picture">
@@ -29,5 +29,18 @@
       </div>
     </div>
 
-  <!-- </div> -->
+    <div id="twoFAProfile" class="pop-up-two-fa hidden">
+  
+      <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
+      <form class="centered-form">
+        <input type="digit" id="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+      </form>
+    
+      <button type="submit" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
+    </div>
+
+    <div id="updateTwoFaError" class="hidden" style="color: red;"></div>
+    <div id="updateTwoFaSucces" class="hidden" style="color: green;"></div>
+
+    <!-- </div> -->
 </div>

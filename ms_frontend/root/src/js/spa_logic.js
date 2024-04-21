@@ -118,50 +118,143 @@ async function handleClickEvent(event) {
     RegisterUserButton();
   else if (event.target.closest('#changeToLoginPageButton'))
     changeToLoginPageButton();
-  else if (event.target.closest('#openPopUpWin'))
-    openPopUpWin();
-  else if (event.target.closest('#RegisterPageButton'))
+  else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-  else if (event.target.closest('#closePopUpWin'))
-    closePopUpWin();
   else if (event.target.closest('#Register42Button'))
     registerWith42();
 
   else if (event.target.closest('#twoFAButtonE')) {
-    document.getElementById('twoFAButtonE').classList.add('hidden');
-    document.getElementById('twoFAButtonD').classList.remove('hidden');
-    const inputBody = {
-      "second_factor": true
-    };
-    const headers = {
-      'Content-Type':'application/json',
-      'Accept':'application/json',
-      'Authorization':'Bearer {access-token}'
-    };
-    const url = `${window.location.origin}/user/2fa/update`
-    fetch(url,
-    {
-      method: 'PUT',
-      body:  JSON.stringify(inputBody),
-      headers: headers
-    })
-    .then(function(res) {
-        return res.json();
-    }).then(function(body) {
-        console.log(body);
-    });
+    enableTwoFactor();
   }
   else if (event.target.closest('#twoFAButtonD')) {
-    //make check with 2fa first before disabling
-    showDiv('userIsNotAuth');
-    hideDiv('userIsAuth');
-    document.getElementById('twoFA').classList.remove('hidden');
-    //fetch
-    document.getElementById('twoFAButtonD').classList.add('hidden');
-    document.getElementById('twoFAButtonE').classList.remove('hidden');
-    document.getElementById('twoFA').classList.add('hidden');
-    showDiv('userIsAuth');
-    hideDiv('userIsNotAuth');
+    disableTwoFactor();
   }
+
+  // else if (event.target.closest('#login42UserButton'))
+  //   loginWith42();
 }
 
+
+
+function enableTwoFactor() {
+  document.getElementById('twoFAButtonE').classList.add('hidden');
+  document.getElementById('twoFAButtonD').classList.remove('hidden');
+
+  const url = `${window.location.origin}/user/2fa/update`
+  fetch(url,
+  {
+    method: 'PUT',
+    headers: headerEnableTwoFa(),
+    body:  JSON.stringify(bodyEnableTwoFa())
+  })
+  .then(function(res) {
+      return res.json();
+  }).then(function(body) {
+      console.log(body);
+  });
+}
+
+function disableTwoFactor() {
+  const url = `${window.location.origin}/user/2fa/update`;
+
+  fetch(url, {
+      method: 'PUT',
+      headers: headerDisableTwoFa(),
+      body: JSON.stringify(bodyDisableTwoFa())
+  })
+  .then(function(res) {
+      if (res.status === 401) {
+          document.getElementById('profilePanel').classList.add('hidden');
+          document.getElementById('twoFAProfile').classList.remove('hidden');
+
+          return fetch(url, { //enter url here
+              method: 'Delete',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'reauthenticate' })
+          })
+          .then(function(secondRes) {
+              // Check if the second fetch was successful
+              if (!secondRes.ok) {
+                  throw new Error(`Authentication failed: ${secondRes.status}`);
+              }
+              return secondRes.json();  // Assuming JSON response is expected
+          });
+      }
+      return res.json();
+  })
+  .then(function(body) {
+    document.getElementById('twoFAProfile').classList.add('hidden');
+    document.getElementById('profilePanel').classList.remove('hidden');
+    document.getElementById('twoFAButtonD').classList.add('hidden');
+    document.getElementById('twoFAButtonE').classList.remove('hidden');
+      // This will handle both responses from the initial and the reauthentication fetch
+      console.log('Response received:', body);
+  })
+  .catch(function(error) {
+      // This will catch errors from the initial fetch, the reauthentication fetch, or JSON parsing errors
+      console.error('Error processing your request:', error);
+  });
+
+}
+
+
+//change the header and body
+function loginWith42() {
+  const url = `${window.location.origin}/user/oauth2/login`
+  fetch(url, {
+    method: 'POST',
+    headers: headerLogin(),
+    // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
+  })
+  .then(async response => {
+    if (!response.ok) {
+      loginErrors(response)
+    }
+    document.getElementById("wrong-password").classList.add("hidden");
+    return response.json();
+  })
+  .then(async data => {
+    if (data.second_factor) {
+      document.getElementById('twoFAButtonE').classList.add('hidden');
+      document.getElementById('twoFAButtonD').classList.remove('hidden');
+
+      setUpTwoFaPage();
+      await verifyButtonClick();
+      if (two_fa_code.length === 6) {  
+        const url = `${window.location.origin}/user/2fa/verify`
+        fetch(url, {
+            method: 'POST',
+            headers: headerTwoFa(),
+            body: JSON.stringify(bodyTwoFa())
+          })
+        .then(async response => {
+          if (!response.ok) {
+            // location.reload();
+            throw new Error('2FA Code was not correct!');
+          }
+          initUserData(data, usernameElement.value, passwordElement.value)
+          authSucces();
+          clearLoginInput(usernameElement, passwordElement);
+          console.log("CORRECT 2FA CODE")
+          setDownTwoFaPage();
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+          // document.getElementById('twoFA').classList.add('hidden');
+          return ;//back to loginpage or 2fa page?
+        });
+      }
+    }
+    else {
+      initUserData(data, usernameElement.value, passwordElement.value)
+      authSucces();
+      clearLoginInput(usernameElement, passwordElement);
+    }
+
+  })
+  .catch(error => {
+    clearLoginInput(usernameElement, passwordElement);
+    // setErrorWithTimout('info_login', error, 9999999)
+    console.log('Error during login:', error);
+  });
+}
