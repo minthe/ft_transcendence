@@ -1,12 +1,16 @@
-function afterAuth(authMethod) {
+
+function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
   initUserData(data, usernameElement.value, passwordElement.value)
   authSucces();
   if (authMethod === 'login')
     clearLoginInput(usernameElement, passwordElement);
-  else if (authMethod === 'register')
-    clearRegisterInput(usernameElement, passwordElement, mail);
 }
 
+function afterAuthRegister(data, usernameElement, passwordElement, mail) {
+  initUserData(data, usernameElement.value, passwordElement.value)
+  authSucces();
+  clearRegisterInput(usernameElement, passwordElement, mail);
+}
 
 function initUserData(data, username, password) {
 	showDiv('userIsAuth')
@@ -17,7 +21,7 @@ function initUserData(data, username, password) {
 	websocket_obj.user_id = data.user_id
 
 
-  document.getElementById('profileName').textContent = websocket_obj.username;
+  document.getElementById('profileName').value = websocket_obj.username;
   // if (websocket_obj.game_alias)
   document.getElementById('gameAlias').value = websocket_obj.username;
 
@@ -33,6 +37,7 @@ function initUserData(data, username, password) {
 function clearLoginInput(usernameElement, passwordElement) {
   usernameElement.value = "";
   passwordElement.value = "";
+  document.getElementById('twoFaCode').value = '';
 }
 
 function clearRegisterInput(usernameElement, passwordElement, mail) {
@@ -132,7 +137,7 @@ function loginUserButton() {
     document.getElementById("wrong-password").classList.add("hidden");
     if (data.second_factor) {
       showTwoFaDisableBtn();
-      setUpTwoFaPage();
+      setUpTwoFaPage();      
       await verifyButtonClick();
       if (checkTwoFaCode()) {
         const url = `${window.location.origin}/user/2fa`
@@ -146,13 +151,13 @@ function loginUserButton() {
             // location.reload();
             throw new Error(response.data.message);
           }
-          afterAuth('login');
+          afterAuthLogin('login', data, usernameElement, passwordElement);
           setDownTwoFaPage();
         });
       }
     }
     else
-      afterAuth('login');
+      afterAuthLogin('login', data, usernameElement, passwordElement);
   })
   .catch(error => {
     clearLoginInput(usernameElement, passwordElement);
@@ -188,7 +193,7 @@ function RegisterUserButton() {
     document.getElementById("wrong-register").classList.add("hidden");
     showDiv('loginPage'); //maybe not needed
     hideDiv('registerPage'); //maybe not needed
-    afterAuth('register');
+    afterAuthRegister(data, usernameElement, passwordElement, mail);
     // return response.json();
   })
   .catch(error => {
@@ -302,7 +307,7 @@ function loginWith42() {
             // location.reload();
             throw new Error('2FA Code was not correct!');
           }
-          afterAuth('42Login');
+          afterAuthLogin('42Login', data);
           console.log("CORRECT 2FA CODE")
           setDownTwoFaPage();
         })
@@ -314,7 +319,7 @@ function loginWith42() {
       }
     }
     else
-      afterAuth('42Login');
+      afterAuth('42Login', data);
 
   })
   .catch(error => {

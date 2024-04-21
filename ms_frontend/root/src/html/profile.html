@@ -1,4 +1,4 @@
-<div class="profile-page">
+<div id="profilePage" class="profile-page">
   <!-- <div class="profile"> -->
     <div id="profilePanel" class="profile-header">
       <label id="changeProfileImage" class="change-profile-image">
@@ -31,16 +31,16 @@
       </div>
     </div>
 
-    <div id="twoFAProfile" class="pop-up-two-fa hidden">
-  
-      <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
-      <form class="centered-form">
-        <input type="digit" id="twoFaCodeProfile" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
-      </form>
     
-      <button type="submit" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
-    </div>
-
-
+    
     <!-- </div> -->
-</div>
+  </div>
+  <div id="twoFAProfile" class="pop-up-two-fa hidden">
+
+    <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
+    <form class="centered-form">
+      <input type="digit" id="twoFaCodeProfile" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+    </form>
+  
+    <button type="submit" id="verifyButtonProfile" class="btn btn-secondary verify-btn">Verify</button>
+  </div>

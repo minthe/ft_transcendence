@@ -8,8 +8,10 @@ function addEventListenersIsAuth() {
   loadCreators('html/creators.html', 'creatorsSite');
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
+    // verifyButtonClick(event);
   });
 
+  
 
   document.addEventListener('keypress', async function(event) {
       if (event.key === 'Enter' || event.keyCode === 13)

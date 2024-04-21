@@ -7,11 +7,11 @@ function enableTwoFactor() {
 	changeToTwoFa();
 	fetch(url, {
 	  method: 'PUT',
-	  headers: headerEnableTwoFa(),
+	//   headers: headerEnableTwoFa()
 	})
 	.then(async function(response) {
-	  if (response.status === 401) {
-		await verifyButtonClick();
+	  if (response.ok) {
+		await verifyButtonProfileClick();
 		if (checkTwoFaCode()) {
 		  fetch(url, {
 			method: 'POST',
@@ -26,12 +26,14 @@ function enableTwoFactor() {
 	  }
 	  showTwoFaDisableBtn();
 	  updateTwoFaStatus(true);
+	  changeToProfile();
 	})
 	.catch(error => {
 	  updateTwoFaStatus(false);
+	  changeToProfile();
 	  console.error('There was a problem with the fetch operation:', error);
 	});
-	changeToProfile();
+	// changeToProfile();
 }
   
 function disableTwoFactor() {
@@ -40,11 +42,11 @@ function disableTwoFactor() {
 	changeToTwoFa();
 	fetch(url, {
 		method: 'Delete',
-		headers: headerDisableTwoFa(),
+		// headers: headerDisableTwoFa()
 	})
 	.then(async function(response) {
-	  if (response.status === 401) {
-		await verifyButtonClick();
+	  if (response.ok) {
+		await verifyButtonProfileClick();
 		if (checkTwoFaCode()) {
 		  fetch(url, {
 			method: 'POST',
@@ -59,12 +61,14 @@ function disableTwoFactor() {
 	  }
 	  updateTwoFaStatus(true);
 	  showTwoFaEnableBtn();
+	  changeToProfile();
 	})
 	.catch(function(error) {
+	changeToProfile();
 	  updateTwoFaStatus(false);
 	  console.error('Error processing your request:', error);
 	});
-	changeToProfile();
+	// changeToProfile();
 }
   
 function updateTwoFaStatus(success) {
@@ -90,13 +94,14 @@ function updateTwoFaStatus(success) {
   
   
 function changeToTwoFa() {
-	document.getElementById('profilePanel').classList.add('hidden');
+	document.getElementById('profilePage').classList.add('hidden');
 	document.getElementById('twoFAProfile').classList.remove('hidden');
 }
 
 function changeToProfile() {
 	document.getElementById('twoFAProfile').classList.add('hidden');
-	document.getElementById('profilePanel').classList.remove('hidden');
+	document.getElementById('profilePage').classList.remove('hidden');
+	document.getElementById('twoFaCodeProfile').value = '';
 }
 
 function showTwoFaEnableBtn() {
@@ -117,4 +122,29 @@ function checkTwoFaCode() {
 		return false;
 	}
 	return true;
+}
+
+
+function verifyButtonClick() {
+	return new Promise(resolve => {
+		document.getElementById('verifyButton').addEventListener('click', () => {
+			if (document.getElementById('userIsNotAuth').classList.contains('hidden'))
+				two_fa_code = document.getElementById('twoFaCodeProfile').value;
+			else
+				two_fa_code = document.getElementById('twoFaCode').value;
+			resolve();
+		});
+	});
+}
+
+function verifyButtonProfileClick() {
+	return new Promise(resolve => {
+		document.getElementById('verifyButtonProfile').addEventListener('click', () => {
+			if (document.getElementById('userIsNotAuth').classList.contains('hidden'))
+				two_fa_code = document.getElementById('twoFaCodeProfile').value;
+			else
+				two_fa_code = document.getElementById('twoFaCode').value;
+			resolve();
+		});
+	});
 }

@@ -129,6 +129,11 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#twoFAButtonD'))
     disableTwoFactor();
 
+  // else if (event.target.closest('#verifyButton')) {
+  //   console.log('verifyButton clicked#######');
+  //   verifyButtonClick();
+  // }
+
   // else if (event.target.closest('#login42UserButton'))
   //   loginWith42();
 }
