@@ -78,7 +78,6 @@ def updateAlias(request):
 
         user_instance = MyUser.objects.get(user_id=jwt_user_id)
         return
-
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
