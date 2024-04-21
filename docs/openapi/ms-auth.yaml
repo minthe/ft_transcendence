@@ -370,6 +370,8 @@ paths:
               example: {"second_factor": false}
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -386,6 +388,8 @@ paths:
           description: 2fa activated
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '409':
           description: 2fa verification necessary
         '500':
@@ -404,6 +408,8 @@ paths:
           description: 2fa deactivated
         '401':
           description: Missing or invalid JWT token
+        '404':
+          description: User not found
         '409':
           description: 2fa verification necessary
         '500':
