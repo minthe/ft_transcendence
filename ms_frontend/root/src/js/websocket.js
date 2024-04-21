@@ -159,6 +159,7 @@ async function establishWebsocketConnection() {
         // await renderGame()
         break
       case 'render_right':
+        console.log("RENDER_RIGHT");
         // var canvas = document.getElementById("pongCanvas");
         websocket_obj.game.right_pedal = data.new_pedal_pos
         // websocket_obj.game.right_pedal = data.new_pedal_pos

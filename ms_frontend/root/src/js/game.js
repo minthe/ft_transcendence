@@ -135,37 +135,6 @@ function generateHTMLContentInv(matches) {
 }
 
 
-// async function renderInvites() {
-
-//   console.log('In renderInvites:');
-
-
-//   const username = websocket_obj.username;
-//   const matches = websocket_obj.matches_data;
-
-
-
-//   // var theButton = document.getElementById('createGameButton');
-//   // theButton.style.display = 'none';
-//   try {
-
-// // _+_+_+_+_+_+_
-
-//     const response = await fetch(`${window.location.origin}/game/render/invites/${username}/`);
-//     const htmlContent = await response.text();
-
-//     const container = document.getElementById('game-session-container');
-//     container.innerHTML = htmlContent;
-// // _+_+_+_+_+_+_
-
-// } catch (error) {
-//     console.error('There was a problem with the fetch operation:', error);
-// }
-
-
-
-//   }
-
   async function  displayError(){
     console.log('hi');
 

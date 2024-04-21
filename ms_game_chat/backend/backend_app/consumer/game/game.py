@@ -106,6 +106,8 @@ class _Game:
             if (self.game_states[self.game_id]['guest_score'] == self.game_states[self.game_id]['score_limit'] or
                     self.game_states[self.game_id]['host_score'] == self.game_states[self.game_id]['score_limit']):
                 self.game_states[self.game_id]['game_active'] = False
+                # tourn_id = await self.matchResults(self.game_states[self.game_id])
+
                 print("GAME OVER")
 
             print("GAME ACTIVE state = ")
@@ -121,9 +123,7 @@ class _Game:
             try:
                 print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
-                # await self.handle_send_ball_update()
-
-                # Use channel_layer to send a message to the group directly
+                print("SENDING BALL UPDATE")
                 await self.channel_layer.group_send(
                     self.game_group_id,
                     {
@@ -134,15 +134,18 @@ class _Game:
                         },
                     }
                 )
+                print("SENT BALL UPDATE")
                 await asyncio.sleep(1 / 60)
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
-
+                print("GAME ACTIVE")
 
             except Exception as e:
                 print(f"Error in game_loop: {e}")
                 break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
                 print("in game_active = false")
+                tourn_id = await self.matchResults(self.game_states[self.game_id])
+
                 self.game_states.pop(self.game_id, None)
                 print("111111")
 
@@ -168,6 +171,7 @@ class _Game:
 
 
     async def send_game_scene(self, event):
+        print("IN SEND GAME SCENE")
         await self.send(text_data=json.dumps({
             'type': event['data']['response_type'],
             'new_pedal_pos': event['data']['new_pedal_pos']
@@ -392,7 +396,7 @@ class _Game:
     async def handle_send_join_tournament(self):
         print("in handle_send_join_tournament")
         tourn_id = await self.add_to_tourn(self.user['user_id'], self.invited_id)
-        if tourn_id != None:
+        if tourn_id:
             await self.semiFull(tourn_id)
 
 
@@ -403,26 +407,54 @@ class _Game:
     @database_sync_to_async
     def matchResults(self, game_struct):
         game_instance = Game.objects.get(id=self.game_id)
+        user_one = MyUser.objects.get(name=game_instance.hostId)
+        user_two = MyUser.objects.get(name=game_instance.guestId)
+
+        user_one.old_matches.add(game_instance)
+        user_two.old_matches.add(game_instance)
+        user_one.save()
+        user_two.save()
+
+
         if game_struct['host_score'] == game_struct['score_limit']:
             game_instance.winner = game_instance.hostId
             game_instance.loser = game_instance.guestId
         elif game_struct['guest_score'] == game_struct['score_limit']:
             game_instance.winner = game_instance.guestId
             game_instance.loser = game_instance.hostId
-        if game_instance.tournId != 0:
+        if game_instance.tournId is not None:
+            print("matchResults tourn")
             tourn_instance = Tournament.objects.get(id=game_instance.tournId)
             tourn_instance.active_matches.remove(game_instance)
-            return tourn_instance.id
-            tourn_instance.finalMatch.append(MyUser.objects.get(name=game_instance.winnerId))
+            tourn_instance.passed_matches.add(game_instance)
+            tourn_instance.save()
+
+            # return tourn_instance.id
+            if game_instance.stage == "semi":
+                tourn_instance.finalMatch.append(MyUser.objects.get(name=game_instance.winnerId))
             tourn_instance.save()
             if len(tourn_instance.finalMatch) == 2:
-                game_instance = Game.objects.create()
-                game_instance.hostId = tourn_instance.finalMatch[0]
-                game_instance.guestId = tourn_instance.finalMatch[1]
-                tourn_instance.active_matches.add(game_instance)
-                game_instance.tournId = tourn_instance.id
-                game_instance.save()
-                tourn_instance.save()
+                if game_instance.stage == "semi":
+                    game_instance = Game.objects.create()
+                    game_instance.hostId = tourn_instance.finalMatch[0]
+                    game_instance.guestId = tourn_instance.finalMatch[1]
+                    tourn_instance.active_matches.add(game_instance)
+                    game_instance.tournId = tourn_instance.id
+                    game_session.stage = "final"
+                    game_instance.save()
+
+                    # user_one = MyUser.objects.get(user_id=tourn_instance.finalMatch[0])
+                    # user_two = MyUser.objects.get(user_id=tourn_instance.finalMatch[1])
+                    user_one.new_matches.add(game_instance)
+                    user_two.new_matches.add(game_instance)
+                    user_one.save()
+                    user_two.save()
+
+                    tourn_instance.save()
+                else:
+                    tourn_instance.winnerId = game_instance.winnerId
+                    tourn_instance.status = "finished"
+                    tourn_instance.save()
 
     @database_sync_to_async
     def semiFull(self, invited_id):
@@ -452,7 +484,16 @@ class _Game:
                 game_instance.guestId = tourn_instance.semiMatch[i + 1]
                 tourn_instance.active_matches.add(game_instance)
                 game_instance.tournId = tourn_instance.id
+                game_instance.stage = "semi"
                 game_instance.save()
+
+                user_one = MyUser.objects.get(user_id=tourn_instance.semiMatch[i])
+                user_two = MyUser.objects.get(user_id=tourn_instance.semiMatch[i + 1])
+                user_one.new_matches.add(game_instance)
+                user_two.new_matches.add(game_instance)
+                user_one.save()
+                user_two.save()
+
             tourn_instance.save()
             print("tourn_instance.active_matches")
             print(tourn_instance.active_matches)
@@ -483,7 +524,7 @@ class _Game:
             for tourn_session in tourn_sessions:
                 print("tourn_session.hostId")
                 print(tourn_session.hostId)
-                if tourn_session.hostId == user_id:
+                if tourn_session.hostId == user_id and tourn_session.status == "active":
                     print("---MATCH FOUND---")
                     already_inv = False
                     if len(tourn_session.semiMatch) < 4:
@@ -508,11 +549,7 @@ class _Game:
                             if len(tourn_session.semiMatch) == 4:
                                 print("semiMatch is FULL")
                                 return tourn_session.id
-                                # self.semiFull(tourn_session.id)
-                                # try:
-                                #     await self.semiFull(tourn_session.id)
-                                # except Exception as e:
-                                #     print(f"An exception occurred: {e}")
+
                     else:
                         print("DENIED invitation: finish your tournament first")
                     exists = True
@@ -560,8 +597,13 @@ class _Game:
             unit = []
             tourn_entry = []
             tourn_host = tourns.hostId
+            tourn_winner = tourns.winnerId
+            # tourn_status = tourns.status
+
             tourn_entry.append({
-                'tourn_host': tourn_host
+                'tourn_host': tourn_host,
+                'tourn_winner': tourn_winner
+                # 'tourn_status': tourn_status
             })
             unit.append(tourn_entry)
             for game_session in game_sessions:
@@ -569,12 +611,20 @@ class _Game:
                 player_one = game_session.hostId
                 player_two = game_session.guestId
                 game_id = game_session.id
+                winner_id = game_session.winnerId
+                loser_id = game_session.loserId
+                stage = game_session.stage
+
                 
                 # Append data to the match_data list
                 game_entry.append({
                     'player_one': player_one,
                     'player_two': player_two,
-                    'game_id': game_id
+                    'game_id': game_id,
+                    'winner_id': winner_id,
+                    'loser_id': loser_id,
+                    'stage': stage
+
                 })
                 unit.append(game_entry)
             match_data.append(unit)
@@ -614,7 +664,14 @@ class _Game:
             user1 = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             game_instance = Game.objects.get(id=game_id)
             user1.new_matches.remove(game_instance)
-            game_instance.delete()
+            user1.old_matches.add(game_instance)
+            user1.save()
+
+            user2 = MyUser.objects.get(name=game_instance.guestId)
+            user2.new_matches.remove(game_instance)
+            user2.old_matches.add(game_instance)
+            user2.save()
+            # game_instance.delete()
         except MyUser.DoesNotExist:
             return None
 
