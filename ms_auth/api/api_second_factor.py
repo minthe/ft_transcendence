@@ -56,10 +56,10 @@ def second_factor_activate(request):
 	if not user_views.checkUserExists('user_id', request.user_id):
 		return HttpResponse(status=404)
 	if user_views.getValue(request.user_id, 'second_factor_enabled') == True:
-		return HttpResponse(status=200)
+		return HttpResponse(status=409)
 	second_factor_views.create_2fa(request.user_id)
 	user_views.updateValue(request.user_id, 'second_factor_enabled', True)
-	response = HttpResponse(status=409)
+	response = HttpResponse(status=200)
 	response.delete_cookie('jwt_token')
 	return response
 
@@ -69,9 +69,9 @@ def second_factor_deactivate(request):
 	if not user_views.checkUserExists('user_id', request.user_id):
 		return HttpResponse(status=404)
 	if user_views.getValue(request.user_id, 'second_factor_enabled') == False:
-		return HttpResponse(status=200)
+		return HttpResponse(status=409)
 	second_factor_views.create_2fa(request.user_id)
 	user_views.updateValue(request.user_id, 'second_factor_enabled', False)
-	response = HttpResponse(status=409)
+	response = HttpResponse(status=200)
 	response.delete_cookie('jwt_token')
 	return response
