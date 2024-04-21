@@ -1,4 +1,17 @@
 
+function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
+  initUserData(data, usernameElement.value, passwordElement.value)
+  authSucces();
+  if (authMethod === 'login')
+    clearLoginInput(usernameElement, passwordElement);
+}
+
+function afterAuthRegister(data, usernameElement, passwordElement, mail) {
+  initUserData(data, usernameElement.value, passwordElement.value)
+  authSucces();
+  clearRegisterInput(usernameElement, passwordElement, mail);
+}
+
 function initUserData(data, username, password) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
@@ -8,7 +21,7 @@ function initUserData(data, username, password) {
 	websocket_obj.user_id = data.user_id
 
 
-  document.getElementById('profileName').textContent = websocket_obj.username;
+  document.getElementById('profileName').value = websocket_obj.username;
   // if (websocket_obj.game_alias)
   document.getElementById('gameAlias').value = websocket_obj.username;
 
@@ -24,6 +37,7 @@ function initUserData(data, username, password) {
 function clearLoginInput(usernameElement, passwordElement) {
   usernameElement.value = "";
   passwordElement.value = "";
+  document.getElementById('twoFaCode').value = '';
 }
 
 function clearRegisterInput(usernameElement, passwordElement, mail) {
@@ -42,34 +56,14 @@ function authSucces() {
   window.history.replaceState(state, null, "");
 }
 
-function loginErrors(response) {
+function loginErrors(data) {
   document.getElementById("wrong-password").classList.remove("hidden");
-  switch (response.status) {
-    case 404:
-      document.getElementById("loginUsername").style.border = "1px solid red";
-      document.getElementById("wrong-password").innerHTML = "This User does not exist!";
-      throw new Error('This User does not exist!');
-    case 401:
-      document.getElementById("loginPassword").style.border = "1px solid red";
-      document.getElementById("wrong-password").innerHTML = "Credentials are wrong!";
-      throw new Error('Credentials are wrong!');
-    default:
-      document.getElementById("wrong-password").innerHTML = "Unexpected Error: Failed to check Credentials!";
-      throw new Error('Unexpected Error: Failed to check Credentials')
-  }
+  throw new Error(data.message);
 }
 
-function registerErrors(response) {
+function registerErrors(data) {
   document.getElementById("wrong-register").classList.remove("hidden");
-  switch (response.status) {
-    case 409:
-      document.getElementById("registerUsername").style.border = "1px solid red";
-      document.getElementById("wrong-register").innerHTML = "This Username already exist!";
-      throw new Error('This Username already exist')
-    default:
-      document.getElementById("wrong-register").innerHTML = "Unexpected Error: Failed to create new Account!";
-      throw new Error('Unexpected Error: Failed to create new Account')
-  }
+  throw new Error(data.message);
 }
 
 function setUpTwoFaPage() {
@@ -78,89 +72,107 @@ function setUpTwoFaPage() {
   document.getElementById('twoFA').classList.remove('hidden');
 }
 
+function setDownTwoFaPage() {
+  document.getElementById('loginHeader').classList.remove('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('twoFA').classList.add('hidden');
+}
+
+function getUsername() {
+  const usernameElement = document.getElementById('loginUsername');
+
+  usernameElement.style.border = "";
+  return usernameElement;
+}
+
+function getPassword() {
+  const passwordElement = document.getElementById('loginPassword');
+
+  passwordElement.style.border = "";
+  return passwordElement;
+}
+
+function getUsernameRegister() {
+  const usernameElement = document.getElementById('registerUsername');
+
+  usernameElement.style.border = "";
+  return usernameElement;
+}
+
+function getPasswordRegister() {
+  const passwordElement = document.getElementById('registerPassword');
+
+  passwordElement.style.border = "";
+  return passwordElement;
+}
+
+function getMail() {
+  const mail = document.getElementById('registerMail');
+
+  mail.style.border = "";
+  return mail;
+}
+
 function loginUserButton() {
-	const usernameElement = document.getElementById('loginUsername')
-  const passwordElement = document.getElementById('loginPassword')
+	const usernameElement = getUsername();
+  const passwordElement = getPassword();
 
-  usernameElement.style.border = ""
-  passwordElement.style.border = ""
+  if (sqlCheckLogin(usernameElement, passwordElement))
+    return ;
 
-  if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)) {
-    clearLoginInput(usernameElement, passwordElement);
-    document.getElementById("wrong-password").innerHTML = "Entered not allowed input!";
-    return;
-  }  
-    
-    // for testing purposes | delete later
-    const email = 'marie.a.mensing@gmail.com'
-    const enable2FA = true
-
-    const url = `${window.location.origin}/user/login`
-    fetch(url, {
-      method: 'POST',
-      headers: headerLogin(),
-      body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
-    })
-    .then(async response => {
-      if (!response.ok) {
-        loginErrors(response)
-      }
-      document.getElementById("wrong-password").classList.add("hidden");
-      return response.json();
-    })
-    .then(async data => {
-      if (data.twoFactorAuth) {
-        setUpTwoFaPage();
-        await verifyButtonClick();
-        if (websocket_obj.two_fa_code.length === 6) {   
-          const url = `${window.location.origin}/user/2fa/verify`
-          fetch(url, {
-              method: 'POST',
-              headers: headerTwoFa(),
-              body: JSON.stringify(bodyTwoFa())
-            })
-          .then(async response => {
-            if (!response.ok) {
-              // location.reload();
-              throw new Error('2FA Code was not correct!');
-            }
-            console.log("CORRECT 2FA CODE")
-            document.getElementById('twoFA').classList.add('hidden');
-          })
-          .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            // document.getElementById('twoFA').classList.add('hidden');
-            return ;//back to loginpage or 2fa page?
-          });
-        }
-      }
-      initUserData(data, usernameElement.value, passwordElement.value)
-      authSucces();
-      clearLoginInput(usernameElement, passwordElement);
-    })
-    .catch(error => {
-      clearLoginInput(usernameElement, passwordElement);
-      // setErrorWithTimout('info_login', error, 9999999)
-      console.log('Error during login:', error);
+  const url = `${window.location.origin}/user/login`
+  fetch(url, {
+    method: 'POST',
+    headers: headerLogin(),
+    body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
+  })
+  .then(response => {
+    return response.json().then(data => {
+      return { ok: response.ok, status: response.status, data };
     });
+  })
+  .then(async ({ok, status, data}) => {
+    if (!ok && status !== 401)
+      loginErrors(data)
+    document.getElementById("wrong-password").classList.add("hidden");
+    if (data.second_factor) {
+      showTwoFaDisableBtn();
+      setUpTwoFaPage();      
+      await verifyButtonClick();
+      if (checkTwoFaCode()) {
+        const url = `${window.location.origin}/user/2fa`
+        fetch(url, {
+            method: 'POST',
+            headers: headerTwoFa(),
+            body: JSON.stringify(bodyTwoFa(data.user_id))
+          })
+        .then(response => {
+          if (!response.ok) {
+            // location.reload();
+            throw new Error(response.data.message);
+          }
+          afterAuthLogin('login', data, usernameElement, passwordElement);
+          setDownTwoFaPage();
+        });
+      }
+    }
+    else
+      afterAuthLogin('login', data, usernameElement, passwordElement);
+  })
+  .catch(error => {
+    clearLoginInput(usernameElement, passwordElement);
+    // setErrorWithTimout('info_login', error, 9999999)
+    console.log('Error during login:', error);
+  });
 }
 
 function RegisterUserButton() {
-	const usernameElement = document.getElementById('registerUsername')
-  const passwordElement = document.getElementById('registerPassword')
-  const mail = document.getElementById('registerMail');
+  const usernameElement = getUsernameRegister();
+  const passwordElement = getPasswordRegister();
+  const mail = getMail();
 
-  usernameElement.style.border = ""
-  passwordElement.style.border = ""
-  mail.style.border = ""
-
-  if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)
-    || containsSQLInjection(mail.value)) {
-      clearRegisterInput(usernameElement, passwordElement, mail);
-    document.getElementById("wrong-password").innerHTML = "Entered not allowed input!";
-    return;
-  }
-
+  if (sqlCheckRegister(usernameElement, passwordElement, mail))
+    return ;
   
   const url = `${window.location.origin}/user/register`;
   fetch(url,
@@ -170,18 +182,19 @@ function RegisterUserButton() {
     body: JSON.stringify(bodyRegister(usernameElement, passwordElement, mail))
   })
   .then(response => {
-    if (!response.ok) {
-      registerErrors(response);
+    return response.json().then(data => {
+      return { ok: response.ok, data };
+    });
+  })
+  .then(({ ok, data }) => {
+    if (!ok) {
+        registerErrors(data);
     }
     document.getElementById("wrong-register").classList.add("hidden");
     showDiv('loginPage'); //maybe not needed
     hideDiv('registerPage'); //maybe not needed
-    return response.json();
-  })
-  .then(data => {
-    initUserData(data, usernameElement.value, passwordElement.value)
-    authSucces();
-    clearRegisterInput(usernameElement, passwordElement, mail);
+    afterAuthRegister(data, usernameElement, passwordElement, mail);
+    // return response.json();
   })
   .catch(error => {
     clearRegisterInput(usernameElement, passwordElement, mail);
@@ -200,13 +213,10 @@ function changeToLoginPageButton() {
   document.getElementById("registerPassword").style.border = "";
 }
 
-function openPopUpWin() {
-	hideDiv('loginPage')
-  document.getElementById('loginPagePopUp').classList.remove('hidden');
-}
-
 function showRegisterPage() {
-  document.getElementById('loginPagePopUp').classList.add('hidden');
+  hideDiv('loginPage')
+  console.log("in the show function");
+  // document.getElementById('loginPagePopUp').classList.add('hidden');
   showDiv('registerPage')
   document.getElementById("wrong-password").classList.add("hidden");
   document.getElementById('loginUsername').value = null;
@@ -215,20 +225,7 @@ function showRegisterPage() {
   document.getElementById("loginPassword").style.border = "";
 }
 
-function closePopUpWin() {
-  document.getElementById('loginPagePopUp').classList.add('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-}
 
-function registerWith42() {
-  window.location.href = '/user/oauth2/login';
-  //window.location.href = ''; redirect back
-  // if token true
-  //   sillyLogin();
-  //   establishWebsocketConnection();
-  //   hideDiv('userIsNotAuth'); with delay if dom content needs to load
-  //   showDiv('userIsAuth');
-}
 
 
 
@@ -267,16 +264,67 @@ async function logoutUser() {
 }
 
 
-function moveToNextIfNumber(input, event) {
-  // Remove non-numeric characters
-  input.value = input.value.replace(/\D/g, '');
 
-  // Check if the input value is a number
-  if (!isNaN(parseInt(input.value))) {
-    websocket_obj.two_fa_code += input.value;
-    console.log(codeTwoFa);
-    if (input.nextElementSibling) {
-      input.nextElementSibling.focus();
+
+
+
+
+
+
+
+
+//change the header and body
+function loginWith42() {
+  const url = `${window.location.origin}/user/oauth2/login`
+  fetch(url, {
+    method: 'POST',
+    headers: headerLogin(),
+    // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
+  })
+  .then(async response => {
+    if (!response.ok) {
+      loginErrors(response)
     }
-  }
+    document.getElementById("wrong-password").classList.add("hidden");
+    return response.json();
+  })
+  .then(async data => {
+    if (data.second_factor) {
+      document.getElementById('twoFAButtonE').classList.add('hidden');
+      document.getElementById('twoFAButtonD').classList.remove('hidden');
+
+      setUpTwoFaPage();
+      await verifyButtonClick();
+      if (two_fa_code.length === 6) {  
+        const url = `${window.location.origin}/user/2fa/verify`
+        fetch(url, {
+            method: 'POST',
+            headers: headerTwoFa(),
+            body: JSON.stringify(bodyTwoFa())
+          })
+        .then(async response => {
+          if (!response.ok) {
+            // location.reload();
+            throw new Error('2FA Code was not correct!');
+          }
+          afterAuthLogin('42Login', data);
+          console.log("CORRECT 2FA CODE")
+          setDownTwoFaPage();
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+          // document.getElementById('twoFA').classList.add('hidden');
+          return ;//back to loginpage or 2fa page?
+        });
+      }
+    }
+    else
+      afterAuth('42Login', data);
+
+  })
+  .catch(error => {
+    clearLoginInput(usernameElement, passwordElement);
+    // setErrorWithTimout('info_login', error, 9999999)
+    console.log('Error during login:', error);
+  });
 }

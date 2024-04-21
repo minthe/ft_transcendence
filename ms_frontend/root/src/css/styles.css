@@ -74,6 +74,15 @@ body, html {
 }
 
 /* login page */
+.codeInput {
+  font-size: 32px;
+  letter-spacing: 10px; /* Creates space between characters */
+  width: 200px; /* Adjust width as needed */
+  padding: 10px;
+  text-align: center;
+  border: 2px solid #000;
+  border-radius: 5px;
+}
 
 .header-two-fa {
   color: #131615;
@@ -85,12 +94,6 @@ body, html {
   /* flex-direction: column; */
   align-items: center;
   justify-content: center;
-}
-
-input[type="digit"] {
-  width: 40px;
-  text-align: center;
-  margin: 5px;
 }
 
 .verify-btn {

@@ -16,3 +16,21 @@ function containsSQLInjection(input) {
     return false;
 }
 
+function sqlCheckLogin(usernameElement, passwordElement) {
+    if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)) {
+        clearLoginInput(usernameElement, passwordElement);
+        document.getElementById("wrong-password").innerHTML = "Entered not allowed input!";
+        return true;
+    }
+    return false;
+}
+
+function sqlCheckRegister(usernameElement, passwordElement, mail) {
+    if (containsSQLInjection(usernameElement.value) || containsSQLInjection(passwordElement.value)
+    || containsSQLInjection(mail.value)) {
+        clearRegisterInput(usernameElement, passwordElement, mail);
+        document.getElementById("wrong-register").innerHTML = "Entered not allowed input!";
+        return true;
+    }
+    return false;
+}
