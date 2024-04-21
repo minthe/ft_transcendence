@@ -6,7 +6,7 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 jwt = FT_JWT(settings.JWT_SECRET)
 
 def checkUserExists(key, value):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
+	try:
 		user = User.objects.get(**{key: value})
 		return True
 	except User.DoesNotExist:
@@ -27,43 +27,34 @@ def check_password(username, password):
 		return False
 
 def createIntraUser(user_data):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-		user = User()
-		user.intra_id = user_data['intra_id']
-		user.username = user_data['username']
-		user.email = user_data['email']
-		user.image = user_data['image']
-		user.set_password('') # TODO valentin: change before production
-		user.second_factor_enabled = False
-		user.save()
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
+	for data_key in user_data.keys():
+		if data_key not in user_data:
+			raise Exception('Missing data')
+	user = User()
+	user.intra_id = user_data['intra_id']
+	user.username = user_data['username']
+	user.email = user_data['email']
+	user.image = user_data['image']
+	user.set_password('') # TODO valentin: change before production
+	user.second_factor_enabled = False
+	user.save()
 
 def createUser(data):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-		user = User()
-		user.username = data['username']
-		user.email = data['email']
-		user.set_password(data['password'])
-		user.second_factor_enabled = False
-		user.save()
-		return user
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
+	for data_key in data.keys():
+		if data_key not in data:
+			raise Exception('Missing data')
+	user = User()
+	user.username = data['username']
+	user.email = data['email']
+	user.set_password(data['password'])
+	user.second_factor_enabled = False
+	user.save()
+	return user
 
 def updateValue(user_id, key, value):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-		user = User.objects.get(user_id=user_id)
-		setattr(user, key, value)
-		user.save()
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': "updating value failed"}, status=409)
+	user = User.objects.get(user_id=user_id)
+	setattr(user, key, value)
+	user.save()
 
 def getValue(user_id, key):
     try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
