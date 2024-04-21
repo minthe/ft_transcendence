@@ -15,13 +15,9 @@ paths:
       tags:
         - Frontend
       summary: Serves the homepage
-      security:
-        - bearerAuth: []
       responses:
         '200':
-          description: Service is up and running
-        '401':
-          description: Missing or invalid JWT token'
+          description: OK
         '503':
           description: Service is down or unhealthy
   /static/avatar/{url}:
