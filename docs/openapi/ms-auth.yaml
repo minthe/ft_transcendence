@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.1'
+  version: '1.8.3'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -205,7 +205,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
@@ -216,7 +216,7 @@ paths:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
         '500':
-          description: Error decoding JWT token
+          description: Internal server error
           content:
             application/json:
               example: {"message": "Server Error"}
@@ -333,6 +333,11 @@ paths:
       responses:
         '200':
           description: 2fa verified
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
         '401':
           description: Verification failed
           content:
