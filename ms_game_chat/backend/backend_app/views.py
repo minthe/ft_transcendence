@@ -22,7 +22,7 @@ def createUser(request):
         jwt_user_id = request.user_id
 
         # check if user already exists
-        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
             return JsonResponse({'message': 'User does not exist'}, status=409)
 
         data = json.loads(request.body.decode('utf-8'))
@@ -48,7 +48,7 @@ def createUser(request):
 def updateAvatar(request):
     try:
         jwt_user_id = request.user_id
-        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
             return JsonResponse({'message': 'User does not exist'}, status=409)
         data = json.loads(request.body.decode('utf-8'))
         avatar = data.get('avatar')
