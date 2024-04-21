@@ -10,11 +10,7 @@
       <div id="fileError" class="error-message" style="color: red; display: none;">Invalid file type. Please select an image file.</div>
     
       <h1 id="profileName" class="profile-name"></h1>
-      <select class="form-select" aria-label="Default select example" name="select-status">
-        <option value="1">Online</option>
-        <option value="2">Invisible</option>
-        <option value="3">Do not disturb</option>
-      </select>
+      
       <div class="profile-details">
         <h2 class="section-heading">Details</h2>
         
@@ -26,6 +22,12 @@
         <button id="saveButton" class="btn btn-outline-secondary" style="display: none;">Save</button>
         <button id="editButton" class="btn btn-outline-dark">Edit</button>
         <div id="wrongSavedInput" class="hidden" style="color: red; margin-top: 10px;">Malicious characters entered!</div>
+        
+        <div id="updateTwoFa" class="hidden" ></div>
+
+        
+        <!-- <div id="updateTwoFaError" class="hidden" style="color: red;">Failed to Update 2FA</div>
+        <div id="updateTwoFaSucces" class="hidden" style="color: green;">Updated 2FA succesfully</div> -->
       </div>
     </div>
 
@@ -33,14 +35,12 @@
   
       <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
       <form class="centered-form">
-        <input type="digit" id="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+        <input type="digit" id="twoFaCodeProfile" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
       </form>
     
       <button type="submit" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
     </div>
 
-    <div id="updateTwoFaError" class="hidden" style="color: red;"></div>
-    <div id="updateTwoFaSucces" class="hidden" style="color: green;"></div>
 
     <!-- </div> -->
 </div>

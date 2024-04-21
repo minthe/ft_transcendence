@@ -22,8 +22,10 @@ async function enterKeyEvent() {
     && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
       loginUserButton();
   else if (!document.getElementById('registerPage').classList.contains('hidden') 
-    && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+    && !document.getElementById('userIsNotAuth').classList.contains('hidden')) {
+      // console.log('went in register user button enter key!!!!!!!!');
       RegisterUserButton();
+  }
   else if (!document.getElementById('chat').classList.contains('hidden')
     && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
     await sendMessage();
