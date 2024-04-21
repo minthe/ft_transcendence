@@ -386,8 +386,7 @@ class _Chat:
         return None
 
     def getAvatar(self, chat_name):
-        user_exist = MyUser.objects.filter(name=chat_name).exists()
-        if not user_exist:
+        if not MyUser.objects.filter(name=chat_name).exists():
             return None
         user_instance = MyUser.objects.get(name=chat_name)
         avatar_url = user_instance.avatar.url if user_instance.avatar else None
