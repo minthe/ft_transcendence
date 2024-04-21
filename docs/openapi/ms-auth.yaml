@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.5'
+  version: '1.8.6'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -141,6 +141,7 @@ paths:
             Set-Cookie:
               schema:
                 type: string
+                description: jwt_token cookie is deleted
                 example: jwt_token=; Max-Age=0; HttpOnly
           content:
             application/json:
@@ -390,6 +391,7 @@ paths:
             Set-Cookie:
               schema:
                 type: string
+                description: jwt_token cookie is deleted
                 example: jwt_token=; Max-Age=0; HttpOnly
         '401':
           description: Missing or invalid JWT token
@@ -415,6 +417,7 @@ paths:
             Set-Cookie:
               schema:
                 type: string
+                description: jwt_token cookie is deleted
                 example: jwt_token=; Max-Age=0; HttpOnly
         '401':
           description: Missing or invalid JWT token
