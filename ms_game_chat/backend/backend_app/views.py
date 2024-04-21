@@ -22,8 +22,8 @@ def createUser(request):
         jwt_user_id = request.user_id
 
         # check if user already exists
-        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
-            return JsonResponse({'message': 'User does not exist'}, status=409)
+        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User already exists'}, status=409)
 
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
