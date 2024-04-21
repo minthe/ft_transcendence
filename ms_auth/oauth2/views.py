@@ -1,16 +1,8 @@
 import json
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from mail import views as mail_views
-from user import views as user_views
-from intra42 import views as intra42_views
-from ft_jwt.ft_jwt.ft_jwt import FT_JWT
-
-jwt = FT_JWT(settings.JWT_SECRET)
-
-redirect_uri = f"https://{settings.CURRENT_HOST}{settings.REDIRECT_URI}"
 
 # get access_token
 def getToken(request):
@@ -20,7 +12,7 @@ def getToken(request):
 			"client_id": settings.CLIENT_ID,
 			"client_secret": settings.CLIENT_SECRET,
 			"code": request.GET.get("code"),
-			"redirect_uri": redirect_uri,
+			"redirect_uri": settings.REDIRECT_URI,
 			"scope": "public"
 		}
 		headers = {
@@ -36,52 +28,3 @@ def getToken(request):
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
-
-def oauth2_redirect(request):
-	try:
-		access_token = getToken(request)
-		user_data = intra42_views.getUserData(access_token)
-
-		if not user_views.checkUserExists('intra_id', user_data['intra_id']):
-			if settings.WELCOME_MAIL == True:
-				mail_views.send_welcome_email(user_data['username'], user_data['email'])
-			user_views.createIntraUser(user_data)
-
-		user_id = user_views.returnUserId(user_data['username'])
-		username = user_views.getValue(user_id, 'username')
-		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
-		jwt_token = jwt.createToken(user_id)
-
-		if not jwt.validateToken(jwt_token):
-			response = JsonResponse({'message': 'Login failed'})
-			response.status_code = 401
-			return response
-
-		response_data = {
-			'user_id': user_id,
-			'username': username,
-			'second_factor': second_factor_status
-		}
-		response = JsonResponse(response_data)
-		response.set_cookie('jwt_token', jwt_token, httponly=True)
-		response.status_code = 200
-		return response
-
-	except Exception as e:
-		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
-
-# handling of 401 error
-
-	# try:
-	# 	response = urlopen(request)
-	# 	response_data = response.read().decode("utf-8")
-	# 	credentials = json.loads(response_data)
-	# 	return JsonResponse(credentials)
-	# except HTTPError as e:
-	# 	if e.code == 401:
-	# 		redirect_url = '/oauth/login'
-	# 	else:
-	# 		redirect_url = '/'
-	# 	return redirect(redirect_url)
