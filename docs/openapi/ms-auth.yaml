@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.0'
+  version: '1.8.1'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -315,10 +315,6 @@ paths:
       summary: verify 2fa code
       description: |
         - Code must be exact 6 random digits.
-        - possible 401 responses:
-          - 'Rate limit exceeded (3 seconds)'
-          - 'Invalid code'
-          - 'Code expired'
       requestBody:
         required: true
         content:
@@ -336,15 +332,18 @@ paths:
             example: {"user_id": 1, "code": "163907"}
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              example: {"message": "Sucessfully verified"}
+          description: 2fa verified
         '401':
           description: Verification failed
           content:
             application/json:
-              example: {"message": "Rate limit exceeded"}
+              examples:
+                rate_limit_exceeded:
+                  value: {"message": "Rate limit exceeded"}
+                invalid_code:
+                  value: {"message": "Invalid code"}
+                code_expired:
+                  value: {"message": "Code expired"}
         '500':
           description: Internal server error
           content:
@@ -364,9 +363,6 @@ paths:
               example: {"second_factor": false}
         '401':
           description: Missing or invalid JWT token
-          content:
-            application/json:
-              example: {"message": "Missing or invalid JWT token"}
         '500':
           description: Internal server error
           content:
@@ -380,24 +376,11 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              example: {"second_factor": true}
+          description: 2fa activated
         '401':
           description: Missing or invalid JWT token
-          content:
-            application/json:
-              examples: 
-                missing_jwt_token:
-                  value: {"message": "Missing or invalid JWT token"}
-                2fa_verification_necessary:
-                  value: {"message": "2fa verification necessary"}
         '409':
-          description: updating value failed
-          content:
-            application/json:
-              example: {"message": "updating value failed"}
+          description: 2fa verification necessary
         '500':
           description: Internal server error
           content:
@@ -411,24 +394,11 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              example: {"second_factor": false}
+          description: 2fa deactivated
         '401':
           description: Missing or invalid JWT token
-          content:
-            application/json:
-              examples: 
-                missing_jwt_token:
-                  value: {"message": "Missing or invalid JWT token"}
-                2fa_verification_necessary:
-                  value: {"message": "2fa verification necessary"}
         '409':
-          description: updating value failed
-          content:
-            application/json:
-              example: {"message": "updating value failed"}
+          description: 2fa verification necessary
         '500':
           description: Internal server error
           content:
