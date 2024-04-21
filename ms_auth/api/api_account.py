@@ -152,9 +152,10 @@ def oauth2_login(request):
 		data = {
 			"client_id": settings.CLIENT_ID,
 			"redirect_uri": settings.REDIRECT_URI,
+			"scope": settings.INTRA_SCOPE,
+			"state": settings.INTRA_STATE,
 			"response_type": "code"
 		}
-		print(f"oauth2 login: {settings.OAUTH_AUTH}?{urlencode(data)}")
 		return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 	except Exception as e:
 		error_message = str(e)
@@ -163,6 +164,9 @@ def oauth2_login(request):
 
 def oauth2_redirect(request):
 	try:
+		if request.GET.get('state') != settings.INTRA_STATE:
+			return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
+
 		access_token = oauth2_views.getToken(request)
 		user_data = intra42_views.getUserData(access_token)
 

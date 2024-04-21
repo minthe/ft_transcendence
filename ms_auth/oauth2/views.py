@@ -13,7 +13,7 @@ def getToken(request):
 			"client_secret": settings.CLIENT_SECRET,
 			"code": request.GET.get("code"),
 			"redirect_uri": settings.REDIRECT_URI,
-			"scope": "public"
+			"state": settings.INTRA_STATE,
 		}
 		headers = {
 			"Content-Type": 'application/x-www-form-urlencoded'
@@ -23,6 +23,7 @@ def getToken(request):
 		response = urlopen(request)
 		response_data = response.read().decode("utf-8")
 		credentials = json.loads(response_data)
+
 		return (credentials.get("access_token"))
 	except Exception as e:
 		error_message = str(e)
