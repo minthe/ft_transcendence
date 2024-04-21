@@ -177,7 +177,7 @@ def oauth2_redirect(request):
 		jwt_token = jwt.createToken(user_id)
 
 		if not jwt.validateToken(jwt_token):
-			response = JsonResponse({'message': 'Login failed'})
+			response = JsonResponse({'message': 'JWT token could not be created'})
 			response.status_code = 401
 			return response
 
@@ -195,17 +195,3 @@ def oauth2_redirect(request):
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
-
-# handling of 401 error
-
-	# try:
-	# 	response = urlopen(request)
-	# 	response_data = response.read().decode("utf-8")
-	# 	credentials = json.loads(response_data)
-	# 	return JsonResponse(credentials)
-	# except HTTPError as e:
-	# 	if e.code == 401:
-	# 		redirect_url = '/oauth/login'
-	# 	else:
-	# 		redirect_url = '/'
-	# 	return redirect(redirect_url)
