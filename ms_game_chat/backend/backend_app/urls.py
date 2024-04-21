@@ -25,7 +25,7 @@ urlpatterns = [
 
     # CHAT
     # 'user/avatar'
-    path('game/avatar/<str:username>/', views.uploadAvatar),
+    # path('game/avatar/<str:username>/', views.uploadAvatar),
 
     # GAME
     # 'game/create'
