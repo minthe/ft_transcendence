@@ -23,9 +23,8 @@ def register(request):
 	try:
 		data =json.loads(request.body)
 		username = data.get('username')
-		password = data.get('password')
 		email = data.get('email')
-		avatar = 'moon-dog.jpg'
+		avatar = settings.AVATAR_DEFAULT
 
 		''' TODO valentin
 		Input validation
@@ -54,7 +53,7 @@ def register(request):
 			'username': username,
 			'avatar': avatar,
 		}
-		game_chat_request_url = f"http://172.16.10.7:6969/game/user"
+		game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 		encoded_data = json.dumps(game_chat_data).encode("utf-8")
 
 		print(f"request_to_game_chat url: {game_chat_request_url}")
