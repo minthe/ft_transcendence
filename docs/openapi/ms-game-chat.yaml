@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: game-chat REST API
-  version: '1.1.1'
+  version: '1.1.2'
   description: |
     REST API Documentation for ft_transcendence.
     Under heavy development. Expect breaking changes.
@@ -25,10 +25,19 @@ paths:
       responses:
         '200':
           description: Service is up and running
+          content:
+            application/json:
+              example: {"message": "Service is up and running"}
         '401':
-          description: Unauthorized
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
         '503':
           description: Service is down or unhealthy
+          content:
+            application/json:
+              example: {"message": "Service is down or unhealthy"}
   /game/user:
     post:
       tags:
@@ -45,63 +54,78 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          description: Bad request (for example user already exists, input validation error)
+        '409':
+          description: User already exists
           content:
-            text/plain:
-              schema:
-                type: string
-                example: "input validation error"
+            application/json:
+              example: {"message": "User already exists"}
         '401':
-          description: Unauthorized
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
         '500':
           description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Internal server error"}
   /game/user/avatar:
     put:
       tags:
-        - User
+        - Avatar
       summary: Update Avatar
       security:
         - bearerAuth: []
       requestBody:
         required: true
         content:
-          text/plain:
+          application/json:
             schema:
-              type: string
-              example: "https://localhost/static/avatar/abcdef1234567890.png"
+              $ref: '#/components/schemas/AvatarRequest'
       responses:
         '200':
           description: OK
-        '400':
-          description: User not found
         '401':
-          description: Unauthorized
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
         '500':
           description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Internal server error"}
   /game/user/alias:
     put:
       tags:
-        - User
+        - Alias
       summary: Update Alias
       security:
         - bearerAuth: []
       requestBody:
         required: true
         content:
-          text/plain:
+          application/json:
             schema:
-              type: string
-              example: "moon-dog.jpg"
+              $ref: '#/components/schemas/AliasRequest'
       responses:
         '200':
           description: OK
-        '400':
-          description: Alias already taken
+        '409':
+          description: Alias already exists
+          content:
+            application/json:
+              example: {"message": "Alias already exists"}
         '401':
-          description: Unauthorized
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
         '500':
           description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Internal server error"}
 
 components:
   securitySchemes:
@@ -122,3 +146,20 @@ components:
         avatar:
           type: string
           example: "https://localhost/static/avatar/abcdef1234567890.png"
+    AvatarRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "moon_dog.png"
+    AliasRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "MoonDog"
+
