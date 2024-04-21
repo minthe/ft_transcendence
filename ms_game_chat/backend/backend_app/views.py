@@ -20,30 +20,27 @@ def goToFrontend(request):
 def createUser(request):
     try:
         jwt_user_id = request.user_id
+
+        # check if user already exists
+        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exist'}, status=409)
+
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
-        user_id = request.user_id
-
-        # check if user already exists
-        user_exist = MyUser.objects.filter(user_id=jwt_user_id).exists()
-        if user_exist:
-            return JsonResponse({}, status=409)
 
         new_user = MyUser()
         new_user.user_id = jwt_user_id
         new_user.name = username
         new_user.avatar = avatar
         new_user.save()
-
         return JsonResponse({}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
+        return JsonResponse({'message': e}, status=500)
 
 # Update Avatar:
-# - Endpoint: game/user/{user_id}/avatar/
+# - Endpoint: game/user/avatar/
 # - Method:   PUT
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
@@ -51,14 +48,20 @@ def createUser(request):
 def updateAvatar(request):
     try:
         jwt_user_id = request.user_id
-        return JsonResponse({'message': 'Not implemented yet'}, status=501)
+        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exist'}, status=409)
+        data = json.loads(request.body.decode('utf-8'))
+        avatar = data.get('avatar')
+        user_instance = MyUser.objects.get(user_id=jwt_user_id)
+        setattr(user_instance, 'avatar', avatar)
+        user_instance.save()
+        return JsonResponse({}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
+        return JsonResponse({'message': e}, status=500)
 
 # Update game alias:
-# - Endpoint: game/user/{user_id}/alias/
+# - Endpoint: game/user/alias/
 # - Method:   PUT
 # - Payload:  alias:string
 @require_http_methods(["PUT"])
@@ -70,43 +73,15 @@ def updateAlias(request):
         data = json.loads(request.body.decode('utf-8'))
         alias = data.get('alias')
 
-        user_exists = MyUser.objects.filter(user_id=jwt_user_id).exists()
-        if not user_exists:
-            return JsonResponse({'message': 'user does not exist'}, status=404)
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exist'}, status=404)
 
         user_instance = MyUser.objects.get(user_id=jwt_user_id)
         return
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-
-
-
-
-
-@require_POST
-@jwt.token_required
-def uploadAvatar(request, username):
-    try:
-        print("REQUEST: ", request.headers)
-
-        print('username: ', username)
-        user_exist = MyUser.objects.filter(name=username).exists()
-        if not user_exist:
-            return JsonResponse({}, status=409)
-
-        if request.method == 'POST':
-            user_instance = MyUser.objects.get(name=username)
-            avatar_file = request.FILES.get('avatar')
-            print('response file: ', avatar_file)
-            if avatar_file:
-                user_instance.avatar = avatar_file
-                user_instance.save()
-        return JsonResponse({}, status=200)
-    except Exception as e:
-        return JsonResponse({}, status=500)
+        return JsonResponse({'message': e}, status=500)
 
 
 ######### GAMEEEEEEEEEEEEEEEEEEEE ######### kristinas kingdom:
