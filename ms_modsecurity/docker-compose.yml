@@ -1,22 +1,22 @@
-version: '3.8'
-
+---
+version: '3'
 services:
-# REST API DOCUMENTATION
-
-# MICROSERVICE FRONTEND
-  modsecurity:
-    container_name: modsecurity
-    build: 
+  nginx-waf-alpine:
+    build:
       context: .
-    networks:
-      - network
-    restart: always
+      dockerfile: v3-nginx/Dockerfile-alpine
+    environment:
+      BACKEND: https://playpong.duckdns.org/
+      SSL_PORT: "4443"
+      DNS_SERVER: "1.1.1.1"
+      METRICS_ALLOW_FROM: all
     ports:
-      - "8081:80"
-    expose:
-      - 8081
-
-
-networks:
-  network:
-    driver: bridge
+      - "8082:8080"
+      - "4442:4443"
+    user: "10001"
+    depends_on:
+      - backend
+    # volumes:
+    #  - ./nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template:rw
+  backend:
+    image: build_container
