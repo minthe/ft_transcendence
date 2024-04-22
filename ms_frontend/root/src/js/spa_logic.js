@@ -114,54 +114,26 @@ async function handleClickEvent(event) {
   }
   else if (event.target.closest('#loginUserButton'))
     loginUserButton();
-  else if (event.target.closest('#RegisterUserButton'))
+  else if (event.target.closest('#RegisterUserButton')) {
+    // console.log('went in register user button spa#######');
     RegisterUserButton();
+  }
   else if (event.target.closest('#changeToLoginPageButton'))
     changeToLoginPageButton();
-  else if (event.target.closest('#openPopUpWin'))
-    openPopUpWin();
-  else if (event.target.closest('#RegisterPageButton'))
+  else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-  else if (event.target.closest('#closePopUpWin'))
-    closePopUpWin();
-  else if (event.target.closest('#Register42Button'))
-    registerWith42();
 
-  else if (event.target.closest('#twoFAButtonE')) {
-    document.getElementById('twoFAButtonE').classList.add('hidden');
-    document.getElementById('twoFAButtonD').classList.remove('hidden');
-    const inputBody = {
-      "second_factor": true
-    };
-    const headers = {
-      'Content-Type':'application/json',
-      'Accept':'application/json',
-      'Authorization':'Bearer {access-token}'
-    };
-    const url = `${window.location.origin}/user/2fa/update`
-    fetch(url,
-    {
-      method: 'PUT',
-      body:  JSON.stringify(inputBody),
-      headers: headers
-    })
-    .then(function(res) {
-        return res.json();
-    }).then(function(body) {
-        console.log(body);
-    });
-  }
-  else if (event.target.closest('#twoFAButtonD')) {
-    //make check with 2fa first before disabling
-    showDiv('userIsNotAuth');
-    hideDiv('userIsAuth');
-    document.getElementById('twoFA').classList.remove('hidden');
-    //fetch
-    document.getElementById('twoFAButtonD').classList.add('hidden');
-    document.getElementById('twoFAButtonE').classList.remove('hidden');
-    document.getElementById('twoFA').classList.add('hidden');
-    showDiv('userIsAuth');
-    hideDiv('userIsNotAuth');
-  }
+
+  else if (event.target.closest('#twoFAButtonE'))
+    enableTwoFactor();
+  else if (event.target.closest('#twoFAButtonD'))
+    disableTwoFactor();
+
+  // else if (event.target.closest('#verifyButton')) {
+  //   console.log('verifyButton clicked#######');
+  //   verifyButtonClick();
+  // }
+
+  // else if (event.target.closest('#login42UserButton'))
+  //   loginWith42();
 }
-

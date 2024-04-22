@@ -1,7 +1,8 @@
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from datetime import datetime
 from user import views as user_views
-import datetime
+from mail import views as mail_views
 
 def generate_second_factor_dict():
 	code = get_random_string(length=6, allowed_chars='0123456789')
@@ -11,7 +12,14 @@ def generate_second_factor_dict():
 						  'last_retry': timestamp}
 	return second_factor_dict
 
-def verify_verification_code(user_id, submitted_code):
+def create_2fa(user_id):
+	second_factor_dict = generate_second_factor_dict()
+	username = user_views.getValue(user_id, 'username')
+	user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
+	code = second_factor_dict['code']
+	mail_views.send_verification_email(username, code, user_views.getValue(user_id, 'email'))
+
+def verify_2fa(user_id, submitted_code):
 	current_time = timezone.now().replace(tzinfo=None)
 	second_factor_dict = user_views.getValue(user_id, 'second_factor_dict')
 	code = second_factor_dict.get('code')

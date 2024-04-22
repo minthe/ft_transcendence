@@ -1,24 +1,18 @@
 import json
 from django.conf import settings
-from django.core.validators import EmailValidator
-from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from urllib.request import Request, urlopen
+from urllib.parse import urlencode
+from django.shortcuts import redirect
 from user import views as user_views
 from second_factor import views as second_factor_views
 from mail import views as mail_views
+from oauth2 import views as oauth2_views
+from intra42 import views as intra42_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
-
-def email_validator(email):
-	email_validator = EmailValidator(message='Email invalid')
-	try:
-		email_validator(email)
-		return True
-	except ValidationError as e:
-		return False
 
 @require_http_methods(["POST"])
 def register(request):
@@ -29,16 +23,15 @@ def register(request):
 	try:
 		data =json.loads(request.body)
 		username = data.get('username')
-		password = data.get('password')
 		email = data.get('email')
-		avatar = 'moon-dog.jpg'
+		avatar = settings.AVATAR_DEFAULT
 
 		''' TODO valentin
 		Input validation
 		- refactor later into deserialize function
 		- add password validation
 		'''
-		if email_validator(email) == False:
+		if mail_views.validator(email) == False:
 			return JsonResponse({'message': 'Email invalid'}, status=400)
 
 		if user_views.checkUserExists('username', username):
@@ -60,7 +53,7 @@ def register(request):
 			'username': username,
 			'avatar': avatar,
 		}
-		game_chat_request_url = f"http://172.16.10.7:6969/game/user"
+		game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 		encoded_data = json.dumps(game_chat_data).encode("utf-8")
 
 		print(f"request_to_game_chat url: {game_chat_request_url}")
@@ -103,17 +96,14 @@ def login(request):
 		if not user_views.checkUserExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
 		if not user_views.check_password(username, password):
-			return JsonResponse({'message': "Credentials are wrong"}, status=401)
+			return JsonResponse({'message': "Credentials are wrong"}, status=409)
 
 		user_id = user_views.returnUserId(username)
   
 		#2fa
 		if user_views.getValue(user_id, 'second_factor_enabled') == True:
-			second_factor_dict = second_factor_views.generate_second_factor_dict()
-			user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
-			code = second_factor_dict['code']
-			mail_views.send_verification_email(username, code, user_views.getValue(user_id, 'email'))
-			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=200)
+			second_factor_views.create_2fa(user_id)
+			return JsonResponse({'user_id': user_id, 'second_factor': True}, status=401)
 
 		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 		jwt_token = jwt.createToken(user_id)
@@ -150,27 +140,60 @@ def logout(request):
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
-@jwt.token_required
-def avatar(request):
+# ----------- OAUTH2 -----------
+
+# request authorization code
+def oauth2_login(request):
 	'''
-	This function is used to get or update the avatar of a user
-	API Endpoint: /user/avatar
+	This function is used to request an authorization code
+	API Endpoint: user/oauth2/login
 	'''
 	try:
-		user_id = request.user_id
-		if not user_views.checkUserExists('user_id', user_id):
-			return JsonResponse({'message': 'User not found'}, status=404)
+		data = {
+			"client_id": settings.CLIENT_ID,
+			"redirect_uri": settings.REDIRECT_URI,
+			"scope": settings.INTRA_SCOPE,
+			"state": settings.INTRA_STATE,
+			"response_type": "code"
+		}
+		return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
+	except Exception as e:
+		error_message = str(e)
+		print(f"An error occurred: {error_message}")
+		return JsonResponse({'message': error_message}, status=500)
 
-		if request.method == 'PUT':
-			data = json.loads(request.body.decode('utf-8'))
-			avatar = data.get('avatar')
-			user_views.updateValue(user_id, 'avatar', avatar)
-			return JsonResponse({'message': 'Avatar updated successfully'}, status=200)
-		elif request.method == 'GET':
-			avatar = user_views.getValue(user_id, 'avatar')
-			return JsonResponse({'avatar': avatar}, status=200)
-		else:
-			return JsonResponse({'message': 'Method not allowed'}, status=405)
+def oauth2_redirect(request):
+	try:
+		if request.GET.get('state') != settings.INTRA_STATE:
+			return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
+
+		access_token = oauth2_views.getToken(request)
+		user_data = intra42_views.getUserData(access_token)
+
+		if not user_views.checkUserExists('intra_id', user_data['intra_id']):
+			if settings.WELCOME_MAIL == True:
+				mail_views.send_welcome_email(user_data['username'], user_data['email'])
+			user_views.createIntraUser(user_data)
+
+		user_id = user_views.returnUserId(user_data['username'])
+		username = user_views.getValue(user_id, 'username')
+		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
+		jwt_token = jwt.createToken(user_id)
+
+		if not jwt.validateToken(jwt_token):
+			response = JsonResponse({'message': 'JWT token could not be created'})
+			response.status_code = 401
+			return response
+
+		response_data = {
+			'user_id': user_id,
+			'username': username,
+			'second_factor': second_factor_status
+		}
+		response = JsonResponse(response_data)
+		response.set_cookie('jwt_token', jwt_token, httponly=True)
+		response.status_code = 200
+		return response
 
 	except Exception as e:
 		error_message = str(e)
