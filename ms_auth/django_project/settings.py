@@ -1,4 +1,4 @@
-import os, logging
+import os
 from pathlib import Path
 
 CURRENT_HOST = os.environ.get('CURRENT_HOST')
@@ -10,11 +10,18 @@ POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRES_HOST = 'users_db'
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
-REDIRECT_URI = os.environ.get('REDIRECT_URI')
+# oauth2
+REDIRECT_URI = f"https://{CURRENT_HOST}{os.environ.get('REDIRECT_URI')}"
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
 OAUTH_TOKEN = os.environ.get('OAUTH_TOKEN')
+INTRA_STATE = os.environ.get('INTRA_STATE')
+INTRA_SCOPE = os.environ.get('INTRA_SCOPE')
+# network
+MS_GAME_CHAT = os.environ.get('MS_GAME_CHAT')
+# user
+AVATAR_DEFAULT = os.environ.get('AVATAR_DEFAULT')
 # email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server

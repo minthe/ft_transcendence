@@ -13,10 +13,10 @@ function headerLogin() {
 	};
 }
 
-function bodyTwoFa() {
+function bodyTwoFa(user_id) {
 	return {
-		"user_id": websocket_obj.user_id,
-		"code": websocket_obj.two_fa_code
+		"user_id": user_id,
+		"code": two_fa_code
 	};
 }
 
@@ -46,5 +46,33 @@ function headerLogout() {
 	return {
 		'Accept':'application/json',
   		'Authorization':'Bearer {access-token}'
+	};
+}
+
+function headerEnableTwoFa() {
+	return {
+		'accept': 'application/json',
+		'Content-Type': 'application/json',
+		'Authorization':'Bearer {access-token}'
+	};
+}
+
+function bodyEnableTwoFa() {
+	return {
+		"second_factor": true
+	};
+}
+
+function headerDisableTwoFa() {
+	return {
+		'accept': 'application/json',
+		'Content-Type': 'application/json',
+		'Authorization':'Bearer {access-token}'
+	};
+}
+
+function bodyDisableTwoFa() {
+	return {
+		"second_factor": false
 	};
 }

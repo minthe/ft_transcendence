@@ -8,8 +8,10 @@ function addEventListenersIsAuth() {
   loadCreators('html/creators.html', 'creatorsSite');
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
+    // verifyButtonClick(event);
   });
 
+  
 
   document.addEventListener('keypress', async function(event) {
       if (event.key === 'Enter' || event.keyCode === 13)
@@ -22,8 +24,10 @@ async function enterKeyEvent() {
     && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
       loginUserButton();
   else if (!document.getElementById('registerPage').classList.contains('hidden') 
-    && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
+    && !document.getElementById('userIsNotAuth').classList.contains('hidden')) {
+      // console.log('went in register user button enter key!!!!!!!!');
       RegisterUserButton();
+  }
   else if (!document.getElementById('chat').classList.contains('hidden')
     && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
     await sendMessage();
