@@ -11,7 +11,7 @@ POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRES_HOST = 'users_db'
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 # oauth2
-REDIRECT_URI = f"https://{CURRENT_HOST}{os.environ.get('REDIRECT_URI')}"
+REDIRECT_URI = os.environ.get('REDIRECT_URI')
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
