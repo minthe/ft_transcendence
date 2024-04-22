@@ -16,6 +16,7 @@ urlpatterns = [
     path('game/invite/<str:username>/<int:game_id>/<str:guest_user_name>/', views.inviteUserToGame),
     path('game/render/invites/<str:username>/', views.renderInvites),
 
+
     # 'game/render/display'
     # path('game/render/diyplay/<int:game_id>/', views.renderDisplay),
 ]
