@@ -94,11 +94,9 @@ class _User:
     @database_sync_to_async
     def leaveChat(self, user_id, chat_id):
         try:
-            user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
-            if not user_exists:
+            if not MyUser.objects.filter(user_id=user_id).exists():
                 return 'User in leaveChat not found'
-            chat_exists = Chat.objects.filter(id=chat_id).exists()
-            if not chat_exists:
+            if not Chat.objects.filter(id=chat_id).exists():
                 return 'Chat in leaveChat not found'
             chat_instance = Chat.objects.get(id=chat_id)
             user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -116,8 +114,7 @@ class _User:
 
     @database_sync_to_async
     def get_avatar(self, user_id):
-        user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
-        if not user_exists:
+        if not MyUser.objects.filter(user_id=user_id).exists():
             return None
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         avatar_url = user_instance.avatar if user_instance.avatar else None

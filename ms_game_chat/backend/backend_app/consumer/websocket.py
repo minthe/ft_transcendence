@@ -87,7 +87,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
     async def receive(self, text_data):
         token = self.scope['cookies'].get('jwt_token')
-        print("TOKEN: ", token)
+        # print("TOKEN: ", token)
         # if not jwt.validateToken():
         #     # print("TOKEN IS NOT VALID")
         #     await self.close()
@@ -101,13 +101,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_join_tournament']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
-            print("In else ----\n")
             chat_id = text_data_json["data"]["chat_id"]
             # user_id = text_data_json["data"]["user_id"]
             self.my_group_id = 'group_%s' % chat_id
-            print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
+            #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
             await self.channel_layer.group_add(self.my_group_id, self.channel_name)
-
             if what_type == 'save_message_in_db':
                 await self.handle_save_message_in_db(text_data_json)
             elif what_type == 'send_chat_messages':
