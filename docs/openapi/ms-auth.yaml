@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.6'
+  version: '1.8.7'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -479,7 +479,7 @@ components:
     OAuthError:
         type: object
         properties:
-          error:
+          message:
             type: string
             description: Error message (e.g., "Invalid OAuth2 credentials", "OAuth2 provider error")
     TokenPayload:
