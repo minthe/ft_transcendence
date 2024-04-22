@@ -120,7 +120,7 @@ class _User:
         if not user_exists:
             return None
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        avatar_url = user_instance.avatar.url if user_instance.avatar else None
+        avatar_url = user_instance.avatar if user_instance.avatar else None
         result = '../../backend' + str(avatar_url) if avatar_url else None
         return result
 
