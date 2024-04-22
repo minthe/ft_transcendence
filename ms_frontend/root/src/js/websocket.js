@@ -108,7 +108,7 @@ async function establishWebsocketConnection() {
         break
       case 'online_stats':
         websocket_obj.onlineStats = data.online_stats
-          await renderMessages()
+        await renderMessages()
         break
       case 'user_left_chat_info':
         break
