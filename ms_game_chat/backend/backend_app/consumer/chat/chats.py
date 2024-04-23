@@ -241,20 +241,19 @@ class _Chat:
         except Exception as e:
             return str(e)
 
+
     @database_sync_to_async
     def createPrivateChat(self, user_id, chat_name):
         try:
             # chat_name should be the user we create a chat with
-            user_exists = MyUser.objects.filter(name=chat_name).exists()
-            if not user_exists:
+            if not MyUser.objects.filter(name=chat_name).exists():
                 return 'User does not exist'
-            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+            user_instance = MyUser.objects.get(user_id=user_id)
             if chat_name == user_instance.name:
                 return 'Sorry, you can not be in a chat with yourself :('
             # Filter all private chats that the user is part of
             private_chats = Chat.objects.filter(isPrivate=True, myuser__user_id=user_id)  # changed id to user_id
-            chat_already_exists = private_chats.filter(myuser__name=chat_name)
-            if chat_already_exists:
+            if private_chats.filter(myuser__name=chat_name):
                 return "You are already in a private chat with this user"
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
             current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -389,8 +388,11 @@ class _Chat:
         if not MyUser.objects.filter(name=chat_name).exists():
             return None
         user_instance = MyUser.objects.get(name=chat_name)
-        avatar_url = user_instance.avatar.url if user_instance.avatar else None
-        result = '../../backend' + str(avatar_url) if avatar_url else None
+        avatar_url = user_instance.avatar if user_instance.avatar else None
+        result = str(avatar_url) if avatar_url else None
+        # result = '../../backend' + str(avatar_url) if avatar_url else None # doesnt work if avatar is url
         return result
+
+
 
 
