@@ -72,8 +72,6 @@ def second_factor_activate(request):
 	user_id = request.user_id
 	if not user_views.checkUserExists('user_id', user_id):
 		return HttpResponse(status=404)
-	if user_views.getValue(request.user_id, 'second_factor_enabled') == True:
-		return HttpResponse(status=409)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
 		user_views.updateValue(user_id, 'second_factor_enabled', True)
@@ -90,8 +88,6 @@ def second_factor_deactivate(request):
 	user_id = request.user_id
 	if not user_views.checkUserExists('user_id', user_id):
 		return HttpResponse(status=404)
-	if user_views.getValue(request.user_id, 'second_factor_enabled') == False:
-		return HttpResponse(status=409)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
 		user_views.updateValue(user_id, 'second_factor_enabled', False)
