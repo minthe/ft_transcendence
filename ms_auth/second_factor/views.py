@@ -1,6 +1,6 @@
+import datetime
 from django.utils.crypto import get_random_string
 from django.utils import timezone
-from datetime import datetime
 from user import views as user_views
 from mail import views as mail_views
 
