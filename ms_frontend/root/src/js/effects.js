@@ -207,8 +207,10 @@ async function updatePage() {
 		}
 		else if (state.currPage === 'gameSite')
 			gameSiteClicked();
-		else if (state.currPage === 'profileSite')
+		else if (state.currPage === 'profileSite') {
+			await getTwoFaStatus();
 			showSiteHideOthers('profileSite', 'profileButton')
+		}
 		else if (state.currPage === 'creatorsSite')
 			showSiteHideOthers('creatorsSite', 'creatorsButton');
 		else if (state.currPage === 'statsSite')

@@ -135,11 +135,11 @@ function loginUserButton() {
       loginErrors(data)
     document.getElementById("wrong-password").classList.add("hidden");
     if (data.second_factor) {
-      showTwoFaDisableBtn();
+      await getTwoFaStatus();
       setUpTwoFaPage();      
       await verifyButtonClick();
       if (checkTwoFaCode()) {
-        const url = `${window.location.origin}/user/2fa`
+        const url = `${window.location.origin}/user/2fa/verify`
         return fetch(url, {
             method: 'POST',
             headers: headerTwoFa(),

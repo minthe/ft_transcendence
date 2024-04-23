@@ -84,25 +84,28 @@ function disableTwoFactor() {
 	// changeToProfile();
 }
   
-function updateTwoFaStatus(success) {
+function updateTwoFaStatus(success, message) {
 	const twoFaStatus = document.getElementById('updateTwoFa');
 
-	if (success) {
-		setTimeout(function() {
-		twoFaStatus.classList.add('hidden');
-		}, 2500);
-		twoFaStatus.classList.remove('hidden');
+	// if (success) {
+	setTimeout(function() {
+	twoFaStatus.classList.add('hidden');
+	}, 2500);
+	twoFaStatus.classList.remove('hidden');
+	if (success)
 		twoFaStatus.style.color = 'green';
-		twoFaStatus.textContent = 'Updated 2FA succesfully';
-	}
-	else {
-		setTimeout(function() {
-		twoFaStatus.classList.add('hidden');
-		}, 2500);
-		twoFaStatus.classList.remove('hidden');
+	else
 		twoFaStatus.style.color = 'red';
-		twoFaStatus.textContent = 'Failed to Update 2FA';
-	}
+	twoFaStatus.textContent = message;
+	// }
+	// else {
+	// 	setTimeout(function() {
+	// 	twoFaStatus.classList.add('hidden');
+	// 	}, 2500);
+	// 	twoFaStatus.classList.remove('hidden');
+	// 	twoFaStatus.style.color = 'red';
+	// 	twoFaStatus.textContent = 'Failed to Update 2FA';
+	// }
 }
   
   
@@ -186,4 +189,52 @@ async function getTwoFaStatus() {
 	.catch(error => {
 		console.log('Get 2fa status error: ', error);
 	})
+}
+
+
+
+
+
+
+
+
+function updateTwoFactor(correctMethod) {
+	const url = `${window.location.origin}/user/2fa`
+  
+	changeToTwoFa();
+	fetch(url, {
+	  method: 'POST',
+	//   headers: headerEnableTwoFa()
+	})
+	.then(async function(response) {
+	  if (response.ok) {
+		await verifyButtonProfileClick();
+		if (checkTwoFaCode()) {
+		  return fetch(url, {
+			method: correctMethod,
+			headers: headerUpdateTwoFa(),
+			body: JSON.stringify(bodyUpdateTwoFa())
+		  })
+		  .then(async responseTwoFa => {
+			if (!responseTwoFa.ok) 
+				return { twoFaUpdated: false, message: response.message};
+			return { twoFaUpdated: true, message: 'Updated 2FA succesfully'};
+		  });
+		}
+	  }
+	  return { twoFaUpdated: false, message: response.message};
+	})
+	.then(async result => {
+		if (!result.twoFaUpdated)
+			throw Error(result.message);
+		updateTwoFaStatus(true, result.message);
+		await getTwoFaStatus();
+		changeToProfile();
+	})
+	.catch(error => {
+		changeToProfile();
+		updateTwoFaStatus(false, result.message);
+		console.error('There was a problem with the fetch operation:', error);
+	});
+	// changeToProfile();
 }
