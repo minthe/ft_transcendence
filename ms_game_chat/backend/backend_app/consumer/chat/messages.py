@@ -47,14 +47,15 @@ class _Message:
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         message = text_data_json["data"]["message"]
+
         # Use await to call the async method in the synchronous context
-        await self.create_message(user_id, chat_id, message)
+        response_message = await self.create_message(user_id, chat_id, message)
         await self.channel_layer.group_send(
             self.my_group_id,
             {
                 'type': 'send.message.save.success',
                 'data': {
-                    'message': 'ok',
+                    'message': response_message,
                 },
             }
         )
@@ -103,6 +104,8 @@ class _Message:
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):
         try:
+            if not text:
+                return 'Message is empty'
             user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             specific_timestamp = timezone.now()
             new_message = Message.objects.create(senderId=user_id, sender=user_instance.name, text=text,
@@ -110,9 +113,9 @@ class _Message:
             chat_instance = Chat.objects.get(id=chat_id)
             chat_instance.messages.add(new_message.id)
             new_message.save()
-            return "Message created successfully"
+            return 'ok'
         except Exception as e:
-            return {'error': 'something big in createMessage'}
+            return f'something big in createMessage: {e}'
 
     @database_sync_to_async
     def get_chat_messages(self, chat_id):

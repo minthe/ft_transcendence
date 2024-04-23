@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.7'
+  version: '1.9.0'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -313,43 +313,16 @@ paths:
     post:
       tags:
         - 2FA
-      summary: verify 2fa code
+      summary: generate 2fa code
       description: |
         - Code must be exact 6 random digits.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - user_id
-                - code
-              properties:
-                user_id:
-                  type: integer
-                code:
-                  type: string
-            example: {"user_id": 1, "code": "163907"}
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: 2fa verified
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+          description: OK
         '401':
-          description: Verification failed
-          content:
-            application/json:
-              examples:
-                rate_limit_exceeded:
-                  value: {"message": "Rate limit exceeded"}
-                invalid_code:
-                  value: {"message": "Invalid code"}
-                code_expired:
-                  value: {"message": "Code expired"}
+          description: Missing or invalid JWT token
         '404':
           description: User not found
         '500':
@@ -384,17 +357,34 @@ paths:
       summary: activate 2fa
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+            example: {"code": "163907"}
       responses:
         '200':
           description: 2fa activated
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                description: jwt_token cookie is deleted
-                example: jwt_token=; Max-Age=0; HttpOnly
         '401':
-          description: Missing or invalid JWT token
+          description: Verification failed
+          content:
+            application/json:
+              examples:
+                invalid_code:
+                  value: {"message": "Invalid code"}
+                rate_limit_exceeded:
+                  value: {"message": "Rate limit exceeded"}
+                code_expired:
+                  value: {"message": "Code expired"}
+                invalid_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
         '404':
           description: User not found
         '409':
@@ -410,17 +400,34 @@ paths:
       summary: deactivate 2fa
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+            example: {"code": "163907"}
       responses:
         '200':
           description: 2fa deactivated
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                description: jwt_token cookie is deleted
-                example: jwt_token=; Max-Age=0; HttpOnly
         '401':
-          description: Missing or invalid JWT token
+          description: Verification failed
+          content:
+            application/json:
+              examples:
+                invalid_code:
+                  value: {"message": "Invalid code"}
+                rate_limit_exceeded:
+                  value: {"message": "Rate limit exceeded"}
+                code_expired:
+                  value: {"message": "Code expired"}
+                invalid_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
         '404':
           description: User not found
         '409':
@@ -430,7 +437,56 @@ paths:
           content:
             application/json:
               example: {"message": "Server Error"}
-
+  /user/2fa/verify:
+    post:
+      tags:
+        - 2FA
+      summary: verify code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - code
+              properties:
+                user_id:
+                  type: integer
+                code:
+                  type: string
+            example: {"user_id": 1, "code": "163907"}
+      responses:
+        '200':
+          description: 2fa verified
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+        '401':
+          description: Verification failed
+          content:
+            application/json:
+              examples:
+                invalid_code:
+                  value: {"message": "Invalid code"}
+                rate_limit_exceeded:
+                  value: {"message": "Rate limit exceeded"}
+                code_expired:
+                  value: {"message": "Code expired"}
+                invalid_jwt_token:
+                  value: {"message": "Missing or invalid JWT token"}
+        '409':
+          description: 2fa not activated
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Verification failed"}
 components:
   securitySchemes:
     bearerAuth:
