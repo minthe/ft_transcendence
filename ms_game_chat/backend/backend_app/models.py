@@ -14,7 +14,7 @@ class MyUser(models.Model):
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
     blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
-    # gameAlias = models.CharField("gameAlias", max_length=100) #Julien changed
+    gameAlias = models.CharField("gameAlias", max_length=100)
 
 
 class Chat(models.Model):

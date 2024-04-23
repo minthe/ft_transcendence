@@ -1,8 +1,8 @@
+import datetime
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from user import views as user_views
 from mail import views as mail_views
-import datetime
 
 def generate_second_factor_dict():
 	code = get_random_string(length=6, allowed_chars='0123456789')
