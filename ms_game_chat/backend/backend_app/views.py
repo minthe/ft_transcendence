@@ -22,16 +22,12 @@ def goToFrontend(request):
 def createUser(request):
     try:
         jwt_user_id = request.user_id
-
-        # check if user already exists
         if MyUser.objects.filter(user_id=jwt_user_id).exists():
             print(f"User {jwt_user_id} already exists")
             return JsonResponse({'message': 'User already exists'}, status=409)
-
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
-
         new_user = MyUser()
         new_user.user_id = jwt_user_id
         new_user.name = username
@@ -116,15 +112,14 @@ def updateAvatar(request):
 def updateAlias(request):
     try:
         jwt_user_id = request.user_id
-        return JsonResponse({'message': 'Not implemented yet'}, status=501)
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exists'}, status=409)
         data = json.loads(request.body.decode('utf-8'))
         alias = data.get('alias')
-
-        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
-            return JsonResponse({'message': 'User does not exist'}, status=404)
-
         user_instance = MyUser.objects.get(user_id=jwt_user_id)
-        return
+        setattr(user_instance, 'gameAlias', alias)
+        user_instance.save()
+        return JsonResponse({}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
