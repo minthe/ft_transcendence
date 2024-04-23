@@ -18,6 +18,9 @@ def second_factor_verify(request):
 	if not user_views.checkUserExists('user_id', user_id):
 		return HttpResponse(status=404)
 
+	if not user_views.getValue(user_id, 'second_factor_enabled'):
+		return JsonResponse({'message': '2FA not enabled'}, status=409)
+
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
 		response = HttpResponse(status=200)
@@ -73,10 +76,8 @@ def second_factor_activate(request):
 		return HttpResponse(status=409)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
-		user_views.updateValue(request.user_id, 'second_factor_enabled', True)
-		response = HttpResponse(status=200)
-		response.set_cookie('jwt_token', jwt.createToken(user_id), httponly=True)
-		return response
+		user_views.updateValue(user_id, 'second_factor_enabled', True)
+		return HttpResponse(status=200)
 	else:
 		return JsonResponse({'message': error_message}, status=401)
 
@@ -93,9 +94,7 @@ def second_factor_deactivate(request):
 		return HttpResponse(status=409)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
-		user_views.updateValue(request.user_id, 'second_factor_enabled', False)
-		response = HttpResponse(status=200)
-		response.delete_cookie('jwt_token')
-		return response
+		user_views.updateValue(user_id, 'second_factor_enabled', False)
+		return HttpResponse(status=200)
 	else:
 		return JsonResponse({'message': error_message}, status=401)

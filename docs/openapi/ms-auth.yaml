@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.8.9'
+  version: '1.9.0'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -478,6 +478,8 @@ paths:
                   value: {"message": "Code expired"}
                 invalid_jwt_token:
                   value: {"message": "Missing or invalid JWT token"}
+        '409':
+          description: 2fa not activated
         '404':
           description: User not found
         '500':
