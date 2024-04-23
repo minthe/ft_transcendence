@@ -134,6 +134,6 @@ async function handleClickEvent(event) {
   //   verifyButtonClick();
   // }
 
-  // else if (event.target.closest('#login42UserButton'))
-  //   loginWith42();
+  else if (event.target.closest('#login42Button'))
+    loginWith42();
 }

@@ -336,15 +336,3 @@ fetch(url, {
 	// }
 }
 
-
-function getJwtTokenFromCookie() {
-	const cookies = document.cookie.split(';');
-	console.log(document.cookie);
-	for (let i = 0; i < cookies.length; i++) {
-		const cookie = cookies[i].trim();
-		console.log(cookies[i]);
-	  if (cookie.startsWith('test='))
-		return true;
-	}
-	return false;
-}

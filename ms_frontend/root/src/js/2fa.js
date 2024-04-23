@@ -13,25 +13,31 @@ function enableTwoFactor() {
 	  if (response.ok) {
 		await verifyButtonProfileClick();
 		if (checkTwoFaCode()) {
-		  fetch(url, {
+		  return fetch(url, {
 			method: 'POST',
 			headers: headerTwoFa(),
 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
 		  })
 		  .then(async responseTwoFa => {
-			if (!responseTwoFa.ok)
-			  throw new Error(!responseTwoFa.status);
+			if (!responseTwoFa.ok) 
+				return { twoFaUpdated: false};
+			return { twoFaUpdated: true};
 		  });
 		}
 	  }
-	  showTwoFaDisableBtn();
-	  updateTwoFaStatus(true);
-	  changeToProfile();
+	  return { twoFaUpdated: true};
+	})
+	.then(result => {
+		if (!result.twoFaUpdated)
+			throw Error("update failed");
+		updateTwoFaStatus(true);
+		showTwoFaDisableBtn();
+		changeToProfile();
 	})
 	.catch(error => {
-	  updateTwoFaStatus(false);
-	  changeToProfile();
-	  console.error('There was a problem with the fetch operation:', error);
+		changeToProfile();
+		updateTwoFaStatus(false);
+		console.error('There was a problem with the fetch operation:', error);
 	});
 	// changeToProfile();
 }
@@ -48,25 +54,32 @@ function disableTwoFactor() {
 	  if (response.ok) {
 		await verifyButtonProfileClick();
 		if (checkTwoFaCode()) {
-		  fetch(url, {
+		  return fetch(url, {
 			method: 'POST',
 			headers: headerTwoFa(),
 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
 		  })
 		  .then(function(responseTwoFa) {
-			  if (!responseTwoFa.ok)
-				  throw new Error(responseTwoFa.status);
+			if (!responseTwoFa.ok)
+				return { twoFaUpdated: false};
+				//   throw new Error(responseTwoFa.status);
+			return { twoFaUpdated: true};
 		  });
 		}
 	  }
-	  updateTwoFaStatus(true);
-	  showTwoFaEnableBtn();
-	  changeToProfile();
+	  return { twoFaUpdated: true};
+	})
+	.then(result => {
+		if (!result.twoFaUpdated)
+			throw Error("update failed");
+		updateTwoFaStatus(true);
+		showTwoFaEnableBtn();
+		changeToProfile();
 	})
 	.catch(function(error) {
-	changeToProfile();
-	  updateTwoFaStatus(false);
-	  console.error('Error processing your request:', error);
+		changeToProfile();
+		updateTwoFaStatus(false);
+		console.error('Error processing your request:', error);
 	});
 	// changeToProfile();
 }
@@ -80,7 +93,7 @@ function updateTwoFaStatus(success) {
 		}, 2500);
 		twoFaStatus.classList.remove('hidden');
 		twoFaStatus.style.color = 'green';
-		twoFaStatus.value = 'Updated 2FA succesfully';
+		twoFaStatus.textContent = 'Updated 2FA succesfully';
 	}
 	else {
 		setTimeout(function() {
@@ -88,7 +101,7 @@ function updateTwoFaStatus(success) {
 		}, 2500);
 		twoFaStatus.classList.remove('hidden');
 		twoFaStatus.style.color = 'red';
-		twoFaStatus.value = 'Failed to Update 2FA';
+		twoFaStatus.textContent = 'Failed to Update 2FA';
 	}
 }
   
@@ -147,4 +160,30 @@ function verifyButtonProfileClick() {
 			resolve();
 		});
 	});
+}
+
+
+//needs to be added in login, refresh and spa logic
+async function getTwoFaStatus() {
+	const url = `${window.location.origin}/user/2fa`
+
+	fetch(url, {
+		method: 'GET'
+	})
+	.then(async response => {
+		return response.json().then(data => {
+			return { ok: response.ok, data};
+		});
+	})
+	.then(async result => {
+		if (!result.ok)
+			throw Error(result.data.message);
+		if (response.data.second_factor)
+			showTwoFaDisableBtn();
+		else
+			showTwoFaEnableBtn();
+	})
+	.catch(error => {
+		console.log('Get 2fa status error: ', error);
+	})
 }

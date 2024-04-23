@@ -21,16 +21,13 @@ function initUserData(data, username, password) {
 	websocket_obj.user_id = data.user_id
 
 
-  document.getElementById('profileName').value = websocket_obj.username;
-  // if (websocket_obj.game_alias)
-  document.getElementById('gameAlias').value = websocket_obj.username;
+  document.getElementById('profileName').textContent = websocket_obj.username;
+  // if (!websocket_obj.game_alias)
+
+    document.getElementById('gameAlias').value = websocket_obj.username;
 
   // document.getElementById("profilePicture").src = websocket_obj.profile_picture;
 
-  if (getJwtTokenFromCookie()) {
-		console.log('found token');
-		// await establishWebsocketConnection();
-	}
 }
 
 
@@ -58,11 +55,13 @@ function authSucces() {
 
 function loginErrors(data) {
   document.getElementById("wrong-password").classList.remove("hidden");
+  document.getElementById("wrong-password").textContent = data.message;
   throw new Error(data.message);
 }
 
 function registerErrors(data) {
   document.getElementById("wrong-register").classList.remove("hidden");
+  document.getElementById("wrong-register").textContent = data.message;
   throw new Error(data.message);
 }
 
@@ -141,25 +140,38 @@ function loginUserButton() {
       await verifyButtonClick();
       if (checkTwoFaCode()) {
         const url = `${window.location.origin}/user/2fa`
-        fetch(url, {
+        return fetch(url, {
             method: 'POST',
             headers: headerTwoFa(),
             body: JSON.stringify(bodyTwoFa(data.user_id))
-          })
+        })
         .then(response => {
           if (!response.ok) {
-            // location.reload();
-            throw new Error(response.data.message);
+              return response.json().then(data => {
+                  console.log('that would be the error: ', data.message); // Assuming the server sends back an object with a `message` field
+                  loginErrors(data);
+                  return { twoFaActivated: true, twoFaSuccess: false, data };
+              });
           }
-          afterAuthLogin('login', data, usernameElement, passwordElement);
-          setDownTwoFaPage();
-        });
+          else {
+                afterAuthLogin('login', data, usernameElement, passwordElement);
+                setDownTwoFaPage();
+                return { twoFaActivated: true, twoFaSuccess: true, data };
+          }
+      });
       }
     }
-    else
+    else {
       afterAuthLogin('login', data, usernameElement, passwordElement);
+      return { twoFaActivated: false, twoFaSuccess: false, data };
+    }
+  })
+  .then(result => {
+    if (result.twoFaActivated && !result.twoFaSuccess)
+      return data.message;
   })
   .catch(error => {
+    setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
     // setErrorWithTimout('info_login', error, 9999999)
     console.log('Error during login:', error);
@@ -274,56 +286,116 @@ async function logoutUser() {
 
 
 //change the header and body
+// function loginWith42() {
+
+//   console.log('inside login for 42 #####');
+
+//   const url = `${window.location.origin}/user/oauth2/login`
+//   fetch(url, {
+//     method: 'POST',
+//     headers: headerLogin(),
+//     mode: 'no-cors'
+//     // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
+//   })
+//   .then(async response => {
+//     if (!response.ok) {
+//       loginErrors(response)
+//     }
+//     document.getElementById("wrong-password").classList.add("hidden");
+//     return response.json();
+//   })
+//   .then(async data => {
+//     if (data.second_factor) {
+//       document.getElementById('twoFAButtonE').classList.add('hidden');
+//       document.getElementById('twoFAButtonD').classList.remove('hidden');
+
+//       setUpTwoFaPage();
+//       await verifyButtonClick();
+//       if (two_fa_code.length === 6) {  
+//         const url = `${window.location.origin}/user/2fa/verify`
+//         fetch(url, {
+//             method: 'POST',
+//             headers: headerTwoFa(),
+//             body: JSON.stringify(bodyTwoFa())
+//           })
+//         .then(async response => {
+//           if (!response.ok) {
+//             // location.reload();
+//             throw new Error('2FA Code was not correct!');
+//           }
+//           afterAuthLogin('42Login', data);
+//           console.log("CORRECT 2FA CODE")
+//           setDownTwoFaPage();
+//         })
+//         .catch(error => {
+//           console.error('There was a problem with the fetch operation:', error);
+//           // document.getElementById('twoFA').classList.add('hidden');
+//           return ;//back to loginpage or 2fa page?
+//         });
+//       }
+//     }
+//     else
+//       afterAuth('42Login', data);
+
+//   })
+//   .catch(error => {
+//     // setErrorWithTimout('info_login', error, 9999999)
+//     console.log('Error during login:', error);
+//   });
+// }
+
+
+
+
+
 function loginWith42() {
+
   const url = `${window.location.origin}/user/oauth2/login`
   fetch(url, {
     method: 'POST',
     headers: headerLogin(),
+    // mode: 'no-cors'
     // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
   })
   .then(async response => {
-    if (!response.ok) {
-      loginErrors(response)
+    console.log('first then in 42 login###');
+    return response.json().then(data => {
+      return { ok: response.ok, status: response.status, data };
+    });
+  })
+  .then(async ({ok, status, data}) => {
+    console.log('before error detected');
+    if (!ok && status !== 401) {
+      console.log('error detected');
+      loginErrors(data)
     }
     document.getElementById("wrong-password").classList.add("hidden");
-    return response.json();
-  })
-  .then(async data => {
     if (data.second_factor) {
-      document.getElementById('twoFAButtonE').classList.add('hidden');
-      document.getElementById('twoFAButtonD').classList.remove('hidden');
-
-      setUpTwoFaPage();
+      showTwoFaDisableBtn();
+      setUpTwoFaPage();      
       await verifyButtonClick();
-      if (two_fa_code.length === 6) {  
-        const url = `${window.location.origin}/user/2fa/verify`
+      if (checkTwoFaCode()) {
+        const url = `${window.location.origin}/user/2fa`
         fetch(url, {
             method: 'POST',
             headers: headerTwoFa(),
-            body: JSON.stringify(bodyTwoFa())
+            body: JSON.stringify(bodyTwoFa(data.user_id))
           })
-        .then(async response => {
+        .then(response => {
           if (!response.ok) {
             // location.reload();
-            throw new Error('2FA Code was not correct!');
+            throw new Error(response.data.message);
           }
-          afterAuthLogin('42Login', data);
-          console.log("CORRECT 2FA CODE")
+          // afterAuthLogin('login42', data, usernameElement, passwordElement);
           setDownTwoFaPage();
-        })
-        .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-          // document.getElementById('twoFA').classList.add('hidden');
-          return ;//back to loginpage or 2fa page?
         });
       }
     }
-    else
-      afterAuth('42Login', data);
-
+    // else
+      // afterAuthLogin('login42', data, usernameElement, passwordElement);
   })
   .catch(error => {
-    clearLoginInput(usernameElement, passwordElement);
+    // clearLoginInput(usernameElement, passwordElement);
     // setErrorWithTimout('info_login', error, 9999999)
     console.log('Error during login:', error);
   });
