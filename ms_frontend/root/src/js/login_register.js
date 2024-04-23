@@ -166,8 +166,8 @@ function loginUserButton() {
       return { twoFaActivated: false, twoFaSuccess: false, data };
     }
   })
-  .then(result => {
-    if (result.twoFaActivated && !result.twoFaSuccess)
+  .then(({twoFaActivated, twoFaSuccess, data}) => {
+    if (twoFaActivated && twoFaSuccess)
       return data.message;
   })
   .catch(error => {

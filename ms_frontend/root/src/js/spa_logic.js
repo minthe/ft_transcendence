@@ -124,15 +124,15 @@ async function handleClickEvent(event) {
     showRegisterPage();
 
 
+  // else if (event.target.closest('#twoFAButtonE'))
+  //   enableTwoFactor();
+  // else if (event.target.closest('#twoFAButtonD'))
+  //   disableTwoFactor();
   else if (event.target.closest('#twoFAButtonE'))
-    enableTwoFactor();
+    updateTwoFactor('PUT');
   else if (event.target.closest('#twoFAButtonD'))
-    disableTwoFactor();
+    updateTwoFactor('DELETE');
 
-  // else if (event.target.closest('#verifyButton')) {
-  //   console.log('verifyButton clicked#######');
-  //   verifyButtonClick();
-  // }
 
   else if (event.target.closest('#login42Button'))
     loginWith42();

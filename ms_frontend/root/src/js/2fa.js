@@ -217,23 +217,23 @@ function updateTwoFactor(correctMethod) {
 		  })
 		  .then(async responseTwoFa => {
 			if (!responseTwoFa.ok) 
-				return { twoFaUpdated: false, message: response.message};
+				return { twoFaUpdated: false, message: responseTwoFa.message};
 			return { twoFaUpdated: true, message: 'Updated 2FA succesfully'};
 		  });
 		}
 	  }
 	  return { twoFaUpdated: false, message: response.message};
 	})
-	.then(async result => {
-		if (!result.twoFaUpdated)
-			throw Error(result.message);
-		updateTwoFaStatus(true, result.message);
+	.then(async ({twoFaUpdated, message}) => {
+		if (!twoFaUpdated)
+			throw Error(message);
+		updateTwoFaStatus(true, message);
 		await getTwoFaStatus();
 		changeToProfile();
 	})
 	.catch(error => {
 		changeToProfile();
-		updateTwoFaStatus(false, result.message);
+		updateTwoFaStatus(false, error);
 		console.error('There was a problem with the fetch operation:', error);
 	});
 	// changeToProfile();
