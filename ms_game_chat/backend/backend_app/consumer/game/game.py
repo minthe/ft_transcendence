@@ -407,8 +407,8 @@ class _Game:
     @database_sync_to_async
     def matchResults(self, game_struct):
         game_instance = Game.objects.get(id=self.game_id)
-        user_one = MyUser.objects.get(name=game_instance.hostId)
-        user_two = MyUser.objects.get(name=game_instance.guestId)
+        user_one = MyUser.objects.get(user_id=game_instance.hostId)
+        user_two = MyUser.objects.get(user_id=game_instance.guestId)
 
         user_one.old_matches.add(game_instance)
         user_two.old_matches.add(game_instance)
@@ -417,11 +417,11 @@ class _Game:
 
 
         if game_struct['host_score'] == game_struct['score_limit']:
-            game_instance.winner = game_instance.hostId
-            game_instance.loser = game_instance.guestId
+            game_instance.winnerId = game_instance.hostId
+            game_instance.loserId = game_instance.guestId
         elif game_struct['guest_score'] == game_struct['score_limit']:
-            game_instance.winner = game_instance.guestId
-            game_instance.loser = game_instance.hostId
+            game_instance.winnerId = game_instance.guestId
+            game_instance.loserId = game_instance.hostId
         if game_instance.tournId is not None:
             print("matchResults tourn")
             tourn_instance = Tournament.objects.get(id=game_instance.tournId)
@@ -431,7 +431,9 @@ class _Game:
 
             # return tourn_instance.id
             if game_instance.stage == "semi":
-                tourn_instance.finalMatch.append(MyUser.objects.get(name=game_instance.winnerId))
+                print("semi")
+                print(game_instance.winnerId)
+                tourn_instance.finalMatch.append(game_instance.winnerId)
             tourn_instance.save()
             if len(tourn_instance.finalMatch) == 2:
                 if game_instance.stage == "semi":
@@ -440,7 +442,7 @@ class _Game:
                     game_instance.guestId = tourn_instance.finalMatch[1]
                     tourn_instance.active_matches.add(game_instance)
                     game_instance.tournId = tourn_instance.id
-                    game_session.stage = "final"
+                    game_instance.stage = "final"
                     game_instance.save()
 
                     # user_one = MyUser.objects.get(user_id=tourn_instance.finalMatch[0])
@@ -588,6 +590,7 @@ class _Game:
     @database_sync_to_async
     def get_tourns(self, user_id):
         print("in get_tourns")
+        print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         tourn_instances = user_instance.tourns.all()
 
