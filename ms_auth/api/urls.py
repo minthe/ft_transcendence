@@ -16,6 +16,7 @@ urlpatterns = [
   	path('oauth2/redirect', api_account.oauth2_redirect, name="oauth2_redirect"),
 	# 2FA
 	path('2fa', api_second_factor.second_factor, name="second_factor"),
+	path('2fa/verify', api_second_factor.second_factor_verify, name="second_factor_verify"),
 	# Avatar
 	path('avatar', api_avatar.avatar, name="avatar"),
 	# Token
