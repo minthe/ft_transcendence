@@ -6,7 +6,7 @@ from ft_jwt.ft_jwt import FT_JWT
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
-from .models import Chat
+from .models import Chat, Message
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
@@ -38,26 +38,21 @@ def createUser(request):
         new_user.avatar = avatar
         new_user.save()
 
-        response = createChatBot(new_user.user_id)
+        response = createChatWithChatBot(new_user.user_id)
         print(f"RESPONSE CREATE CHAT {response}")
         return JsonResponse({}, status=200)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
 
+from django.utils import timezone
 
-def createChatBot(user_id):
+def createChatWithChatBot(user_id):
     try:
         chat_name = 'CHAT_BOT'
 
         if not MyUser.objects.filter(name=chat_name).exists():
-            chat_bot = MyUser()
-            max_user_id = MyUser.objects.all().aggregate(models.Max('user_id'))['user_id__max'] or 0
-            print(f"generated user id for chat bot: {max_user_id}")
-            chat_bot.user_id = max_user_id + 1
-            chat_bot.name = 'CHAT_BOT'
-            chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
-            chat_bot.save()
+            createChatBot()
 
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -67,6 +62,15 @@ def createChatBot(user_id):
         user_instance.save()
         chat_bot_instance.chats.add(new_chat.id)
         chat_bot_instance.save()
+
+        # create message in chat
+        specific_timestamp = timezone.now()
+        text = 'Hey! I am CHAT_BOT lol'
+        new_message = Message.objects.create(senderId=chat_bot_instance.user_id, sender=chat_name, text=text,
+                                             timestamp=specific_timestamp)
+        chat_instance = Chat.objects.get(id=new_chat.id)
+        new_message.save()
+        chat_instance.messages.add(new_message.id)
         return "ok"
     except ValueError:
         return "User does not exist 2"
@@ -74,7 +78,13 @@ def createChatBot(user_id):
         return str(e)
 
 
-
+def createChatBot():
+    chat_bot = MyUser()
+    max_user_id = MyUser.objects.all().aggregate(models.Max('user_id'))['user_id__max'] or 0
+    chat_bot.user_id = max_user_id + 1
+    chat_bot.name = 'CHAT_BOT'
+    chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
+    chat_bot.save()
 
 # Update Avatar:
 # - Endpoint: game/user/avatar/
