@@ -55,6 +55,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = []
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 ROOT_URLCONF = "django_project.urls"
 
 DATABASES = {
