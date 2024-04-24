@@ -7,7 +7,7 @@ services:
     build:
       context: swagger
     environment:
-      URLS_PRIMARY_NAME: "API Gateway"
+      URLS_PRIMARY_NAME: "Auth"
       URLS: "[{ url: './doc/ms-api-gateway.yaml', name: 'API Gateway'},
               { url: './doc/ms-auth.yaml', name: 'Auth' },
               { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
