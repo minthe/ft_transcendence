@@ -128,10 +128,14 @@ async function handleClickEvent(event) {
   //   enableTwoFactor();
   // else if (event.target.closest('#twoFAButtonD'))
   //   disableTwoFactor();
-  else if (event.target.closest('#twoFAButtonE'))
+  else if (event.target.closest('#twoFAButtonE')) {
+    console.log('en button clicked');
     updateTwoFactor('PUT');
-  else if (event.target.closest('#twoFAButtonD'))
+  }
+  else if (event.target.closest('#twoFAButtonD')) {
+    console.log("dis button clicked");
     updateTwoFactor('DELETE');
+  }
 
 
   else if (event.target.closest('#login42Button'))

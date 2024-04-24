@@ -57,7 +57,7 @@ function headerUpdateTwoFa() {
 	};
 }
 
-function bodyUpdataTwoFa() {
+function bodyUpdateTwoFa() {
 	return {
 		"code": two_fa_code
 	};

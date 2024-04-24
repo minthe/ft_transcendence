@@ -1,14 +1,16 @@
 
-function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
+async function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
   initUserData(data, usernameElement.value, passwordElement.value)
   authSucces();
+  await getTwoFaStatus();
   if (authMethod === 'login')
     clearLoginInput(usernameElement, passwordElement);
 }
 
-function afterAuthRegister(data, usernameElement, passwordElement, mail) {
+async function afterAuthRegister(data, usernameElement, passwordElement, mail) {
   initUserData(data, usernameElement.value, passwordElement.value)
   authSucces();
+  await getTwoFaStatus();
   clearRegisterInput(usernameElement, passwordElement, mail);
 }
 
@@ -135,7 +137,6 @@ function loginUserButton() {
       loginErrors(data)
     document.getElementById("wrong-password").classList.add("hidden");
     if (data.second_factor) {
-      await getTwoFaStatus();
       setUpTwoFaPage();      
       await verifyButtonClick();
       if (checkTwoFaCode()) {
@@ -145,35 +146,30 @@ function loginUserButton() {
             headers: headerTwoFa(),
             body: JSON.stringify(bodyTwoFa(data.user_id))
         })
-        .then(response => {
+        .then(async response => {
           if (!response.ok) {
               return response.json().then(data => {
-                  console.log('that would be the error: ', data.message); // Assuming the server sends back an object with a `message` field
+                  console.log('that would be the error: ', data.message);
                   loginErrors(data);
-                  return { twoFaActivated: true, twoFaSuccess: false, data };
               });
           }
           else {
-                afterAuthLogin('login', data, usernameElement, passwordElement);
+                await afterAuthLogin('login', data, usernameElement, passwordElement);
                 setDownTwoFaPage();
-                return { twoFaActivated: true, twoFaSuccess: true, data };
           }
       });
       }
+      data.message = 'Not enough digits or non numeric characters';
+      loginErrors(data);
     }
-    else {
-      afterAuthLogin('login', data, usernameElement, passwordElement);
-      return { twoFaActivated: false, twoFaSuccess: false, data };
-    }
-  })
-  .then(({twoFaActivated, twoFaSuccess, data}) => {
-    if (twoFaActivated && twoFaSuccess)
-      return data.message;
+    else
+      await afterAuthLogin('login', data, usernameElement, passwordElement);
   })
   .catch(error => {
+    console.log('error for less digits activated thrice');
+
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
-    // setErrorWithTimout('info_login', error, 9999999)
     console.log('Error during login:', error);
   });
 }
@@ -198,14 +194,14 @@ function RegisterUserButton() {
       return { ok: response.ok, data };
     });
   })
-  .then(({ ok, data }) => {
+  .then(async ({ ok, data }) => {
     if (!ok) {
         registerErrors(data);
     }
     document.getElementById("wrong-register").classList.add("hidden");
     showDiv('loginPage'); //maybe not needed
     hideDiv('registerPage'); //maybe not needed
-    afterAuthRegister(data, usernameElement, passwordElement, mail);
+    await afterAuthRegister(data, usernameElement, passwordElement, mail);
     // return response.json();
   })
   .catch(error => {

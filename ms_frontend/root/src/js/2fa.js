@@ -1,88 +1,88 @@
 
 let two_fa_code = '';
 
-function enableTwoFactor() {
-	const url = `${window.location.origin}/user/2fa`
+// function enableTwoFactor() {
+// 	const url = `${window.location.origin}/user/2fa`
   
-	changeToTwoFa();
-	fetch(url, {
-	  method: 'PUT',
-	//   headers: headerEnableTwoFa()
-	})
-	.then(async function(response) {
-	  if (response.ok) {
-		await verifyButtonProfileClick();
-		if (checkTwoFaCode()) {
-		  return fetch(url, {
-			method: 'POST',
-			headers: headerTwoFa(),
-			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
-		  })
-		  .then(async responseTwoFa => {
-			if (!responseTwoFa.ok) 
-				return { twoFaUpdated: false};
-			return { twoFaUpdated: true};
-		  });
-		}
-	  }
-	  return { twoFaUpdated: true};
-	})
-	.then(result => {
-		if (!result.twoFaUpdated)
-			throw Error("update failed");
-		updateTwoFaStatus(true);
-		showTwoFaDisableBtn();
-		changeToProfile();
-	})
-	.catch(error => {
-		changeToProfile();
-		updateTwoFaStatus(false);
-		console.error('There was a problem with the fetch operation:', error);
-	});
-	// changeToProfile();
-}
+// 	changeToTwoFa();
+// 	fetch(url, {
+// 	  method: 'PUT',
+// 	//   headers: headerEnableTwoFa()
+// 	})
+// 	.then(async function(response) {
+// 	  if (response.ok) {
+// 		await verifyButtonProfileClick();
+// 		if (checkTwoFaCode()) {
+// 		  return fetch(url, {
+// 			method: 'POST',
+// 			headers: headerTwoFa(),
+// 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
+// 		  })
+// 		  .then(async responseTwoFa => {
+// 			if (!responseTwoFa.ok) 
+// 				return { twoFaUpdated: false};
+// 			return { twoFaUpdated: true};
+// 		  });
+// 		}
+// 	  }
+// 	  return { twoFaUpdated: true};
+// 	})
+// 	.then(result => {
+// 		if (!result.twoFaUpdated)
+// 			throw Error("update failed");
+// 		updateTwoFaStatus(true);
+// 		showTwoFaDisableBtn();
+// 		changeToProfile();
+// 	})
+// 	.catch(error => {
+// 		changeToProfile();
+// 		updateTwoFaStatus(false);
+// 		console.error('There was a problem with the fetch operation:', error);
+// 	});
+// 	// changeToProfile();
+// }
   
-function disableTwoFactor() {
-	const url = `${window.location.origin}/user/2fa`;
+// function disableTwoFactor() {
+// 	const url = `${window.location.origin}/user/2fa`;
 	
-	changeToTwoFa();
-	fetch(url, {
-		method: 'Delete',
-		// headers: headerDisableTwoFa()
-	})
-	.then(async function(response) {
-	  if (response.ok) {
-		await verifyButtonProfileClick();
-		if (checkTwoFaCode()) {
-		  return fetch(url, {
-			method: 'POST',
-			headers: headerTwoFa(),
-			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
-		  })
-		  .then(function(responseTwoFa) {
-			if (!responseTwoFa.ok)
-				return { twoFaUpdated: false};
-				//   throw new Error(responseTwoFa.status);
-			return { twoFaUpdated: true};
-		  });
-		}
-	  }
-	  return { twoFaUpdated: true};
-	})
-	.then(result => {
-		if (!result.twoFaUpdated)
-			throw Error("update failed");
-		updateTwoFaStatus(true);
-		showTwoFaEnableBtn();
-		changeToProfile();
-	})
-	.catch(function(error) {
-		changeToProfile();
-		updateTwoFaStatus(false);
-		console.error('Error processing your request:', error);
-	});
-	// changeToProfile();
-}
+// 	changeToTwoFa();
+// 	fetch(url, {
+// 		method: 'Delete',
+// 		// headers: headerDisableTwoFa()
+// 	})
+// 	.then(async function(response) {
+// 	  if (response.ok) {
+// 		await verifyButtonProfileClick();
+// 		if (checkTwoFaCode()) {
+// 		  return fetch(url, {
+// 			method: 'POST',
+// 			headers: headerTwoFa(),
+// 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
+// 		  })
+// 		  .then(function(responseTwoFa) {
+// 			if (!responseTwoFa.ok)
+// 				return { twoFaUpdated: false};
+// 				//   throw new Error(responseTwoFa.status);
+// 			return { twoFaUpdated: true};
+// 		  });
+// 		}
+// 	  }
+// 	  return { twoFaUpdated: true};
+// 	})
+// 	.then(result => {
+// 		if (!result.twoFaUpdated)
+// 			throw Error("update failed");
+// 		updateTwoFaStatus(true);
+// 		showTwoFaEnableBtn();
+// 		changeToProfile();
+// 	})
+// 	.catch(function(error) {
+// 		changeToProfile();
+// 		updateTwoFaStatus(false);
+// 		console.error('Error processing your request:', error);
+// 	});
+// 	// changeToProfile();
+// }
   
 function updateTwoFaStatus(success, message) {
 	const twoFaStatus = document.getElementById('updateTwoFa');
@@ -144,10 +144,7 @@ function checkTwoFaCode() {
 function verifyButtonClick() {
 	return new Promise(resolve => {
 		document.getElementById('verifyButton').addEventListener('click', () => {
-			if (document.getElementById('userIsNotAuth').classList.contains('hidden'))
-				two_fa_code = document.getElementById('twoFaCodeProfile').value;
-			else
-				two_fa_code = document.getElementById('twoFaCode').value;
+			two_fa_code = document.getElementById('twoFaCode').value;
 			resolve();
 		});
 	});
@@ -156,20 +153,16 @@ function verifyButtonClick() {
 function verifyButtonProfileClick() {
 	return new Promise(resolve => {
 		document.getElementById('verifyButtonProfile').addEventListener('click', () => {
-			if (document.getElementById('userIsNotAuth').classList.contains('hidden'))
-				two_fa_code = document.getElementById('twoFaCodeProfile').value;
-			else
-				two_fa_code = document.getElementById('twoFaCode').value;
+			two_fa_code = document.getElementById('twoFaCodeProfile').value;
 			resolve();
 		});
 	});
 }
 
 
-//needs to be added in login, refresh and spa logic
+// needs to be added in login, refresh and spa logic
 async function getTwoFaStatus() {
 	const url = `${window.location.origin}/user/2fa`
-
 	fetch(url, {
 		method: 'GET'
 	})
@@ -181,7 +174,7 @@ async function getTwoFaStatus() {
 	.then(async result => {
 		if (!result.ok)
 			throw Error(result.data.message);
-		if (response.data.second_factor)
+		if (result.data.second_factor)
 			showTwoFaDisableBtn();
 		else
 			showTwoFaEnableBtn();
@@ -197,32 +190,36 @@ async function getTwoFaStatus() {
 
 
 
-
+// check errors
 function updateTwoFactor(correctMethod) {
-	const url = `${window.location.origin}/user/2fa`
+	const url = `${window.location.origin}/user/2fa`;
   
-	changeToTwoFa();
+	// changeToTwoFa();
 	fetch(url, {
 	  method: 'POST',
 	//   headers: headerEnableTwoFa()
 	})
 	.then(async function(response) {
-	  if (response.ok) {
-		await verifyButtonProfileClick();
-		if (checkTwoFaCode()) {
-		  return fetch(url, {
-			method: correctMethod,
-			headers: headerUpdateTwoFa(),
-			body: JSON.stringify(bodyUpdateTwoFa())
-		  })
-		  .then(async responseTwoFa => {
-			if (!responseTwoFa.ok) 
-				return { twoFaUpdated: false, message: responseTwoFa.message};
-			return { twoFaUpdated: true, message: 'Updated 2FA succesfully'};
-		  });
+		changeToTwoFa();
+		// const dataRes = await response.json();
+		if (response.ok) {
+			await verifyButtonProfileClick();
+			if (checkTwoFaCode()) {
+				return fetch(url, {
+					method: correctMethod,
+					headers: headerUpdateTwoFa(),
+					body: JSON.stringify(bodyUpdateTwoFa())
+				})
+				.then(async responseTwoFa => {
+					const data = await responseTwoFa.json();
+					if (!responseTwoFa.ok) 
+						return { twoFaUpdated: false, message: data.message};
+					return { twoFaUpdated: true, message: 'Updated 2FA succesfully'};
+				});
+			}
+			return { twoFaUpdated: false, message: 'Not enough digits or non numeric characters'};
 		}
-	  }
-	  return { twoFaUpdated: false, message: response.message};
+		return { twoFaUpdated: false, message: response.status}; //maybe needs to be checked again
 	})
 	.then(async ({twoFaUpdated, message}) => {
 		if (!twoFaUpdated)
@@ -234,7 +231,7 @@ function updateTwoFactor(correctMethod) {
 	.catch(error => {
 		changeToProfile();
 		updateTwoFaStatus(false, error);
-		console.error('There was a problem with the fetch operation:', error);
+		// console.error('There was a problem with the fetch operation:', error);
 	});
-	// changeToProfile();
+	changeToProfile();
 }
