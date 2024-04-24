@@ -5,7 +5,7 @@ from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
 import json
 from django.views.decorators.csrf import csrf_exempt
-# from django.db import models
+from django.db import models
 from backend_app.models import Game, MyUser, Chat, Message
 
 
@@ -34,13 +34,13 @@ def createUser(request):
         new_user.user_id = jwt_user_id
         new_user.name = username
         new_user.avatar = avatar
-        print("BEFOR CREATING GAME ALIAS FOR MY USER")
         new_user.alias = username
         new_user.save()
-        print("BEFOR CREATING chAT WITH BOT")
         response = createChatWithChatBot(new_user.user_id)
-        print(f"RESPONSE CREATE CHAT {response}")
-        return JsonResponse({}, status=200)
+        if response == 'ok':
+            return JsonResponse({}, status=200)
+        print(f"FAILED TO CREATE CHAT BOT: {response}")
+        raise Exception("Failed to create Chat Bot: ", response)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
@@ -52,9 +52,7 @@ def createChatWithChatBot(user_id):
         chat_name = 'CHAT_BOT'
 
         if not MyUser.objects.filter(name=chat_name).exists():
-            print("BEFOR CREATING chAT BOT")
             createChatBot(chat_name)
-        print("AFTER CREATING chAT  BOT")
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
@@ -63,7 +61,7 @@ def createChatWithChatBot(user_id):
         user_instance.save()
         chat_bot_instance.chats.add(new_chat.id)
         chat_bot_instance.save()
-        print("BEFORE CREATING MESSAGE")
+
         # create message in chat
         specific_timestamp = timezone.now()
         text = 'Hey! I am CHAT_BOT lol'
@@ -72,7 +70,6 @@ def createChatWithChatBot(user_id):
         chat_instance = Chat.objects.get(id=new_chat.id)
         new_message.save()
         chat_instance.messages.add(new_message.id)
-        print("AFTER CREATING MESSAGE")
         return "ok"
     except ValueError:
         return "User does not exist 2"
