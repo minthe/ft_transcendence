@@ -15,7 +15,7 @@ def get_2fa_code(user_id):
 def generate_second_factor_dict(code):
 	timestamp = timezone.now().replace(tzinfo=None).isoformat()
 	hashed_code = make_password(code)
-	second_factor_dict = {'code': hashed_code,  # TODO valentin store in memory cache
+	second_factor_dict = {'code': hashed_code,
 						  'timestamp': timestamp,
 						  'last_retry': timestamp}
 	return second_factor_dict
