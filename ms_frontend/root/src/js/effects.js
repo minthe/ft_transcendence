@@ -207,8 +207,10 @@ async function updatePage() {
 		}
 		else if (state.currPage === 'gameSite')
 			gameSiteClicked();
-		else if (state.currPage === 'profileSite')
+		else if (state.currPage === 'profileSite') {
+			await getTwoFaStatus();
 			showSiteHideOthers('profileSite', 'profileButton')
+		}
 		else if (state.currPage === 'creatorsSite')
 			showSiteHideOthers('creatorsSite', 'creatorsButton');
 		else if (state.currPage === 'statsSite')
@@ -336,15 +338,3 @@ fetch(url, {
 	// }
 }
 
-
-function getJwtTokenFromCookie() {
-	const cookies = document.cookie.split(';');
-	console.log(document.cookie);
-	for (let i = 0; i < cookies.length; i++) {
-		const cookie = cookies[i].trim();
-		console.log(cookies[i]);
-	  if (cookie.startsWith('test='))
-		return true;
-	}
-	return false;
-}

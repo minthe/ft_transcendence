@@ -49,7 +49,7 @@ function headerLogout() {
 	};
 }
 
-function headerEnableTwoFa() {
+function headerUpdateTwoFa() {
 	return {
 		'accept': 'application/json',
 		'Content-Type': 'application/json',
@@ -57,22 +57,8 @@ function headerEnableTwoFa() {
 	};
 }
 
-function bodyEnableTwoFa() {
+function bodyUpdateTwoFa() {
 	return {
-		"second_factor": true
-	};
-}
-
-function headerDisableTwoFa() {
-	return {
-		'accept': 'application/json',
-		'Content-Type': 'application/json',
-		'Authorization':'Bearer {access-token}'
-	};
-}
-
-function bodyDisableTwoFa() {
-	return {
-		"second_factor": false
+		"code": two_fa_code
 	};
 }
