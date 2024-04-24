@@ -3,6 +3,8 @@ import json
 from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 class _Chat:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
@@ -281,8 +283,7 @@ class _Chat:
     @database_sync_to_async
     def inviteUserToChat(self, user_id, chat_id, invited_user):
         try:
-            invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
-            if not invited_user_exists:
+            if not MyUser.objects.filter(name=invited_user).exists():
                 return 'User you want to invite doesnt exists'
             inviting_user = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             invited_user = MyUser.objects.get(name=invited_user)
@@ -296,8 +297,8 @@ class _Chat:
 
     @database_sync_to_async
     def block_user(self, user_id, user_to_block):
-        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
-        other_user_exists = MyUser.objects.filter(name=user_to_block)
+        current_user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
+        other_user_exists = MyUser.objects.filter(name=user_to_block).exists()
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'blocked_by': None}
         current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -314,8 +315,8 @@ class _Chat:
 
     @database_sync_to_async
     def unblock_user(self, user_id, user_to_unblock):
-        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
-        other_user_exists = MyUser.objects.filter(name=user_to_unblock)
+        current_user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
+        other_user_exists = MyUser.objects.filter(name=user_to_unblock).exists()
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'unblocked_by': None}
         current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -325,7 +326,6 @@ class _Chat:
             other_user_instance.blockedBy.remove(current_user_instance)
             other_user_instance.save()
             return {'status': 200}
-        # User is already blocked, return a response or handle accordingly
         return {'status': 409, 'unblocked_by': None}  # 'User already blocked'
 
     @database_sync_to_async
@@ -357,7 +357,7 @@ class _Chat:
         for user in users_in_chat:
             if not current_user == user.name:
                 return user.name
-        return 'lol private shit backend CONSUMERS.py'
+        return 'Unexpected Error in getChatName()'
 
     def getPrivateChatNames(self, chat_instance, user_id):
         if not chat_instance.isPrivate:
@@ -384,15 +384,29 @@ class _Chat:
                 return channel['channel_name']
         return None
 
+
     def getAvatar(self, chat_name):
         if not MyUser.objects.filter(name=chat_name).exists():
             return None
         user_instance = MyUser.objects.get(name=chat_name)
         avatar_url = user_instance.avatar if user_instance.avatar else None
-        result = str(avatar_url) if avatar_url else None
-        # result = '../../backend' + str(avatar_url) if avatar_url else None # doesnt work if avatar is url
+
+        if self.is_valid_url(avatar_url):
+            print("Valid URL")
+            result = str(avatar_url) if avatar_url else None
+        else:
+            print("Invalid URL")
+            result = '../../backend' + str(avatar_url) if avatar_url else None # doesnt work if avatar is url
         return result
 
+
+    def is_valid_url(self, url):
+        validator = URLValidator()
+        try:
+            validator(url)
+            return True
+        except ValidationError:
+            return False
 
 
 

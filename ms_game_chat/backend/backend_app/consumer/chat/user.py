@@ -50,7 +50,6 @@ class _User:
     async def handle_get_avatar(self, text_data_json):
         user_id = text_data_json["data"]["user_id"]
         response = await self.get_avatar(user_id)
-
         await self.send(text_data=json.dumps({
             'type': 'get_avatar',
             'avatar': response,
