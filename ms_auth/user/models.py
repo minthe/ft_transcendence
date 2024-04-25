@@ -27,4 +27,4 @@ class User(models.Model):
 		return get_random_string(length)
 
 	def set_default_avatar(self):
-		self.avatar = '${window.location.origin}/static/avatar/moon_dog.jpg'
+		self.avatar = 'moon_dog.jpg'
