@@ -281,64 +281,55 @@ async function logoutUser() {
 
 
 
-//change the header and body
-// function loginWith42() {
+function openAuthPopup() {
+  const url = `${window.location.origin}/user/oauth2/login`;
+  const windowName = 'AuthWindow';
+  const windowFeatures = 'width=600,height=700,resizable=yes';
 
-//   console.log('inside login for 42 #####');
+  const popup = window.open(url, windowName, windowFeatures);
+  if (popup) {
+    popup.focus();
+  } else {
+    alert('Please allow popups for this website.');
+  }
 
-//   const url = `${window.location.origin}/user/oauth2/login`
-//   fetch(url, {
-//     method: 'POST',
-//     headers: headerLogin(),
-//     mode: 'no-cors'
-//     // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
-//   })
-//   .then(async response => {
-//     if (!response.ok) {
-//       loginErrors(response)
-//     }
-//     document.getElementById("wrong-password").classList.add("hidden");
-//     return response.json();
-//   })
-//   .then(async data => {
-//     if (data.second_factor) {
-//       document.getElementById('twoFAButtonE').classList.add('hidden');
-//       document.getElementById('twoFAButtonD').classList.remove('hidden');
+  return popup;
+}
 
-//       setUpTwoFaPage();
-//       await verifyButtonClick();
-//       if (two_fa_code.length === 6) {  
-//         const url = `${window.location.origin}/user/2fa/verify`
-//         fetch(url, {
-//             method: 'POST',
-//             headers: headerTwoFa(),
-//             body: JSON.stringify(bodyTwoFa())
-//           })
-//         .then(async response => {
-//           if (!response.ok) {
-//             // location.reload();
-//             throw new Error('2FA Code was not correct!');
-//           }
-//           afterAuthLogin('42Login', data);
-//           console.log("CORRECT 2FA CODE")
-//           setDownTwoFaPage();
-//         })
-//         .catch(error => {
-//           console.error('There was a problem with the fetch operation:', error);
-//           // document.getElementById('twoFA').classList.add('hidden');
-//           return ;//back to loginpage or 2fa page?
-//         });
-//       }
-//     }
-//     else
-//       afterAuth('42Login', data);
+// Listening for messages from the popup
+window.addEventListener('message', function(event) {
+  if (event.origin !== `${window.location.origin}/user/oauth2/login`) {
+    return; // Ignore messages that do not come from the expected domain
+  }
 
-//   })
-//   .catch(error => {
-//     // setErrorWithTimout('info_login', error, 9999999)
-//     console.log('Error during login:', error);
-//   });
-// }
+  if (event.data === 'success') {
+    window.opener.postMessage('success', 'https://your-website.com');
+    window.close(); // Optionally close the popup
+
+    console.log('Authentication successful!');
+    // Process successful authentication here
+  } else {
+    console.log('Authentication failed or cancelled.');
+    // Handle failed authentication or cancellation here
+  }
+}, false);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

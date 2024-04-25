@@ -122,22 +122,14 @@ async function handleClickEvent(event) {
     changeToLoginPageButton();
   else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-
-
-  // else if (event.target.closest('#twoFAButtonE'))
-  //   enableTwoFactor();
-  // else if (event.target.closest('#twoFAButtonD'))
-  //   disableTwoFactor();
-  else if (event.target.closest('#twoFAButtonE')) {
-    console.log('en button clicked');
+  else if (event.target.closest('#twoFAButtonE'))
     updateTwoFactor('PUT');
-  }
-  else if (event.target.closest('#twoFAButtonD')) {
-    console.log("dis button clicked");
+  else if (event.target.closest('#twoFAButtonD'))
     updateTwoFactor('DELETE');
-  }
 
 
-  else if (event.target.closest('#login42Button'))
-    loginWith42();
+    else if (event.target.closest('#login42Button'))
+      openAuthPopup();
+  // else if (event.target.closest('#login42Button'))
+  //   loginWith42();
 }
