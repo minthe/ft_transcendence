@@ -6,7 +6,8 @@ from ft_jwt.ft_jwt import FT_JWT
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
-from .models import Chat, Message
+from backend_app.models import Game, MyUser, Chat, Message
+
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
@@ -28,15 +29,18 @@ def createUser(request):
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
+        print("BEFOR CREATING MY USER")
         new_user = MyUser()
         new_user.user_id = jwt_user_id
         new_user.name = username
         new_user.avatar = avatar
+        new_user.alias = username
         new_user.save()
-
         response = createChatWithChatBot(new_user.user_id)
-        print(f"RESPONSE CREATE CHAT {response}")
-        return JsonResponse({}, status=200)
+        if response == 'ok':
+            return JsonResponse({}, status=200)
+        print(f"FAILED TO CREATE CHAT BOT: {response}")
+        raise Exception("Failed to create Chat Bot: ", response)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
@@ -48,8 +52,7 @@ def createChatWithChatBot(user_id):
         chat_name = 'CHAT_BOT'
 
         if not MyUser.objects.filter(name=chat_name).exists():
-            createChatBot()
-
+            createChatBot(chat_name)
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
@@ -74,12 +77,13 @@ def createChatWithChatBot(user_id):
         return str(e)
 
 
-def createChatBot():
+def createChatBot(chat_name):
     chat_bot = MyUser()
     max_user_id = MyUser.objects.all().aggregate(models.Max('user_id'))['user_id__max'] or 0
     chat_bot.user_id = max_user_id + 1
-    chat_bot.name = 'CHAT_BOT'
+    chat_bot.name = chat_name
     chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
+    chat_bot.alias = chat_name
     chat_bot.save()
 
 # Update Avatar:
@@ -129,7 +133,6 @@ def updateAlias(request):
 
 
 from django.http import JsonResponse
-from backend_app.models import Game, MyUser
 
 def createGame(request, username, invited_username):
     try:
