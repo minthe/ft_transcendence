@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.1'
+  version: '1.9.2'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -288,6 +288,7 @@ paths:
               properties:
                 avatar:
                   type: string
+                  example: "moonDog.jpg"
       responses:
         '200':
           description: Avatar updated successfully
@@ -500,10 +501,13 @@ components:
       properties:
         username:
           type: string
+          example: "guest"
         password:
           type: string
+          example: "123"
         email:
           type: string
+          example: "guest@gmail.com"
     LoginRequest:
       type: object
       required:
@@ -512,8 +516,10 @@ components:
       properties:
         username:
           type: string
+          example: "guest"
         password:
           type: string
+          example: "123"
     AuthResponse:
       type: object
       required:
