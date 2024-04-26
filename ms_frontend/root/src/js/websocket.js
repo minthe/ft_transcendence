@@ -283,8 +283,12 @@ async function establishWebsocketConnection() {
       case 'recieve_tourns':
         console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
-        console.log('DATA: ', websocket_obj.game.invites[1][0])
-        console.log('DATA: ', websocket_obj.game.invites[1][1])
+        console.log('DATA: ', websocket_obj.game.invites)
+        console.log('DATA: ', websocket_obj.game.invites[0])
+        console.log('DATA: ', websocket_obj.game.invites[0][1])
+        console.log('DATA: ', websocket_obj.game.invites[0][0])
+        generateFrontendRepresentation(websocket_obj.game.invites)
+        // console.log('DATA: ', websocket_obj.game.invites[1][1])
 
         break
       default:

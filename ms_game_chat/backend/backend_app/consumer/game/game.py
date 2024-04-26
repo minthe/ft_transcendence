@@ -592,11 +592,20 @@ class _Game:
         print("in get_tourns")
         print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        tourn_instances = user_instance.tourns.all()
+        # tourn_instances = user_instance.tourns.all()
+        # tourn_instances = all_instances.objects.filter(status="active")
+        tourn_instances = user_instance.tourns.filter(status="active")
+        print("tourn_instances")
+        print(tourn_instances)
 
         match_data = []
         for tourns in tourn_instances:
-            game_sessions = tourns.active_matches.all()
+            # game_sessions = tourns.active_matches.all()
+            active_sessions = tourns.active_matches.all()
+            passed_sessions = tourns.passed_matches.all()
+            game_sessions = active_sessions.union(passed_sessions)
+            # game_sessions = tourns.active_matches.all()
+
             unit = []
             tourn_entry = []
             tourn_host = tourns.hostId
@@ -633,6 +642,8 @@ class _Game:
             match_data.append(unit)
 
         json_data = json.dumps(match_data)
+        print ("json_data")
+        print(json_data)
         return json_data
 
     @database_sync_to_async
@@ -664,8 +675,8 @@ class _Game:
             print("user_id")
 
             print(user_id)
-            user1 = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             game_instance = Game.objects.get(id=game_id)
+            user1 = MyUser.objects.get(name=game_instance.hostId)  # changed id to user_id
             user1.new_matches.remove(game_instance)
             user1.old_matches.add(game_instance)
             user1.save()

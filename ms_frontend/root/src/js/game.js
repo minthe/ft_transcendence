@@ -3,6 +3,9 @@ function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
   if (document.getElementById('createGameButton'))
     document.getElementById('createGameButton').addEventListener('click', createGame);
+  if (document.getElementById('tournamentsContainer'))
+    document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
+
 }
 
 
@@ -88,6 +91,74 @@ async function requestTourns() {
   document.getElementById("invites-screen").classList.remove("hidden");
   await sendDataToBackend('request_tourns');
 }
+
+async function generateFrontendRepresentation(data) {
+  const tournamentsContainer = document.getElementById('tournamentsContainer');
+
+  // Iterate through tournaments
+  data.forEach(tournament => {
+      const tournamentDiv = document.createElement('div');
+      tournamentDiv.classList.add('tournament');
+
+      // Create tournament host and winner representation
+      const tournamentHost = document.createElement('p');
+      tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
+      tournamentDiv.appendChild(tournamentHost);
+
+      const tournamentWinner = document.createElement('p');
+      tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
+      tournamentDiv.appendChild(tournamentWinner);
+
+      // Iterate through games inside the tournament
+      const gamesContainer = document.createElement('div');
+      gamesContainer.classList.add('games-container');
+      tournament.slice(1).forEach(game => {
+          const gameDiv = document.createElement('div');
+          gameDiv.classList.add('game');
+
+          // Create game representation
+          const gameDetails = document.createElement('p');
+          gameDetails.textContent = `Game ID: ${game.game_id}, Stage: ${game.stage}`;
+          gameDiv.appendChild(gameDetails);
+
+          const playersDetails = document.createElement('p');
+          playersDetails.textContent = `Player One: ${game.player_one}, Player Two: ${game.player_two}`;
+          gameDiv.appendChild(playersDetails);
+
+          // Append game representation to games container
+          gamesContainer.appendChild(gameDiv);
+      });
+
+      // Append games container to tournament container
+      tournamentDiv.appendChild(gamesContainer);
+
+      // Append tournament container to main container
+      if (tournamentsContainer) {
+        tournamentsContainer.appendChild(tournamentDiv);
+    } else {
+        console.error('Tournaments container not found or is null.');
+    }
+      tournamentsContainer.appendChild(tournamentDiv);
+  });
+}
+
+// async function renderTourns() {
+//   console.log('In renderTourns');
+//   if (websocket_obj.game.tourns != 0)
+//   {
+//     const container = document.getElementById('game-session-container');
+//     container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
+
+//     container.querySelectorAll('.join-game-btn').forEach(button => {
+//       button.addEventListener('click', async function() {
+//         const gameId = this.getAttribute('data-gameid');
+//         joinGame(gameId);
+//       });
+//     });
+//   }
+// }
+
+
 
 
 async function renderInvites() {
