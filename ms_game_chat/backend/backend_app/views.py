@@ -53,13 +53,12 @@ from django.utils import timezone
 def createChatWithChatBot(user_id):
     try:
         chat_name = 'CHAT_BOT'
-
         if not MyUser.objects.filter(name=chat_name).exists():
             delete_later = createChatBot(chat_name)
             if delete_later != 'ok':
-                JsonResponse({'message': delete_later}, status=499)
+                JsonResponse({'message': delete_later}, status=499) # delete later, debug
         chat_bot_instance = MyUser.objects.get(name=chat_name)
-        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        user_instance = MyUser.objects.get(user_id=user_id)
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
         new_chat.save()
         user_instance.chats.add(new_chat.id)
