@@ -283,6 +283,7 @@ async function establishWebsocketConnection() {
       case 'recieve_tourns':
         console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
+        // websocket_obj.game.invites = data.matches
         console.log('DATA: ', websocket_obj.game.invites)
         console.log('DATA: ', websocket_obj.game.invites[0])
         console.log('DATA: ', websocket_obj.game.invites[0][1])

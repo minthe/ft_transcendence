@@ -87,14 +87,16 @@ async function requestInvites() {
 
 async function requestTourns() {
   console.log('In requestTourns');
-  document.getElementById("start-screen").classList.add("hidden");
-  document.getElementById("invites-screen").classList.remove("hidden");
+  // document.getElementById("start-screen").classList.add("hidden");
+  // document.getElementById("invites-screen").classList.remove("hidden");
   await sendDataToBackend('request_tourns');
 }
 
 async function generateFrontendRepresentation(data) {
   const tournamentsContainer = document.getElementById('tournamentsContainer');
 
+    console.log('In generateFrontendRepresentation');
+    console.log(data);
   // Iterate through tournaments
   data.forEach(tournament => {
       const tournamentDiv = document.createElement('div');
@@ -108,6 +110,7 @@ async function generateFrontendRepresentation(data) {
       const tournamentWinner = document.createElement('p');
       tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
       tournamentDiv.appendChild(tournamentWinner);
+      
 
       // Iterate through games inside the tournament
       const gamesContainer = document.createElement('div');
