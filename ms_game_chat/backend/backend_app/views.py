@@ -26,10 +26,13 @@ def createUser(request):
         if MyUser.objects.filter(user_id=jwt_user_id).exists():
             print(f"User {jwt_user_id} already exists")
             return JsonResponse({'message': 'User already exists'}, status=409)
+        if jwt_user_id == 1:
+            delete_later = "USER ID 1 SHOULD BE FOR CHATBOT, VALENTIN PLS FIX"
+            print(delete_later)
+            return JsonResponse({'message', delete_later}, status=500)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
-        print("BEFOR CREATING MY USER")
         new_user = MyUser()
         new_user.user_id = jwt_user_id
         new_user.name = username
@@ -52,7 +55,9 @@ def createChatWithChatBot(user_id):
         chat_name = 'CHAT_BOT'
 
         if not MyUser.objects.filter(name=chat_name).exists():
-            createChatBot(chat_name)
+            delete_later = createChatBot(chat_name)
+            if delete_later != 'ok':
+                JsonResponse({'message': delete_later}, status=499)
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
@@ -78,13 +83,15 @@ def createChatWithChatBot(user_id):
 
 
 def createChatBot(chat_name):
+    if MyUser.objects.filter(user_id=1).exists(): # delete later when chatbot works
+        return "CHATBOT DOES NOT EXIST YET BUT USER ID 1 IS NOT FREE, MARIE & VALENTIN PLS FIX"
     chat_bot = MyUser()
-    max_user_id = MyUser.objects.all().aggregate(models.Max('user_id'))['user_id__max'] or 0
-    chat_bot.user_id = max_user_id + 1
+    chat_bot.user_id = 1
     chat_bot.name = chat_name
     chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
     chat_bot.alias = chat_name
     chat_bot.save()
+    return "ok"
 
 # Update Avatar:
 # - Endpoint: game/user/avatar/
