@@ -54,6 +54,12 @@ function verifyButtonClick() {
 			two_fa_code = document.getElementById('twoFaCode').value;
 			resolve();
 		});
+		// document.addEventListener('keypress', async function(event) {
+		// 	if (event.key === 'Enter' || event.keyCode === 13) {
+		// 		two_fa_code = document.getElementById('twoFaCode').value;
+		// 		resolve();
+		// 	}
+		// });
 	});
 }
 
@@ -63,6 +69,12 @@ function verifyButtonProfileClick() {
 			two_fa_code = document.getElementById('twoFaCodeProfile').value;
 			resolve();
 		});
+		// document.addEventListener('keypress', async function(event) {
+		// 	if (event.key === 'Enter' || event.keyCode === 13) {
+		// 		two_fa_code = document.getElementById('twoFaCodeProfile').value;
+		// 		resolve();
+		// 	}
+		// });
 	});
 }
 

@@ -292,7 +292,6 @@ function openAuthPopup() {
   } else {
     alert('Please allow popups for this website.');
   }
-
   return popup;
 }
 
@@ -302,7 +301,9 @@ window.addEventListener('message', function(event) {
     return; // Ignore messages that do not come from the expected domain
   }
 
+  console.log('data of the event : ', event.data);
   if (event.data === 'success') {
+   
     window.opener.postMessage('success', 'https://your-website.com');
     window.close(); // Optionally close the popup
 
