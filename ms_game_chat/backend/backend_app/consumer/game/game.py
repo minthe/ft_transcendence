@@ -406,9 +406,16 @@ class _Game:
 
     @database_sync_to_async
     def matchResults(self, game_struct):
+        print("in matchResults")
+        # game_instance = Game.objects.get(id=self.game_id)
         game_instance = Game.objects.get(id=self.game_id)
-        user_one = MyUser.objects.get(user_id=game_instance.hostId)
-        user_two = MyUser.objects.get(user_id=game_instance.guestId)
+        print("game_instance")
+        print(game_instance)
+
+        #         'host_score': self.game_states[self.game_id]['host_score'],
+        # 'guest_score': self.game_states[self.game_id]['guest_score'],
+        user_one = MyUser.objects.get(name=game_instance.hostId)
+        user_two = MyUser.objects.get(name=game_instance.guestId)
 
         user_one.old_matches.add(game_instance)
         user_two.old_matches.add(game_instance)
@@ -417,11 +424,15 @@ class _Game:
 
 
         if game_struct['host_score'] == game_struct['score_limit']:
+            print("game_struct['host_score']")
             game_instance.winnerId = game_instance.hostId
             game_instance.loserId = game_instance.guestId
         elif game_struct['guest_score'] == game_struct['score_limit']:
+            print("game_struct['guest_score']")
             game_instance.winnerId = game_instance.guestId
             game_instance.loserId = game_instance.hostId
+        game_instance.save()
+
         if game_instance.tournId is not None:
             print("matchResults tourn")
             tourn_instance = Tournament.objects.get(id=game_instance.tournId)
@@ -677,11 +688,15 @@ class _Game:
             print(user_id)
             game_instance = Game.objects.get(id=game_id)
             user1 = MyUser.objects.get(name=game_instance.hostId)  # changed id to user_id
+            print("user1")
+            print(user1)
             user1.new_matches.remove(game_instance)
             user1.old_matches.add(game_instance)
             user1.save()
 
             user2 = MyUser.objects.get(name=game_instance.guestId)
+            print("user2")
+            print(user2)
             user2.new_matches.remove(game_instance)
             user2.old_matches.add(game_instance)
             user2.save()
