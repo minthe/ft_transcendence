@@ -414,11 +414,19 @@ class _Game:
 
         #         'host_score': self.game_states[self.game_id]['host_score'],
         # 'guest_score': self.game_states[self.game_id]['guest_score'],
-        user_one = MyUser.objects.get(name=game_instance.hostId)
-        user_two = MyUser.objects.get(name=game_instance.guestId)
+        print("game_instance.hostId")
+        print(game_instance.hostId)
+        user_one = MyUser.objects.get(user_id=game_instance.hostId)
+        print("user_one")
+        print(user_one)
+        user_two = MyUser.objects.get(user_id=game_instance.guestId)
+        print("user_two")
+        print(user_two)
 
         user_one.old_matches.add(game_instance)
         user_two.old_matches.add(game_instance)
+        user_one.new_matches.remove(game_instance)
+        user_two.new_matches.remove(game_instance)
         user_one.save()
         user_two.save()
 
@@ -448,18 +456,18 @@ class _Game:
             tourn_instance.save()
             if len(tourn_instance.finalMatch) == 2:
                 if game_instance.stage == "semi":
-                    game_instance = Game.objects.create()
-                    game_instance.hostId = tourn_instance.finalMatch[0]
-                    game_instance.guestId = tourn_instance.finalMatch[1]
-                    tourn_instance.active_matches.add(game_instance)
-                    game_instance.tournId = tourn_instance.id
-                    game_instance.stage = "final"
-                    game_instance.save()
+                    new_game = Game.objects.create()
+                    new_game.hostId = tourn_instance.finalMatch[0]
+                    new_game.guestId = tourn_instance.finalMatch[1]
+                    tourn_instance.active_matches.add(new_game)
+                    new_game.tournId = tourn_instance.id
+                    new_game.stage = "final"
+                    new_game.save()
 
-                    # user_one = MyUser.objects.get(user_id=tourn_instance.finalMatch[0])
-                    # user_two = MyUser.objects.get(user_id=tourn_instance.finalMatch[1])
-                    user_one.new_matches.add(game_instance)
-                    user_two.new_matches.add(game_instance)
+                    user_one = MyUser.objects.get(user_id=tourn_instance.finalMatch[0])
+                    user_two = MyUser.objects.get(user_id=tourn_instance.finalMatch[1])
+                    user_one.new_matches.add(new_game)
+                    user_two.new_matches.add(new_game)
                     user_one.save()
                     user_two.save()
 
@@ -667,9 +675,15 @@ class _Game:
         # Iterate through game_sessions
         for game_session in game_sessions:
             # Extract opponent name and game id
-            opponent_name = game_session.hostId
+            if int(user_instance.user_id) == int(game_session.hostId):
+                opponent_name = game_session.guestId
+            else:
+                opponent_name = game_session.hostId
             game_id = game_session.id
-            
+            print("game_id ivites")
+            print(game_id)
+            print("opponent_name")
+            print(opponent_name)
             # Append data to the match_data list
             match_data.append({
                 'opponent_name': opponent_name,
