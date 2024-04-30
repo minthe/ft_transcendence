@@ -11,6 +11,7 @@ class User(models.Model):
 	password = models.CharField(max_length=255, null=True)
 	avatar = models.CharField(max_length=2000, null=True)
 	email = models.CharField(max_length=255, unique=True, null=True)
+	alias = models.CharField(max_length=255, unique=True, null=True)
 
 	user_id = models.AutoField(primary_key=True)
 

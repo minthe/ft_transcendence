@@ -5,7 +5,7 @@ from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def checkUserExists(key, value):
+def checkValueExists(key, value):
 	try:
 		user = User.objects.get(**{key: value})
 		return True

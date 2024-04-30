@@ -34,9 +34,9 @@ def register(request):
 		if mail_views.validator(email) == False:
 			return JsonResponse({'message': 'Email invalid'}, status=400)
 
-		if user_views.checkUserExists('username', username):
+		if user_views.checkValueExists('username', username):
 			return JsonResponse({'message': "Username already taken"}, status=409)
-		if user_views.checkUserExists('email', email):
+		if user_views.checkValueExists('email', email):
 			return JsonResponse({'message': "Email already taken"}, status=409)
 
 		user = user_views.createUser(data)
@@ -93,7 +93,7 @@ def login(request):
 		data =json.loads(request.body)
 		username = data.get('username')
 		password = data.get('password')
-		if not user_views.checkUserExists('username', username):
+		if not user_views.checkValueExists('username', username):
 			return JsonResponse({'message': "User not found"}, status=404)
 		if not user_views.check_password(username, password):
 			return JsonResponse({'message': "Credentials are wrong"}, status=409)
@@ -170,7 +170,7 @@ def oauth2_redirect(request):
 		access_token = oauth2_views.getToken(request)
 		user_data = intra42_views.getUserData(access_token)
 
-		if not user_views.checkUserExists('intra_id', user_data['intra_id']):
+		if not user_views.checkValueExists('intra_id', user_data['intra_id']):
 			if settings.WELCOME_MAIL == True:
 				mail_views.send_welcome_email(user_data['username'], user_data['email'])
 			user_views.createIntraUser(user_data)
