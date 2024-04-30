@@ -763,13 +763,18 @@ class _Game:
                 else:
                     host = MyUser.objects.get(name=game_session.guestId).user_id
             # if game_session.hostId == user_instance.name:
+            print("host")
+            print(host)
+            print("user_instance.user_id")
+            print(user_instance.user_id)
             if int(user_instance.user_id) == int(host):
-                opponent_name = game_session.guestId
+                opponent = game_session.guestId
             else:
-                opponent_name = game_session.hostId
+                opponent = game_session.hostId
             game_id = game_session.id
             print("game_id ivites")
             print(game_id)
+            opponent_name = MyUser.objects.get(user_id=opponent).name
             print("opponent_name")
             print(opponent_name)
             # Append data to the match_data list
