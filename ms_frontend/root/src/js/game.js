@@ -78,6 +78,17 @@ async function joinGame(gameId) {
 
 }
 
+
+async function requestHistory() {
+  console.log('In requestHistory');
+  await sendDataToBackend('request_history');
+}
+async function requestStats() {
+  console.log('In requestStats');
+  await sendDataToBackend('request_stats');
+}
+
+
 async function requestInvites() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("invites-screen").classList.remove("hidden");
@@ -96,13 +107,18 @@ async function generateFrontendRepresentation(data) {
   const tournamentsContainer = document.getElementById('tournamentsContainer');
 
     console.log('In generateFrontendRepresentation');
+    console.log(typeof data);
     console.log(data);
-  // Iterate through tournaments
-  data.forEach(tournament => {
+
+    // Iterate through tournaments
+    data.forEach(tournament => {
+      console.log(JSON.stringify(tournament));
+      // tournament = JSON.stringify(tournament);
       const tournamentDiv = document.createElement('div');
       tournamentDiv.classList.add('tournament');
 
       // Create tournament host and winner representation
+      console.log(tournament.tourn_host);
       const tournamentHost = document.createElement('p');
       tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
       tournamentDiv.appendChild(tournamentHost);

@@ -99,7 +99,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         what_type = text_data_json["type"]
 
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             print("In else ----\n")
@@ -176,7 +176,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             await self.handle_send_tourns()
         elif what_type == 'send_join_tournament':
             self.invited_id = text_data_json["data"]["invited_id"]
-            await self.handle_send_join_tournament()   
+            await self.handle_send_join_tournament()
+        elif what_type == 'send_stats':
+            await self.handle_send_stats()
+        elif what_type == 'send_history':
+            await self.handle_send_history()
         else:
             print('IS SOMETHING ELSE')
 

@@ -41,6 +41,7 @@ class Game(models.Model):
     loserId = models.CharField("loserId", max_length=100, default=None, blank=True, null=True)
     tournId = models.IntegerField("tournId", default=None, blank=True, null=True)
     stage = models.CharField("stage", max_length=100)
+    date = models.DateTimeField(default=timezone.now)
     # hostName = models.CharField("hostName", max_length=100) #Julien changed
     # guestName = models.CharField("guestName", max_length=100) #Julien changed
 

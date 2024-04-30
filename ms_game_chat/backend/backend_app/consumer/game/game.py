@@ -4,6 +4,7 @@ from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game, Tournament
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from django.utils import timezone
 import random
 
 
@@ -246,6 +247,22 @@ class _Game:
 
         }))
 
+    async def send_stats(self, event):
+        print("in send_stats")
+        await self.send(text_data=json.dumps({
+            'type': 'recieve_stats',
+            'stats': event['data'],
+
+        }))
+
+    async def send_history(self, event):
+        print("in send_history")
+        await self.send(text_data=json.dumps({
+            'type': 'recieve_history',
+            'history': event['data'],
+
+        }))
+
 
 
     async def handle_send_game_scene(self):
@@ -399,10 +416,58 @@ class _Game:
         if tourn_id:
             await self.semiFull(tourn_id)
 
+    async def handle_send_stats(self):
+        return_data = await self.get_stats(self.user['user_id'])
+        await self.channel_layer.send(
+        self.channel_name,
+        {
+            'type': 'send.stats',
+            'data': return_data,
+        })
+
+    async def handle_send_history(self):
+        return_data = await self.get_history(self.user['user_id'])
+        await self.channel_layer.send(
+        self.channel_name,
+        {
+            'type': 'send.history',
+            'data': return_data,
+        })
 
 
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
+    
+    @database_sync_to_async
+    def get_history(self, user_id):
+        user_instance = MyUser.objects.get(user_id=user_id)
+        before_reverse = user_instance.old_matches.all()
+        game_sessions = before_reverse.order_by('-id')
+        match_data = []
+        for game_session in game_sessions:
+            # print(game_session.id)
+            game_entry = []
+            winner_id = game_session.winnerId
+            loser_id = game_session.loserId
+            game_id = game_session.id
+            # date = game_session.date.isoformat()
+            date = game_session.date.strftime("%Y-%m-%d %H:%M:%S")
+            game_entry.append({
+                'winner_id': winner_id,
+                'loser_id': loser_id,
+                'game_id': game_id,
+                'date': date
+            })
+            match_data.append(game_entry)
+        return match_data
 
+    @database_sync_to_async
+    def get_stats(self, user_id):
+        user_instance = MyUser.objects.get(user_id=user_id)
+        won_games = user_instance.old_matches.filter(winnerId=user_id).count()
+        lost_games = user_instance.old_matches.filter(loserId=user_id).count()
+        total_games = won_games + lost_games
+
+        return { 'won_games': won_games, 'lost_games': lost_games, 'total_games': total_games }
 
     @database_sync_to_async
     def matchResults(self, game_struct):
@@ -416,10 +481,16 @@ class _Game:
         # 'guest_score': self.game_states[self.game_id]['guest_score'],
         print("game_instance.hostId")
         print(game_instance.hostId)
-        user_one = MyUser.objects.get(user_id=game_instance.hostId)
+        if game_instance.hostId.isdigit():
+            user_one = MyUser.objects.get(user_id=game_instance.hostId)
+        else:
+            user_one = MyUser.objects.get(name=game_instance.hostId)
         print("user_one")
         print(user_one)
-        user_two = MyUser.objects.get(user_id=game_instance.guestId)
+        if game_instance.guestId.isdigit():
+            user_two = MyUser.objects.get(user_id=game_instance.guestId)
+        else:
+            user_two = MyUser.objects.get(name=game_instance.guestId)
         print("user_two")
         print(user_two)
 
@@ -439,6 +510,8 @@ class _Game:
             print("game_struct['guest_score']")
             game_instance.winnerId = game_instance.guestId
             game_instance.loserId = game_instance.hostId
+        # game_instance.date = timezone.now()
+        game_instance.date = timezone.localtime(timezone.now())
         game_instance.save()
 
         if game_instance.tournId is not None:
@@ -611,13 +684,12 @@ class _Game:
         print("in get_tourns")
         print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        # tourn_instances = user_instance.tourns.all()
-        # tourn_instances = all_instances.objects.filter(status="active")
         tourn_instances = user_instance.tourns.filter(status="active")
         print("tourn_instances")
         print(tourn_instances)
 
         match_data = []
+        # avail_game = False
         for tourns in tourn_instances:
             # game_sessions = tourns.active_matches.all()
             active_sessions = tourns.active_matches.all()
@@ -637,6 +709,7 @@ class _Game:
                 # 'tourn_status': tourn_status
             })
             unit.append(tourn_entry)
+            # i = 1;
             for game_session in game_sessions:
                 game_entry = []
                 player_one = game_session.hostId
@@ -645,6 +718,7 @@ class _Game:
                 winner_id = game_session.winnerId
                 loser_id = game_session.loserId
                 stage = game_session.stage
+                # i = i + 1
 
                 
                 # Append data to the match_data list
@@ -658,6 +732,13 @@ class _Game:
 
                 })
                 unit.append(game_entry)
+            # join_game = []
+            # if avail_game == True:
+            #     join_game.append({
+            #         'join_game': 'True',
+            #         'game_struct_id': avail_game
+            #     })
+
             match_data.append(unit)
 
         json_data = json.dumps(match_data)
@@ -675,7 +756,14 @@ class _Game:
         # Iterate through game_sessions
         for game_session in game_sessions:
             # Extract opponent name and game id
-            if int(user_instance.user_id) == int(game_session.hostId):
+            print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
+            if type(game_session.hostId) == str:
+                if game_session.hostId.isdigit():
+                    host = int(game_session.hostId)
+                else:
+                    host = MyUser.objects.get(name=game_session.guestId).user_id
+            # if game_session.hostId == user_instance.name:
+            if int(user_instance.user_id) == int(host):
                 opponent_name = game_session.guestId
             else:
                 opponent_name = game_session.hostId

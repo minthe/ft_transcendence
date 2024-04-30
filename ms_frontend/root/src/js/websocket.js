@@ -285,12 +285,19 @@ async function establishWebsocketConnection() {
         websocket_obj.game.invites = JSON.parse(data.matches)
         // websocket_obj.game.invites = data.matches
         console.log('DATA: ', websocket_obj.game.invites)
-        console.log('DATA: ', websocket_obj.game.invites[0])
-        console.log('DATA: ', websocket_obj.game.invites[0][1])
-        console.log('DATA: ', websocket_obj.game.invites[0][0])
+        // console.log('DATA: ', websocket_obj.game.invites[0])
+        // console.log('DATA: ', websocket_obj.game.invites[0][1])
+        // console.log('DATA: ', websocket_obj.game.invites[0][0])
         generateFrontendRepresentation(websocket_obj.game.invites)
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
-
+        break
+      case 'recieve_stats':
+        console.log('recieve_stats')
+        console.log(data)
+        break
+      case 'recieve_history':
+        console.log('recieve_history')
+        console.log(data)
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -509,6 +516,21 @@ async function sendDataToBackend(request_type) {
         //     'profile_picture': websocket_obj.profile_picture,
         //     'file_data': websocket_obj.file_data,
         //   }
+        //   break
+        case 'request_stats':
+          type = 'send_stats'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 1,
+          }
+          break
+        case 'request_history':
+          type = 'send_history'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 1,
+          }
+          break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
