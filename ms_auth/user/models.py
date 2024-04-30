@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password, check_password
@@ -27,7 +28,7 @@ class User(models.Model):
 		return get_random_string(length)
 
 	def set_default_avatar(self):
-		self.avatar = 'moon_dog.jpg'
+		self.avatar = f"https://{settings.CURRENT_HOST}{settings.LOC_AVATAR}{settings.AVATAR_DEFAULT}"
 
 	@classmethod
 	def get_highest_user_id(cls):

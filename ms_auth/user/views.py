@@ -33,8 +33,9 @@ def createIntraUser(user_data):
 	user = User()
 	user.intra_id = user_data['intra_id']
 	user.username = user_data['username']
+	user.alias = user_data['username']
 	user.email = user_data['email']
-	user.image = user_data['image']
+	user.avatar = user_data['image']
 	user.set_password('') # TODO valentin: change before production
 	user.second_factor_enabled = False
 	max_id = User.get_highest_user_id()
@@ -50,9 +51,11 @@ def createUser(data):
 			raise Exception('Missing data')
 	user = User()
 	user.username = data['username']
+	user.alias = data['username']
 	user.email = data['email']
 	user.set_password(data['password'])
 	user.second_factor_enabled = False
+	user.set_default_avatar()
 	max_id = User.get_highest_user_id()
 	if max_id and max_id > 2:
 		user.user_id = max_id + 1
