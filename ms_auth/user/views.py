@@ -37,6 +37,11 @@ def createIntraUser(user_data):
 	user.image = user_data['image']
 	user.set_password('') # TODO valentin: change before production
 	user.second_factor_enabled = False
+	max_id = User.get_highest_user_id()
+	if max_id and max_id > 2:
+		user.user_id = max_id + 1
+	else:
+		user.user_id = 2
 	user.save()
 
 def createUser(data):
@@ -48,6 +53,11 @@ def createUser(data):
 	user.email = data['email']
 	user.set_password(data['password'])
 	user.second_factor_enabled = False
+	max_id = User.get_highest_user_id()
+	if max_id and max_id > 2:
+		user.user_id = max_id + 1
+	else:
+		user.user_id = 2
 	user.save()
 	return user
 

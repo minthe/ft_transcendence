@@ -3,7 +3,8 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password, check_password
 
 class User(models.Model):
-	user_id = models.BigIntegerField(primary_key=True)
+	id	= models.AutoField(primary_key=True)
+	user_id = models.SmallIntegerField(unique=True, null=True)
 	second_factor_enabled = models.BooleanField(default=False)
 	second_factor_dict = models.JSONField(db_column='second_factor_dict', default=dict)
 	intra_id = models.CharField(max_length=12, unique=True, null=True)
@@ -12,8 +13,6 @@ class User(models.Model):
 	avatar = models.CharField(max_length=2000, null=True)
 	email = models.CharField(max_length=255, unique=True, null=True)
 	alias = models.CharField(max_length=255, unique=True, null=True)
-
-	user_id = models.AutoField(primary_key=True)
 
 	def set_password(self, plain_password):
 		if plain_password:
@@ -29,3 +28,8 @@ class User(models.Model):
 
 	def set_default_avatar(self):
 		self.avatar = 'moon_dog.jpg'
+
+	@classmethod
+	def get_highest_user_id(cls):
+		highest_id = cls.objects.aggregate(max_id=models.Max('user_id'))['max_id']
+		return highest_id if highest_id is not None else 0
