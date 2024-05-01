@@ -21,6 +21,7 @@ INTRA_SCOPE = os.environ.get('INTRA_SCOPE')
 # network
 MS_GAME_CHAT = os.environ.get('MS_GAME_CHAT')
 # user
+LOC_AVATAR = os.environ.get('LOC_AVATAR')
 AVATAR_DEFAULT = os.environ.get('AVATAR_DEFAULT')
 # email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -35,6 +36,8 @@ WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
 ALLOWED_HOSTS = ['*']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 
 ASGI_APPLICATION = 'django_project.asgi.application'
 

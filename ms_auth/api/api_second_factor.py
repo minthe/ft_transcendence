@@ -15,7 +15,7 @@ def second_factor_verify(request):
 	user_id = data.get('user_id')
 	code = data.get('code')
 
-	if not user_views.checkUserExists('user_id', user_id):
+	if not user_views.checkValueExists('user_id', user_id):
 		return HttpResponse(status=404)
 
 	if not user_views.getValue(user_id, 'second_factor_enabled'):
@@ -50,7 +50,7 @@ def second_factor(request):
 @jwt.token_required
 def second_factor_generate(request):
 	user_id = request.user_id
-	if not user_views.checkUserExists('user_id', user_id):
+	if not user_views.checkValueExists('user_id', user_id):
 		return HttpResponse(status=404)
 	second_factor_views.create_2fa(request.user_id)
 	return HttpResponse(status=200)
@@ -58,7 +58,7 @@ def second_factor_generate(request):
 @require_http_methods(["GET"])
 @jwt.token_required
 def second_factor_status(request):
-	if not user_views.checkUserExists('user_id', request.user_id):
+	if not user_views.checkValueExists('user_id', request.user_id):
 		return HttpResponse(status=404)
 	second_factor_status = user_views.getValue(request.user_id, 'second_factor_enabled')
 	return JsonResponse({'second_factor': second_factor_status}, status=200)
@@ -70,7 +70,7 @@ def second_factor_activate(request):
 	data = json.loads(request.body.decode('utf-8'))
 	code = data.get('code')
 	user_id = request.user_id
-	if not user_views.checkUserExists('user_id', user_id):
+	if not user_views.checkValueExists('user_id', user_id):
 		return HttpResponse(status=404)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:
@@ -86,7 +86,7 @@ def second_factor_deactivate(request):
 	data = json.loads(request.body.decode('utf-8'))
 	code = data.get('code')
 	user_id = request.user_id
-	if not user_views.checkUserExists('user_id', user_id):
+	if not user_views.checkValueExists('user_id', user_id):
 		return HttpResponse(status=404)
 	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
 	if is_verified:

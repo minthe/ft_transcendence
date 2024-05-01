@@ -1,8 +1,8 @@
-import json
+import json, base64
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.core.files.base import ContentFile
+from django.http import JsonResponse
 from urllib.request import Request, urlopen
-from urllib.parse import urlencode
 from user import views as user_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
@@ -16,37 +16,57 @@ def avatar(request):
 	'''
 	try:
 		user_id = request.user_id
-		if not user_views.checkUserExists('user_id', user_id):
+		if not user_views.checkValueExists('user_id', user_id):
 			return JsonResponse({'message': 'User not found'}, status=404)
 
 		if request.method == 'PUT':
-			data = json.loads(request.body.decode('utf-8'))
-			avatar = data.get('avatar')
+			request_body = json.loads(request.body)
+			avatar_binary = request_body.get('avatar') # TODO valentin check if data is valid and if size over 5mb handle error
 
-			# Request an GAME_CHAT service
-			jwt_token = jwt.createToken(user_id)
-			game_chat_headers = {
-				"Content-Type": 'application/json',
-				"Cookie": f"jwt_token={jwt_token}; HttpOnly"
-			}
-			game_chat_data = {
-				'avatar': avatar,
-			}
-			game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user/avatar"
-			encoded_data = json.dumps(game_chat_data).encode("utf-8")
-			print(f"request_to_game_chat url: {game_chat_request_url}")
-			game_chat_request = Request(game_chat_request_url, method='PUT', data=encoded_data, headers=game_chat_headers)
-			game_chat_response = urlopen(game_chat_request)
-			if game_chat_response.getcode() == 200:
-				user_views.updateValue(user_id, 'avatar', avatar)
-				return JsonResponse({'message': 'Avatar updated successfully'}, status=200)
-			elif game_chat_response.getcode() == 409:
-				return JsonResponse({'message': 'updating value failed'}, status=409)
+			if avatar_binary:
+				missing_padding = len(avatar_binary) % 4
+				if missing_padding != 0:
+					avatar_binary += '=' * (4 - missing_padding)
+				format, imgstr = avatar_binary.split(';base64,')
+				ext = format.split('/')[-1]
+
+				data = ContentFile(base64.b64decode(imgstr), name=f'temp_file.{ext}')
+				user_views.updateValue(user_id, 'avatar_binary', data.read())
+
+				# print (f"avatar_binary: {user_views.getValue(user_id, 'avatar_binary')}")
+
+				# Request an GAME_CHAT service
+				avatar = user_views.getValue(user_id, 'avatar') # TODO valentin update with new avatar
+				jwt_token = jwt.createToken(user_id)
+				game_chat_headers = {
+					"Content-Type": 'application/json',
+					"Cookie": f"jwt_token={jwt_token}; HttpOnly"
+				}
+				game_chat_data = {
+					'avatar': avatar,
+				}
+				game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user/avatar"
+				encoded_data = json.dumps(game_chat_data).encode("utf-8")
+				print(f"request_to_game_chat url: {game_chat_request_url}")
+				game_chat_request = Request(game_chat_request_url, method='PUT', data=encoded_data, headers=game_chat_headers)
+				game_chat_response = urlopen(game_chat_request)
+				if game_chat_response.getcode() == 200:
+					user_views.updateValue(user_id, 'avatar', avatar)
+					return JsonResponse({'message': 'Avatar updated successfully'}, status=200)
+				elif game_chat_response.getcode() == 409:
+					return JsonResponse({'message': 'updating value failed'}, status=409)
+				else:
+					return JsonResponse({'message': '[game_chat] Internal server error'}, status=500)
 			else:
-				return JsonResponse({'message': '[game_chat] Internal server error'}, status=500)
-		elif request.method == 'GET':
-			avatar = user_views.getValue(user_id, 'avatar')
-			return JsonResponse({'avatar': avatar}, status=200)
+				return JsonResponse({'message': 'avatar is required'}, status=400)
+
+		if request.method == 'GET': # TODO valentin change later to url that points to the avatar stored as file
+			avatar_binary = user_views.getValue(user_id, 'avatar_binary')
+			if avatar_binary:
+				avatar_base64 = base64.b64encode(avatar_binary).decode('utf-8')
+				return JsonResponse({'avatar': avatar_base64}, status=200)
+			else:
+				return JsonResponse({'message': 'Avatar not found'}, status=404)
 		else:
 			return JsonResponse({'message': 'Method not allowed'}, status=405)
 

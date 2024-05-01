@@ -10,4 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /code
 COPY . .
 
-CMD ["./ms_auth_start.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
