@@ -160,6 +160,7 @@ async function establishWebsocketConnection() {
         // await renderGame()
         break
       case 'render_right':
+        console.log("RENDER_RIGHT");
         // var canvas = document.getElementById("pongCanvas");
         websocket_obj.game.right_pedal = data.new_pedal_pos
         // websocket_obj.game.right_pedal = data.new_pedal_pos
@@ -283,6 +284,25 @@ async function establishWebsocketConnection() {
           console.log('already in a game+#++##+##+#+#+#++#+#');
         else
           renderInvites();
+        break
+      case 'recieve_tourns':
+        console.log('recieve_tourns');
+        websocket_obj.game.invites = JSON.parse(data.matches)
+        // websocket_obj.game.invites = data.matches
+        console.log('DATA: ', websocket_obj.game.invites)
+        // console.log('DATA: ', websocket_obj.game.invites[0])
+        // console.log('DATA: ', websocket_obj.game.invites[0][1])
+        // console.log('DATA: ', websocket_obj.game.invites[0][0])
+        generateFrontendRepresentation(websocket_obj.game.invites)
+        // console.log('DATA: ', websocket_obj.game.invites[1][1])
+        break
+      case 'recieve_stats':
+        console.log('recieve_stats')
+        console.log(data)
+        break
+      case 'recieve_history':
+        console.log('recieve_history')
+        console.log(data)
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -467,11 +487,32 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'request_invites':
+          console.log('request_invites')
           type = 'send_request_invites'
           data = {
             'user_id': websocket_obj.user_id,
-            'game_id': 1,
+            'game_id': 0,
 
+          }
+          break
+        case 'join_tournament':
+          console.log('join_tournamentttttttt')
+          console.log(websocket_obj.user_id)
+          type = 'send_join_tournament'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'invited_id': websocket_obj.invited_id,
+            'game_id': 0,
+          }
+          break
+        case 'request_tourns':
+          console.log('request_tournssss')
+          console.log(websocket_obj.user_id)
+          type = 'send_request_tourns'
+          data = {
+            'user_id': websocket_obj.user_id,
+          //   'invited_id': websocket_obj.invited_id,
+            'game_id': 0,
           }
           break
         // case 'new_profile_picture':
@@ -480,6 +521,21 @@ async function sendDataToBackend(request_type) {
         //     'profile_picture': websocket_obj.profile_picture,
         //     'file_data': websocket_obj.file_data,
         //   }
+        //   break
+        case 'request_stats':
+          type = 'send_stats'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 0,
+          }
+          break
+        case 'request_history':
+          type = 'send_history'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 0,
+          }
+          break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }

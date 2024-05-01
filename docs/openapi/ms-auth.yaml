@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.4'
+  version: '1.9.6'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -126,6 +126,34 @@ paths:
             application/json:
               example: {"message": "User not found"}
         '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
+    get:
+      tags:
+        - Account
+      summary: Get User Data and a fresh JWT token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User Account Data and fresh JWT token
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
+        '503':
           description: Internal server error
           content:
             application/json:
@@ -369,7 +397,15 @@ paths:
           description: updating value failed
           content:
             application/json:
-              example: {"message": "updating value failed"}
+              examples:
+                email_taken:
+                  value: {'message': "Email already taken"}
+                alias_taken:
+                  value: {'message': "Alias already taken"}
+                alias_invalid:
+                  value: {'message': "Alias cannot be set to a existing username"}
+                email_invalid:
+                  value: {'message': "Email is not valid"}
         '500':
           description: Internal server error
           content:
@@ -594,8 +630,10 @@ components:
       properties:
         user_id:
           type: string
+          example: "2"
         username:
           type: string
+          example: "guest"
         second_factor:
           type: boolean
           example: false

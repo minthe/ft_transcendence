@@ -440,6 +440,24 @@ async function openChat() {
   }
 }
 
+
+async function challengeTournClicked() {
+  console.log('In inviting through chat')
+  sendDataToBackend('get_user_in_current_chat')
+  console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
+  console.log('websocket_obj.userInCurrentChat ', websocket_obj.userInCurrentChat)
+  console.log('websocket_obj.username ', websocket_obj.username)
+
+  // websocket_obj.username = 'm' // !!!!!!!!!!!! HARDCODED
+  const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
+  console.log('invited_username ', invited_username)
+  websocket_obj.invited_id = invited_username 
+//   websocket_obj.invited_id = websocket_obj.chat_name
+
+  await sendDataToBackend('join_tournament');
+
+}
+
 async function challengeUserClicked() {
   console.log('In inviting through chat')
   // const username = websocket_obj.username;
