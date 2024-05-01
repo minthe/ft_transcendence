@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.2'
+  version: '1.9.4'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -13,10 +13,11 @@ servers:
 
 tags:
   - name: Status
+  - name: Profile
+  - name: Avatar
   - name: Account
   - name: 2FA
   - name: Token
-  - name: Avatar
 
 paths:
   /user/status:
@@ -262,7 +263,7 @@ paths:
           description: OK
           content:
             application/json:
-              example: {"message": "moon-dog.jpg"}
+              example: {"message": "https://example.com/static/avatar/MoonDog_3fFJ93fjoiedfwe3d.jpg"}
         '401':
           description: Missing or invalid JWT token
           content:
@@ -288,13 +289,77 @@ paths:
               properties:
                 avatar:
                   type: string
-                  example: "moonDog.jpg"
+                  format: byte
+                  example: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBARXhpZgAATU0AKgAAAAgAA1IBAAAAAA... (base64 encoded data)"
       responses:
         '200':
           description: Avatar updated successfully
           content:
             application/json:
               example: {"message": "Avatar updated successfully"}
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
+        '409':
+          description: updating value failed
+          content:
+            application/json:
+              example: {"message": "updating value failed"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
+  /user/profile:
+    get:
+      tags:
+        - Profile
+      summary: Get Profile Data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example: {"avatar": "https://example.com/static/avatar/MoonDog_3fFJ93fjoiedfwe3d.jpg", "email": "mail@example.com", "alias": "MoonDog"}
+        '401':
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example: {"message": "Server Error"}
+    put:
+      tags:
+        - Profile
+      summary: Update Profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "mail@example.com"
+                alias:
+                  type: string
+                  example: "MoonDog"
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              example: {"email": "mail@example.com", "alias": "MoonDog"}
         '401':
           description: Missing or invalid JWT token
           content:
