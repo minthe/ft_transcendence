@@ -82,6 +82,27 @@ body, html {
 
 /* login page */
 
+.local-game-btn {
+  position: fixed;
+  right: 4vw;
+  top: 50vh;
+  width: 8vw;
+  height: 8vw;
+  border-radius: 50%;
+  /* background-color: #4CAF50;
+  color: white; */
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 2vh;
+  font-weight: bold;
+  /* text-transform: uppercase; */
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  /* color: #ef7267; */
+  outline: 4px dashed #f8efb5;
+
+}
+
 .input-login {
   max-width: 180px;
   background-color: #ecc85d;

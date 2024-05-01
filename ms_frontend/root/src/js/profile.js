@@ -34,7 +34,8 @@ const observerProfile = new MutationObserver(function(mutations) {
 observerProfile.observe(document.body, { childList: true, subtree: true });
 
 
-function updateProfile(success, message) {
+//combine function with the one from twofa
+function updateProfileMessage(success, message) {
 	const twoFaStatus = document.getElementById('updateTwoFa');
 
 	setTimeout(function() {
@@ -48,7 +49,8 @@ function updateProfile(success, message) {
 	twoFaStatus.textContent = message;
 }
 
-
+let emailBeforeEdit = document.getElementById('email').value;
+let gameAliasBeforeEdit = document.getElementById('email').value;
 
 function editProfile() {
   let inputs = document.querySelectorAll('input[readonly]');
@@ -67,6 +69,8 @@ function saveChanges() {
       document.getElementById('wrongSavedInput').classList.add('hidden');
     }, 3000);
     document.getElementById('wrongSavedInput').classList.remove('hidden');
+    mail.value = emailBeforeEdit;
+    gameAlias.value = gameAliasBeforeEdit;
     mail.setAttribute('readonly', true);
     gameAlias.setAttribute('readonly', true);
     editButton.style.display = 'block';
@@ -85,10 +89,12 @@ function saveChanges() {
       const data = await response.json();
       throw Error(data.message);
     }
-    updateProfile(true, "Profile updated successfully");
+    updateProfileMessage(true, "Profile updated successfully");
   })
   .catch(error => {
-    updateProfile(false, error);
+    mail.value = emailBeforeEdit;
+    gameAlias.value = gameAliasBeforeEdit;
+    updateProfileMessage(false, error);
     console.error('There was a problem with the fetch operation:', error);
   });
 
@@ -137,10 +143,10 @@ function changeProfileImage() {
           throw Error(data.message);
         }
         document.getElementById('profilePicture').src = dataURI;
-        updateProfile(true, "Avatar updated successfully");
+        updateProfileMessage(true, "Avatar updated successfully");
       })
       .catch(error => {
-        updateProfile(false, error);
+        updateProfileMessage(false, error);
         console.error('There was a problem with the fetch operation:', error);
       });
 
@@ -166,10 +172,10 @@ function getProfileData() {
     document.getElementById('profilePicture').src = data.avatar;
     document.getElementById("email").value = data.email;
     document.getElementById("gameAlias").value = data.alias;
-    updateProfile(true, "Avatar updated successfully");
+    updateProfileMessage(true, "Avatar updated successfully");
   })
   .catch(error => {
-    updateProfile(false, error);
+    updateProfileMessage(false, error);
     console.error('There was a problem with the fetch operation:', error);
   });
 }
