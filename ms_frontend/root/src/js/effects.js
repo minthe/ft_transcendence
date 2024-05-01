@@ -308,13 +308,14 @@ fetch(url, {
 		state.chatObj = {};
 		state.chatOpen= false;
 		throw new Error('User has no token');
-	  }
+	}
 	  sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
-	  hideDiv('userIsNotAuth');
 	  document.getElementById("reloadScreen").style.display = "block";
 	  setTimeout(function() {
 		  document.getElementById("reloadScreen").style.display = "none";
-			  updatePage();
+		  hideDiv('userIsNotAuth');
+		  showDiv('userIsAuth');
+		  updatePage();
 	  }, 500);
   })
   .catch(error => {
@@ -338,3 +339,21 @@ fetch(url, {
 	// }
 }
 
+const sentences = ["Welcome to our website!", "Enjoy your stay!", "Have fun playing!", "It`s a feature not a bug!"];
+let currentSentence = 0;
+
+function changeText() {
+    const textElement = document.getElementById('text');
+    textElement.style.opacity = 0;  // Hide text to reset animation
+    setTimeout(() => {
+        textElement.textContent = sentences[currentSentence];
+        textElement.style.opacity = 1;
+        textElement.style.animation = 'none';  // Reset animation
+        textElement.offsetHeight;  // Trigger reflow
+        textElement.style.animation = null;  // Re-apply animation
+
+        currentSentence = (currentSentence + 1) % sentences.length;
+    }, 1500);  // Wait a bit longer for the animation to finish
+}
+
+setInterval(changeText, 5000);

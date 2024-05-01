@@ -17,8 +17,12 @@ async function afterAuthRegister(data, usernameElement, passwordElement, mail) {
 function initUserData(data, username, password) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
+
+  //needed?
 	websocket_obj.username = username
 	websocket_obj.password = password
+  //needed?
+
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
 
@@ -166,8 +170,6 @@ function loginUserButton() {
       await afterAuthLogin('login', data, usernameElement, passwordElement);
   })
   .catch(error => {
-    console.log('error for less digits activated thrice');
-
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
     console.log('Error during login:', error);
@@ -284,36 +286,67 @@ async function logoutUser() {
 function openAuthPopup() {
   const url = `${window.location.origin}/user/oauth2/login`;
   const windowName = 'AuthWindow';
-  const windowFeatures = 'width=600,height=700,resizable=yes';
+  const windowFeatures = `width=${window.outerWidth},height=${window.outerHeight},resizable=yes`;
 
   const popup = window.open(url, windowName, windowFeatures);
   if (popup) {
     popup.focus();
+    checkForToken(popup);
+      // popup.close();
+    
   } else {
     alert('Please allow popups for this website.');
   }
   return popup;
 }
 
-// Listening for messages from the popup
-window.addEventListener('message', function(event) {
-  if (event.origin !== `${window.location.origin}/user/oauth2/login`) {
-    return; // Ignore messages that do not come from the expected domain
-  }
 
-  console.log('data of the event : ', event.data);
-  if (event.data === 'success') {
-   
-    window.opener.postMessage('success', 'https://your-website.com');
-    window.close(); // Optionally close the popup
 
-    console.log('Authentication successful!');
-    // Process successful authentication here
-  } else {
-    console.log('Authentication failed or cancelled.');
-    // Handle failed authentication or cancellation here
-  }
-}, false);
+function checkForToken(popup) {
+  const interval = setInterval(() => {
+    const url = `${window.location.origin}/user/token/existence`
+    fetch(url, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization':'Bearer {access-token}'
+      // 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
+      },
+    //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
+    })
+      .then(async response => {
+      if (!response.ok) {
+        await logoutUser();
+        throw new Error('User has no token');
+      }
+      // state.bodyText = document.body.innerHTML;
+      // state.currPage = "homeSite";
+      // state.chatObj = {};
+      // state.chatOpen= false;
+      // sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+
+      // afterAuthLogin42()
+      document.getElementById("reloadScreen").style.display = "block";
+      setTimeout(function() {
+        document.getElementById("reloadScreen").style.display = "none";
+        // updatePage();
+        // loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
+	      // loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
+        hideDiv('userIsNotAuth');
+        showDiv('userIsAuth');
+      }, 500);
+      popup.close();
+      clearInterval(interval);
+      })
+      .catch(error => {
+      // console.log('Error during login:', error);
+      });
+      // return false;
+  }, 1000); // Check every 1000 milliseconds (1 second)
+  // return true;
+}
+
+
 
 
 

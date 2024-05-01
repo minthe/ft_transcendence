@@ -1,4 +1,4 @@
-<h1 id="loginHeader" class="header-login">Play Pong</h1>
+<h1 id="loginHeader" class="header-login test-text">Play Pong</h1>
 
 <!--LOGIN PAGE-->
 <div id="loginPage" class="login-page">
@@ -6,67 +6,42 @@
   <h1>Login Page</h1>
   <!-- Username Input -->
 
-  <!-- <div class="row">
-    <div class="col-md-3 mb-3"> -->
-      <label for="loginUsername" class="form-label">Username</label>
-      <input type="text" class="form-control" id="loginUsername" placeholder="username">
-    <!-- </div>
-  </div> -->
+      <input type="text" class="form-control input-login" id="loginUsername" placeholder="username">
+
   <!-- Password Input -->
-  <!-- <div class="row">
-    <div class="col-md-3 mb-3"> -->
-      <label for="loginPassword" class="form-label">Password</label>
-      <input type="password" id="loginPassword" class="form-control" placeholder="password" aria-describedby="passwordHelpBlock">
+
+      <input type="password" id="loginPassword" class="form-control input-login" placeholder="password" aria-describedby="passwordHelpBlock">
 
     <div id="wrong-password" class="hidden" style="color: red;"></div>
 
-      <!-- <div id="passwordHelpBlock" class="form-text">
-        Can be everything you want lol
-      </div> -->
-      <!-- <p id="info_login"></p> -->
-    <!-- </div>
-  </div> -->
-  <button type="submit" id="loginUserButton" class="btn btn-outline-warning">Login</button>
+  <button type="submit" id="loginUserButton" class="btn btn-success">Login</button>
   
-  <p style="color: #ef7267;">Or</p>
-  <button type="submit" id="login42Button" class="btn btn-outline-warning pop-up-btn">Login with 42</button>
+  <p class="glowing-or">Or</p>
+  <button type="submit" id="login42Button" class="btn btn-success pop-up-btn">Login with 42</button>
   <br><br>
 
-  <button id="changeToRegisterPage" class="btn btn-secondary btn-sm">No Account yet?</button><br><br>
+  <button id="changeToRegisterPage" class="btn btn-dark btn-sm">No Account yet?</button><br><br>
   <!-- </div> -->
 </div>
 
 <!--REGISTER PAGE-->
 <div id="registerPage" class="hidden register-page">
-  <div class="container-xxl">
+  <!-- <div class="container-xxl"> -->
   <h1>Register Page</h1>
   <!-- Username Input -->
-  <!-- <div class="row">
-    <div class="col-md-3 mb-3"> -->
-      <label for="registerUsername" class="form-label">Username</label>
-      <input type="text" class="form-control" id="registerUsername" placeholder="username">
-    <!-- </div>
-  </div> -->
-  <!-- Age Input -->
-  <!-- <div class="row">
-    <div class="col-md-3 mb-3"> -->
-      <label for="registerMail" class="form-label">E-Mail</label>
-      <input type="text" class="form-control" id="registerMail"placeholder="e-mail">
-    <!-- </div>
-  </div> -->
+      <input type="text" class="form-control input-login" id="registerUsername" placeholder="username">
+  <!-- E-Mail Input -->
+
+      <input type="text" class="form-control input-login" id="registerMail"placeholder="e-mail">
+
   <!-- Password Input -->
-  <!-- <div class="row">
-    <div class="col-md-3 mb-3"> -->
-      <label for="registerPassword" class="form-label">Password</label>
-      <input type="password" class="form-control" id="registerPassword" placeholder="password">
-    <!-- </div>
-  </div> -->
-  <!-- <p id="info_register"></p> -->
+      <input type="password" class="form-control input-login" id="registerPassword" placeholder="password">
+
   <div id="wrong-register" class="hidden" style="color: red;"></div>
 
-  <button type="submit" id="RegisterUserButton" class="btn btn-outline-warning">Register</button><br><br>
-  <button id="changeToLoginPageButton" class="btn btn-secondary btn-sm">Have an Account?</button><br><br>
-  </div>
+  <button type="submit" id="RegisterUserButton" class="btn btn-success">Register</button><br><br>
+  <button id="changeToLoginPageButton" class="btn btn-dark btn-sm">Have an Account?</button><br><br>
+  <!-- </div> -->
 </div>
 
 
@@ -75,7 +50,7 @@
   <form class="centered-form">
     <input type="digit" id="twoFaCode" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
   </form>
-  <button type="submit" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
+  <button type="button" id="verifyButton" class="btn btn-secondary verify-btn">Verify</button>
 </div>
 
 

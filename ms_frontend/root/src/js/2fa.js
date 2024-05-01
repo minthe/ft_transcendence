@@ -47,6 +47,10 @@ function checkTwoFaCode() {
 	return true;
 }
 
+// function cleanup() {
+// 	button.removeEventListener('click', handleVerification);
+// 	document.removeEventListener('keypress', handleVerification);
+// }
 
 function verifyButtonClick() {
 	return new Promise(resolve => {
@@ -54,12 +58,15 @@ function verifyButtonClick() {
 			two_fa_code = document.getElementById('twoFaCode').value;
 			resolve();
 		});
-		// document.addEventListener('keypress', async function(event) {
-		// 	if (event.key === 'Enter' || event.keyCode === 13) {
-		// 		two_fa_code = document.getElementById('twoFaCode').value;
-		// 		resolve();
-		// 	}
-		// });
+		document.addEventListener('keypress', async function(event) {
+			if (event.key === 'Enter' || event.keyCode === 13) {
+				event.preventDefault();
+				two_fa_code = document.getElementById('twoFaCode').value;
+				resolve();
+			}
+		});
+
+        
 	});
 }
 
@@ -69,12 +76,13 @@ function verifyButtonProfileClick() {
 			two_fa_code = document.getElementById('twoFaCodeProfile').value;
 			resolve();
 		});
-		// document.addEventListener('keypress', async function(event) {
-		// 	if (event.key === 'Enter' || event.keyCode === 13) {
-		// 		two_fa_code = document.getElementById('twoFaCodeProfile').value;
-		// 		resolve();
-		// 	}
-		// });
+		document.addEventListener('keypress', async function(event) {
+			if (event.key === 'Enter' || event.keyCode === 13) {
+				event.preventDefault();
+				two_fa_code = document.getElementById('twoFaCodeProfile').value;
+				resolve();
+			}
+		});
 	});
 }
 

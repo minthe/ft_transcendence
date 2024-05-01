@@ -71,7 +71,7 @@ async function handleClickEvent(event) {
 	if (event.target.closest('#homeButton'))
 		showSiteHideOthers('homeSite', 'homeButton');
   else if (event.target.closest('#gameButton'))
-      gameSiteClicked();
+    gameSiteClicked();
   else if (event.target.closest('#statsButton'))
 		showSiteHideOthers('statsSite', 'statsButton');
   else if (event.target.closest('#showChatButton'))
@@ -130,6 +130,13 @@ async function handleClickEvent(event) {
 
     else if (event.target.closest('#login42Button'))
       openAuthPopup();
-  // else if (event.target.closest('#login42Button'))
+
+    else if (event.target.closest('#editButton'))
+      editProfile();
+    else if (event.target.closest('#saveButton'))
+      saveChanges();
+    else if (event.target.closest('#changeProfileImage'))
+      changeProfileImage();
+    // else if (event.target.closest('#login42Button'))
   //   loginWith42();
 }
