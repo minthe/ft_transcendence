@@ -33,7 +33,7 @@ def profile(request):
 				return JsonResponse({'message': "Alias cannot be set to a existing username"}, status=409)
 
 			# email validation
-			if not mail_views.validateEmail(email):
+			if not mail_views.validator(email):
 				return JsonResponse({'message': "Email is not valid"}, status=409)
 
 			# Request an GAME_CHAT service
