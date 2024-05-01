@@ -24,9 +24,9 @@ def profile(request):
 			email = data.get('email')
 			alias = data.get('alias')
 
-			if user_views.checkValueExists('email', email):
+			if user_views.getValue(user_id, 'email') != email and user_views.checkValueExists('email', email):
 				return JsonResponse({'message': "Email already taken"}, status=409)
-			if user_views.checkValueExists('alias', alias):
+			if  user_views.getValue(user_id, 'alias') != alias and user_views.checkValueExists('alias', alias):
 				return JsonResponse({'message': "Alias already taken"}, status=409)
 			if user_views.checkValueExists('username', alias):
 				return JsonResponse({'message': "Alias cannot be set to a existing username"}, status=409)
