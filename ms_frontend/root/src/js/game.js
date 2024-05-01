@@ -110,55 +110,55 @@ async function generateFrontendRepresentation(data) {
     console.log(typeof data);
     console.log(data);
 
-    // Iterate through tournaments
-    data.forEach(tournament => {
-      console.log(JSON.stringify(tournament));
-      // tournament = JSON.stringify(tournament);
-      const tournamentDiv = document.createElement('div');
-      tournamentDiv.classList.add('tournament');
+  // // Iterate through tournaments
+  //   data.forEach(tournament => {
+  //     console.log(JSON.stringify(tournament));
+  //     // tournament = JSON.stringify(tournament);
+  //     const tournamentDiv = document.createElement('div');
+  //     tournamentDiv.classList.add('tournament');
 
-      // Create tournament host and winner representation
-      console.log(tournament.tourn_host);
-      const tournamentHost = document.createElement('p');
-      tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
-      tournamentDiv.appendChild(tournamentHost);
+  //     // Create tournament host and winner representation
+  //     console.log(tournament.tourn_host);
+  //     const tournamentHost = document.createElement('p');
+  //     tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
+  //     tournamentDiv.appendChild(tournamentHost);
 
-      const tournamentWinner = document.createElement('p');
-      tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
-      tournamentDiv.appendChild(tournamentWinner);
+  //     const tournamentWinner = document.createElement('p');
+  //     tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
+  //     tournamentDiv.appendChild(tournamentWinner);
       
 
-      // Iterate through games inside the tournament
-      const gamesContainer = document.createElement('div');
-      gamesContainer.classList.add('games-container');
-      tournament.slice(1).forEach(game => {
-          const gameDiv = document.createElement('div');
-          gameDiv.classList.add('game');
+  //     // Iterate through games inside the tournament
+  //     const gamesContainer = document.createElement('div');
+  //     gamesContainer.classList.add('games-container');
+  //     tournament.slice(1).forEach(game => {
+  //         const gameDiv = document.createElement('div');
+  //         gameDiv.classList.add('game');
 
-          // Create game representation
-          const gameDetails = document.createElement('p');
-          gameDetails.textContent = `Game ID: ${game.game_id}, Stage: ${game.stage}`;
-          gameDiv.appendChild(gameDetails);
+  //         // Create game representation
+  //         const gameDetails = document.createElement('p');
+  //         gameDetails.textContent = `Game ID: ${game.game_id}, Stage: ${game.stage}`;
+  //         gameDiv.appendChild(gameDetails);
 
-          const playersDetails = document.createElement('p');
-          playersDetails.textContent = `Player One: ${game.player_one}, Player Two: ${game.player_two}`;
-          gameDiv.appendChild(playersDetails);
+  //         const playersDetails = document.createElement('p');
+  //         playersDetails.textContent = `Player One: ${game.player_one}, Player Two: ${game.player_two}`;
+  //         gameDiv.appendChild(playersDetails);
 
-          // Append game representation to games container
-          gamesContainer.appendChild(gameDiv);
-      });
+  //         // Append game representation to games container
+  //         gamesContainer.appendChild(gameDiv);
+  //     });
 
-      // Append games container to tournament container
-      tournamentDiv.appendChild(gamesContainer);
+  //     // Append games container to tournament container
+  //     tournamentDiv.appendChild(gamesContainer);
 
-      // Append tournament container to main container
-      if (tournamentsContainer) {
-        tournamentsContainer.appendChild(tournamentDiv);
-    } else {
-        console.error('Tournaments container not found or is null.');
-    }
-      tournamentsContainer.appendChild(tournamentDiv);
-  });
+  //     // Append tournament container to main container
+  //     if (tournamentsContainer) {
+  //       tournamentsContainer.appendChild(tournamentDiv);
+  //   } else {
+  //       console.error('Tournaments container not found or is null.');
+  //   }
+  //     tournamentsContainer.appendChild(tournamentDiv);
+  // });
 }
 
 // async function renderTourns() {

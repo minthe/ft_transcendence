@@ -761,7 +761,19 @@ class _Game:
                 if game_session.hostId.isdigit():
                     host = int(game_session.hostId)
                 else:
-                    host = MyUser.objects.get(name=game_session.guestId).user_id
+                    host = MyUser.objects.get(name=game_session.hostId).user_id
+            else:
+                host = game_session.hostId
+
+            if type(game_session.guestId) == str:
+                if game_session.guestId.isdigit():
+                    guest = int(game_session.guestId)
+                else:
+                    guest = MyUser.objects.get(name=game_session.guestId).user_id
+            else:
+                guest = game_session.guestId
+
+            
             # if game_session.hostId == user_instance.name:
             print("host")
             print(host)
@@ -774,12 +786,16 @@ class _Game:
             game_id = game_session.id
             print("game_id ivites")
             print(game_id)
-            opponent_name = MyUser.objects.get(user_id=opponent).name
+            if opponent.isdigit() or type(opponent) == int:
+                opponent_name = MyUser.objects.get(user_id=opponent)
+            else: 
+                opponent_name = MyUser.objects.get(name=opponent)
+            # opponent_name = MyUser.objects.get(user_id=opponent.name)
             print("opponent_name")
-            print(opponent_name)
+            print(opponent_name.name)
             # Append data to the match_data list
             match_data.append({
-                'opponent_name': opponent_name,
+                'opponent_name': opponent_name.name,
                 'game_id': game_id
             })
         json_data = json.dumps(match_data)
