@@ -47,7 +47,7 @@ http {
         }
 
         location ~ ^/user/ {
-        client_max_body_size 2.5m;
+        client_max_body_size 5m;
         proxy_pass http://auth_backend:8000;
         proxy_set_header Host $host;
         }
