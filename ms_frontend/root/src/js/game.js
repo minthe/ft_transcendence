@@ -3,6 +3,9 @@ function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
   if (document.getElementById('createGameButton'))
     document.getElementById('createGameButton').addEventListener('click', createGame);
+  if (document.getElementById('tournamentsContainer'))
+    document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
+
 }
 
 
@@ -75,11 +78,106 @@ async function joinGame(gameId) {
 
 }
 
+
+async function requestHistory() {
+  console.log('In requestHistory');
+  await sendDataToBackend('request_history');
+}
+async function requestStats() {
+  console.log('In requestStats');
+  await sendDataToBackend('request_stats');
+}
+
+
 async function requestInvites() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("invites-screen").classList.remove("hidden");
   await sendDataToBackend('request_invites');
 }
+
+
+async function requestTourns() {
+  console.log('In requestTourns');
+  // document.getElementById("start-screen").classList.add("hidden");
+  // document.getElementById("invites-screen").classList.remove("hidden");
+  await sendDataToBackend('request_tourns');
+}
+
+async function generateFrontendRepresentation(data) {
+  const tournamentsContainer = document.getElementById('tournamentsContainer');
+
+    console.log('In generateFrontendRepresentation');
+    console.log(typeof data);
+    console.log(data);
+
+    // Iterate through tournaments
+    data.forEach(tournament => {
+      console.log(JSON.stringify(tournament));
+      // tournament = JSON.stringify(tournament);
+      const tournamentDiv = document.createElement('div');
+      tournamentDiv.classList.add('tournament');
+
+      // Create tournament host and winner representation
+      console.log(tournament.tourn_host);
+      const tournamentHost = document.createElement('p');
+      tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
+      tournamentDiv.appendChild(tournamentHost);
+
+      const tournamentWinner = document.createElement('p');
+      tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
+      tournamentDiv.appendChild(tournamentWinner);
+      
+
+      // Iterate through games inside the tournament
+      const gamesContainer = document.createElement('div');
+      gamesContainer.classList.add('games-container');
+      tournament.slice(1).forEach(game => {
+          const gameDiv = document.createElement('div');
+          gameDiv.classList.add('game');
+
+          // Create game representation
+          const gameDetails = document.createElement('p');
+          gameDetails.textContent = `Game ID: ${game.game_id}, Stage: ${game.stage}`;
+          gameDiv.appendChild(gameDetails);
+
+          const playersDetails = document.createElement('p');
+          playersDetails.textContent = `Player One: ${game.player_one}, Player Two: ${game.player_two}`;
+          gameDiv.appendChild(playersDetails);
+
+          // Append game representation to games container
+          gamesContainer.appendChild(gameDiv);
+      });
+
+      // Append games container to tournament container
+      tournamentDiv.appendChild(gamesContainer);
+
+      // Append tournament container to main container
+      if (tournamentsContainer) {
+        tournamentsContainer.appendChild(tournamentDiv);
+    } else {
+        console.error('Tournaments container not found or is null.');
+    }
+      tournamentsContainer.appendChild(tournamentDiv);
+  });
+}
+
+// async function renderTourns() {
+//   console.log('In renderTourns');
+//   if (websocket_obj.game.tourns != 0)
+//   {
+//     const container = document.getElementById('game-session-container');
+//     container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
+
+//     container.querySelectorAll('.join-game-btn').forEach(button => {
+//       button.addEventListener('click', async function() {
+//         const gameId = this.getAttribute('data-gameid');
+//         joinGame(gameId);
+//       });
+//     });
+//   }
+// }
+
+
 
 
 async function renderInvites() {
@@ -126,37 +224,6 @@ function generateHTMLContentInv(matches) {
   return htmlContent;
 }
 
-
-// async function renderInvites() {
-
-//   console.log('In renderInvites:');
-
-
-//   const username = websocket_obj.username;
-//   const matches = websocket_obj.matches_data;
-
-
-
-//   // var theButton = document.getElementById('createGameButton');
-//   // theButton.style.display = 'none';
-//   try {
-
-// // _+_+_+_+_+_+_
-
-//     const response = await fetch(`${window.location.origin}/game/render/invites/${username}/`);
-//     const htmlContent = await response.text();
-
-//     const container = document.getElementById('game-session-container');
-//     container.innerHTML = htmlContent;
-// // _+_+_+_+_+_+_
-
-// } catch (error) {
-//     console.error('There was a problem with the fetch operation:', error);
-// }
-
-
-
-//   }
 
   async function  displayError(){
     console.log('hi');
