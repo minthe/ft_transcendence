@@ -5,7 +5,7 @@ websocket_obj = {
   active_game: null,
 
   username: null,
-  password: null,
+  // password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
   // avatar: null,
   blocked_by: [],

@@ -1,27 +1,31 @@
 
 async function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
-  initUserData(data, usernameElement.value, passwordElement.value)
+  initUserData(data, usernameElement.value)
   authSucces();
   await getTwoFaStatus();
-  if (authMethod === 'login')
-    clearLoginInput(usernameElement, passwordElement);
+  clearLoginInput(usernameElement, passwordElement);
 }
 
 async function afterAuthRegister(data, usernameElement, passwordElement, mail) {
-  initUserData(data, usernameElement.value, passwordElement.value)
+  initUserData(data, usernameElement.value)
   authSucces();
   await getTwoFaStatus();
   clearRegisterInput(usernameElement, passwordElement, mail);
 }
 
-function initUserData(data, username, password) {
+async function afterAuthLogin42(data) {
+  initUserData(data, data.username)
+  authSucces();
+  await getTwoFaStatus();
+}
+
+//remove password
+function initUserData(data, username) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
 
-  //needed?
 	websocket_obj.username = username
-	websocket_obj.password = password
-  //needed?
+
 
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
@@ -286,7 +290,9 @@ async function logoutUser() {
 function openAuthPopup() {
   const url = `${window.location.origin}/user/oauth2/login`;
   const windowName = 'AuthWindow';
-  const windowFeatures = `width=${window.outerWidth},height=${window.outerHeight},resizable=yes`;
+  const windowFeatures = `width=${window.outerWidth / 3},height=${window.outerHeight / 1.2}
+  , left=${window.outerWidth / 2.85},top=${window.outerHeight / 9},resizable=yes`;
+
 
   const popup = window.open(url, windowName, windowFeatures);
   if (popup) {
@@ -301,37 +307,31 @@ function openAuthPopup() {
 }
 
 
-
+//2fa needed
 function checkForToken(popup) {
+  const url = `${window.location.origin}/user/login`
   const interval = setInterval(() => {
-    const url = `${window.location.origin}/user/token/existence`
     fetch(url, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
-      'Authorization':'Bearer {access-token}'
+      // 'Authorization':'Bearer {access-token}'
       // 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
       },
     //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
     })
-      .then(async response => {
+    .then(async response => {
       if (!response.ok) {
         await logoutUser();
         throw new Error('User has no token');
       }
-      // state.bodyText = document.body.innerHTML;
-      // state.currPage = "homeSite";
-      // state.chatObj = {};
-      // state.chatOpen= false;
-      // sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
+      const data = await response.json();
+      console.log(data);
+      afterAuthLogin42(data);
 
-      // afterAuthLogin42()
       document.getElementById("reloadScreen").style.display = "block";
       setTimeout(function() {
         document.getElementById("reloadScreen").style.display = "none";
-        // updatePage();
-        // loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
-	      // loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
         hideDiv('userIsNotAuth');
         showDiv('userIsAuth');
       }, 500);

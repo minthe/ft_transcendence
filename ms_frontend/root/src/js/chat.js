@@ -131,7 +131,7 @@ async function handleClickedOnChatElement(chat_obj) {
     console.log('goes back to default and closes');
     hideDiv('messageSide');
     document.getElementById('right-heading-name').textContent = "";
-    chat_avatar.src = "../img/ballWithEye.jpg";
+    chat_avatar.src = "../img/playPongLogoWhite.webp";
     state.chatOpen = false;
   }
   if (state.currPage !== 'group_chat' || state.chatObj.chat_name !== chat_obj.chat_name) {
@@ -381,7 +381,7 @@ async function chatSiteClicked() {
   showSiteHideOthers('chat', 'showChatButton')
   hideDiv('messageSide');
   document.getElementById('right-heading-name').textContent = "";
-  chat_avatar.src = "../img/ballWithEye.jpg";
+  chat_avatar.src = "../img/playPongLogoWhite.webp";
   
   state.chatOpen = false;
 }

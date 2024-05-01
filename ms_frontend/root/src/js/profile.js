@@ -49,10 +49,12 @@ function updateProfileMessage(success, message) {
 	twoFaStatus.textContent = message;
 }
 
-let emailBeforeEdit = document.getElementById('email').value;
-let gameAliasBeforeEdit = document.getElementById('email').value;
+let emailBeforeEdit;
+let gameAliasBeforeEdit;
 
 function editProfile() {
+  emailBeforeEdit = document.getElementById('email').value;
+  gameAliasBeforeEdit = document.getElementById('gameAlias').value;
   let inputs = document.querySelectorAll('input[readonly]');
 
   inputs.forEach(input => input.removeAttribute('readonly'));
@@ -159,7 +161,7 @@ function changeProfileImage() {
 
 
 //needs to be called when clicked on profile page, traversing in spa or refresh
-function getProfileData() {
+async function getProfileData() {
   const url = `${window.location.origin}/user/profile`
   fetch (url, {
     method: 'GET',
@@ -169,13 +171,19 @@ function getProfileData() {
     const data = await response.json();
     if (!response.ok)
       throw Error(data.message);
-    document.getElementById('profilePicture').src = data.avatar;
+    // document.getElementById('profilePicture').src = data.avatar;
     document.getElementById("email").value = data.email;
     document.getElementById("gameAlias").value = data.alias;
-    updateProfileMessage(true, "Avatar updated successfully");
+    // updateProfileMessage(true, "Avatar updated successfully");
   })
   .catch(error => {
-    updateProfileMessage(false, error);
+    // updateProfileMessage(false, error);
     console.error('There was a problem with the fetch operation:', error);
   });
+}
+
+async function profileButtonClicked() {
+  await getTwoFaStatus();
+  await getProfileData();
+  showSiteHideOthers('profileSite', 'profileButton');
 }

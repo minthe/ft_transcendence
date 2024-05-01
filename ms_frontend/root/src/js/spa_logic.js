@@ -77,7 +77,7 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#showChatButton'))
 		await chatSiteClicked();
   else if (event.target.closest('#profileButton'))
-		showSiteHideOthers('profileSite', 'profileButton');
+    profileButtonClicked();
   else if (event.target.closest('#creatorsButton'))
 		showSiteHideOthers('creatorsSite', 'creatorsButton');
   else if (event.target.closest('#logoutButton'))
