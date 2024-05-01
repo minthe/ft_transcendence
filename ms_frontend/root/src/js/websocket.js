@@ -485,7 +485,7 @@ async function sendDataToBackend(request_type) {
           type = 'send_request_invites'
           data = {
             'user_id': websocket_obj.user_id,
-            'game_id': 1,
+            'game_id': 0,
 
           }
           break
@@ -496,7 +496,7 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'invited_id': websocket_obj.invited_id,
-            'game_id': 1,
+            'game_id': 0,
           }
           break
         case 'request_tourns':
@@ -506,7 +506,7 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
           //   'invited_id': websocket_obj.invited_id,
-            'game_id': 1,
+            'game_id': 0,
           }
           break
         // case 'new_profile_picture':
@@ -520,14 +520,14 @@ async function sendDataToBackend(request_type) {
           type = 'send_stats'
           data = {
             'user_id': websocket_obj.user_id,
-            'game_id': 1,
+            'game_id': 0,
           }
           break
         case 'request_history':
           type = 'send_history'
           data = {
             'user_id': websocket_obj.user_id,
-            'game_id': 1,
+            'game_id': 0,
           }
           break
         default:

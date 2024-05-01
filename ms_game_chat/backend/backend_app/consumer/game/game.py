@@ -748,6 +748,7 @@ class _Game:
 
     @database_sync_to_async
     def get_matches(self, user_id):
+        print("in GET MATCHES")
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
         game_sessions = user_instance.new_matches.all()
 
@@ -757,6 +758,7 @@ class _Game:
         for game_session in game_sessions:
             # Extract opponent name and game id
             print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
+            print(game_session.hostId)
             if type(game_session.hostId) == str:
                 if game_session.hostId.isdigit():
                     host = int(game_session.hostId)
@@ -775,6 +777,8 @@ class _Game:
 
             
             # if game_session.hostId == user_instance.name:
+            print("game_session.id")
+            print(game_session.id)
             print("host")
             print(host)
             print("user_instance.user_id")
