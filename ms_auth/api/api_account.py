@@ -163,37 +163,37 @@ def oauth2_login(request):
 
 def oauth2_redirect(request):
 	try:
-		if request.GET.get('state') != settings.INTRA_STATE:
-			return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
+		with transaction.atomic():
+			if request.GET.get('state') != settings.INTRA_STATE:
+				return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
 
-		access_token = oauth2_views.getToken(request)
-		user_data = intra42_views.getUserData(access_token)
+			access_token = oauth2_views.getToken(request)
+			user_data = intra42_views.getUserData(access_token)
 
-		if not user_views.checkValueExists('intra_id', user_data['intra_id']):
-			if settings.WELCOME_MAIL == True:
-				mail_views.send_welcome_email(user_data['username'], user_data['email'])
-			user_views.createIntraUser(user_data)
+			if not user_views.checkValueExists('intra_id', user_data['intra_id']):
+				if settings.WELCOME_MAIL == True:
+					mail_views.send_welcome_email(user_data['username'], user_data['email'])
+				user_views.createIntraUser(user_data)
 
-		user_id = user_views.returnUserId(user_data['username'])
-		username = user_views.getValue(user_id, 'username')
-		second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
-		jwt_token = jwt.createToken(user_id)
+			user_id = user_views.returnUserId(user_data['username'])
+			username = user_views.getValue(user_id, 'username')
+			second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
+			jwt_token = jwt.createToken(user_id)
 
-		if not jwt.validateToken(jwt_token):
-			response = JsonResponse({'message': 'JWT token could not be created'})
-			response.status_code = 401
+			if not jwt.validateToken(jwt_token):
+				response = JsonResponse({'message': 'JWT token could not be created'})
+				response.status_code = 401
+				return response
+
+			response_data = {
+				'user_id': user_id,
+				'username': username,
+				'second_factor': second_factor_status
+			}
+			response = JsonResponse(response_data)
+			response.set_cookie('jwt_token', jwt_token, httponly=True)
+			response.status_code = 200
 			return response
-
-		response_data = {
-			'user_id': user_id,
-			'username': username,
-			'second_factor': second_factor_status
-		}
-		response = JsonResponse(response_data)
-		response.set_cookie('jwt_token', jwt_token, httponly=True)
-		response.status_code = 200
-		return response
-
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
