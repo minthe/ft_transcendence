@@ -199,14 +199,8 @@ def oauth2_redirect(request):
 				response.status_code = 401
 				return response
 
-			response_data = {
-				'user_id': user_id,
-				'username': username,
-				'second_factor': second_factor_status
-			}
-			response = JsonResponse(response_data)
+			response = HttpResponse(status=200)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
-			response.status_code = 200
 			return response
 	except Exception as e:
 		error_message = str(e)
