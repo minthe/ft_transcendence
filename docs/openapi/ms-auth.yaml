@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.6'
+  version: '1.9.7'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -197,10 +197,6 @@ paths:
               schema:
                 type: string
                 example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
         '302':
           description: Redirect to OAuth2 Provider
           headers:
