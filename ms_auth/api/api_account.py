@@ -196,9 +196,34 @@ def oauth2_redirect(request):
 				user_views.createIntraUser(user_data)
 
 			user_id = user_views.returnUserId(user_data['username'])
-			username = user_views.getValue(user_id, 'username')
-			second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 			jwt_token = jwt.createToken(user_id)
+
+			if not user_views.checkValueExists('intra_id', user_data['intra_id']):
+				# request to game-chat
+				username = user_views.getValue(user_id, 'username')
+				avatar = user_views.getValue(user_id, 'avatar')
+				game_chat_headers = {
+					"Content-Type": 'application/json',
+					"Cookie": f"jwt_token={jwt_token}; HttpOnly"
+				}
+				game_chat_data = {
+					'username': username,
+					'avatar': avatar,
+				}
+				game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
+				encoded_data = json.dumps(game_chat_data).encode("utf-8")
+
+				print(f"request_to_game_chat url: {game_chat_request_url}")
+				game_chat_request = Request(game_chat_request_url, method='POST', data=encoded_data, headers=game_chat_headers)
+				game_chat_response = urlopen(game_chat_request)
+				if game_chat_response.getcode() == 200:
+					response = HttpResponse(status=200)
+					response.set_cookie('jwt_token', jwt_token, httponly=True)
+					return response
+				elif game_chat_response.getcode() == 409:
+					return JsonResponse({'message': "user already exists"}, status=409)
+				else:
+					return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 
 			if not jwt.validateToken(jwt_token):
 				response = JsonResponse({'message': 'JWT token could not be created'})
