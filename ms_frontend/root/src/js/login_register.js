@@ -162,8 +162,8 @@ function loginUserButton() {
               });
           }
           else {
-                await afterAuthLogin(data, usernameElement, passwordElement);
-                setDownTwoFaPage();
+              await afterAuthLogin(data, usernameElement, passwordElement);
+              setDownTwoFaPage();
           }
       });
       }
@@ -368,10 +368,12 @@ function checkForToken(popup) {
     })
     .then(async response => {
       const data = await response.json();
-      if (!response.ok && response.status !== 401) {
+      //check again
+      if (!response.ok && !data.second_factor) {
         await logoutUser();
         throw new Error('User has no token');
       }
+      clearInterval(interval);
       popup.close();
       if (data.second_factor) {
         setUpTwoFaPage();
@@ -392,16 +394,17 @@ function checkForToken(popup) {
             }
             else {
                 await afterAuthLogin42(data);
-                setDownTwoFaPage();
+                // setDownTwoFaPage();
             }
           });
           }
           data.message = 'Not enough digits or non numeric characters';
           loginErrors(data);
       }
-      console.log('whats in data: ', data);
-      await afterAuthLogin42(data);
-
+      else {
+        await afterAuthLogin42(data);
+      }
+      setDownTwoFaPage();
       document.getElementById("reloadScreen").style.display = "block";
       setTimeout(function() {
         document.getElementById("reloadScreen").style.display = "none";
@@ -409,13 +412,13 @@ function checkForToken(popup) {
         showDiv('userIsAuth');
       }, 500);
       
-      clearInterval(interval);
+      // clearInterval(interval);
       })
       .catch(error => {
       // console.log('Error during login:', error);
       });
       // return false;
-  }, 1000); // Check every 1000 milliseconds (1 second)
+  }, 1500); // Check every 1000 milliseconds (1 second)
   // return true;
 }
 
