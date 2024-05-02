@@ -171,7 +171,8 @@ async function getProfileData() {
     const data = await response.json();
     if (!response.ok)
       throw Error(data.message);
-    // document.getElementById('profilePicture').src = data.avatar;
+    console.log('data for profile: ', data);
+    document.getElementById('profilePicture').src = data.avatar;
     document.getElementById("email").value = data.email;
     document.getElementById("gameAlias").value = data.alias;
     // updateProfileMessage(true, "Avatar updated successfully");

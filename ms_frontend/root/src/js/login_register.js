@@ -1,5 +1,5 @@
 
-async function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
+async function afterAuthLogin(data, usernameElement, passwordElement) {
   initUserData(data, usernameElement.value)
   authSucces();
   await getTwoFaStatus();
@@ -162,7 +162,7 @@ function loginUserButton() {
               });
           }
           else {
-                await afterAuthLogin('login', data, usernameElement, passwordElement);
+                await afterAuthLogin(data, usernameElement, passwordElement);
                 setDownTwoFaPage();
           }
       });
@@ -171,7 +171,7 @@ function loginUserButton() {
       loginErrors(data);
     }
     else
-      await afterAuthLogin('login', data, usernameElement, passwordElement);
+      await afterAuthLogin(data, usernameElement, passwordElement);
   })
   .catch(error => {
     setDownTwoFaPage();
@@ -308,6 +308,55 @@ function openAuthPopup() {
 
 
 //2fa needed
+// function checkForToken(popup) {
+//   const url = `${window.location.origin}/user/login`
+//   const interval = setInterval(() => {
+//     fetch(url, {
+//       method: 'GET',
+//       headers: {
+//       'Content-Type': 'application/json',
+//       // 'Authorization':'Bearer {access-token}'
+//       // 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
+//       },
+//     //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
+//     })
+//     .then(async response => {
+//       if (!response.ok) {
+//         await logoutUser();
+//         throw new Error('User has no token');
+//       }
+//       const data = await response.json();
+//       console.log('whats in data: ', data);
+//       afterAuthLogin42(data);
+
+//       document.getElementById("reloadScreen").style.display = "block";
+//       setTimeout(function() {
+//         document.getElementById("reloadScreen").style.display = "none";
+//         hideDiv('userIsNotAuth');
+//         showDiv('userIsAuth');
+//       }, 500);
+//       popup.close();
+//       clearInterval(interval);
+//       })
+//       .catch(error => {
+//       // console.log('Error during login:', error);
+//       });
+//       // return false;
+//   }, 1000); // Check every 1000 milliseconds (1 second)
+//   // return true;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 function checkForToken(popup) {
   const url = `${window.location.origin}/user/login`
   const interval = setInterval(() => {
@@ -315,19 +364,43 @@ function checkForToken(popup) {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
-      // 'Authorization':'Bearer {access-token}'
-      // 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
       },
-    //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
     })
     .then(async response => {
-      if (!response.ok) {
+      const data = await response.json();
+      if (!response.ok && response.status !== 401) {
         await logoutUser();
         throw new Error('User has no token');
       }
-      const data = await response.json();
-      console.log(data);
-      afterAuthLogin42(data);
+      popup.close();
+      if (data.second_factor) {
+        setUpTwoFaPage();
+        await verifyButtonClick();
+        if (checkTwoFaCode()) {
+          const url = `${window.location.origin}/user/2fa/verify`
+          return fetch(url, {
+              method: 'POST',
+              headers: headerTwoFa(),
+              body: JSON.stringify(bodyTwoFa(data.user_id))
+          })
+          .then(async response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    console.log('that would be the error: ', data.message);
+                    loginErrors(data);
+                });
+            }
+            else {
+                await afterAuthLogin42(data);
+                setDownTwoFaPage();
+            }
+          });
+          }
+          data.message = 'Not enough digits or non numeric characters';
+          loginErrors(data);
+      }
+      console.log('whats in data: ', data);
+      await afterAuthLogin42(data);
 
       document.getElementById("reloadScreen").style.display = "block";
       setTimeout(function() {
@@ -335,7 +408,7 @@ function checkForToken(popup) {
         hideDiv('userIsNotAuth');
         showDiv('userIsAuth');
       }, 500);
-      popup.close();
+      
       clearInterval(interval);
       })
       .catch(error => {
@@ -351,73 +424,3 @@ function checkForToken(popup) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function loginWith42() {
-
-  const url = `${window.location.origin}/user/oauth2/login`
-  fetch(url, {
-    method: 'POST',
-    headers: headerLogin(),
-    // mode: 'no-cors'
-    // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
-  })
-  .then(async response => {
-    console.log('first then in 42 login###');
-    return response.json().then(data => {
-      return { ok: response.ok, status: response.status, data };
-    });
-  })
-  .then(async ({ok, status, data}) => {
-    console.log('before error detected');
-    if (!ok && status !== 401) {
-      console.log('error detected');
-      loginErrors(data)
-    }
-    document.getElementById("wrong-password").classList.add("hidden");
-    if (data.second_factor) {
-      showTwoFaDisableBtn();
-      setUpTwoFaPage();      
-      await verifyButtonClick();
-      if (checkTwoFaCode()) {
-        const url = `${window.location.origin}/user/2fa`
-        fetch(url, {
-            method: 'POST',
-            headers: headerTwoFa(),
-            body: JSON.stringify(bodyTwoFa(data.user_id))
-          })
-        .then(response => {
-          if (!response.ok) {
-            // location.reload();
-            throw new Error(response.data.message);
-          }
-          // afterAuthLogin('login42', data, usernameElement, passwordElement);
-          setDownTwoFaPage();
-        });
-      }
-    }
-    // else
-      // afterAuthLogin('login42', data, usernameElement, passwordElement);
-  })
-  .catch(error => {
-    // clearLoginInput(usernameElement, passwordElement);
-    // setErrorWithTimout('info_login', error, 9999999)
-    console.log('Error during login:', error);
-  });
-}
