@@ -115,13 +115,13 @@ def login(request):
 			jwt_token = request.COOKIES.get('jwt_token')
 			if jwt_token and jwt.validateToken(jwt_token):
 				user_id = jwt.getUserId(jwt_token)
+				username = user_views.getValue(user_id, 'username')
 
 				#2fa
 				if user_views.getValue(user_id, 'second_factor_enabled') == True:
 					second_factor_views.create_2fa(user_id)
 					return JsonResponse({'user_id': user_id, 'username': username, 'second_factor': True}, status=401)
 
-				username = user_views.getValue(user_id, 'username')
 				second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 				response = JsonResponse({'user_id': user_id, 'username': username, 'second_factor': second_factor_status})
 				jwt_token = jwt.createToken(user_id)
