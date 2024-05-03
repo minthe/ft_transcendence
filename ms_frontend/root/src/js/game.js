@@ -8,10 +8,8 @@ function gameDom() {
 
 }
 
-
-async function joinGame(gameId) {
-
-  console.log('In JoinGame');
+async function joinedGameSuccessfully(gameId) {
+  console.log('In joinedGameSuccessfully');
 
   const gameScreen = document.getElementById("game-screen");
 
@@ -56,25 +54,111 @@ async function joinGame(gameId) {
   document.getElementById("pongCanvas").classList.remove("hidden");
   gameScreen.classList.add('show');
   gameScreen.classList.remove('hidden');
-  await sendDataToBackend('init_game');
+  // await sendDataToBackend('init_game');
 
-  document.addEventListener("keydown", async function(event) {
-      // Log the key code to the console
-      console.log("Key pressed: " + event.keyCode);
-      if (event.keyCode == 40 || event.keyCode == 38)
-      {
-          websocket_obj.game.key_code = event.keyCode;
-          // websocket_obj.game.game_id = gameId;
-          console.log("in key event listener:");
-
-          console.log(websocket_obj.game.is_host);
-
-          await sendDataToBackend('game_new_move');
-          websocket_obj.game.key_code = 0;
-      }
+  window.addEventListener('popstate', function(event) {
+      // Your code to handle the back button press here
+      console.log('Back button pressed!');
+      
   });
 
-  console.log('end of JoinGame');
+
+    document.addEventListener("keydown", async function(event) {
+        // Log the key code to the console
+        console.log("Key pressed: " + event.keyCode);
+        if (event.keyCode == 40 || event.keyCode == 38)
+        {
+            websocket_obj.game.key_code = event.keyCode;
+            // websocket_obj.game.game_id = gameId;
+            console.log("in key event listener:");
+
+            console.log(websocket_obj.game.is_host);
+
+            await sendDataToBackend('game_new_move');
+            websocket_obj.game.key_code = 0;
+        }
+    });
+
+    console.log('end of JoinedGameSuccessfully');
+}
+
+async function joinGame(gameId) {
+
+  console.log('In JoinGame');
+  websocket_obj.game.game_id = gameId;
+  await sendDataToBackend('init_game');
+  
+
+
+  // const gameScreen = document.getElementById("game-screen");
+
+  // const canvas = document.getElementById("pongCanvas");
+  // const ctx = canvas.getContext("2d");
+
+  // // Draw paddles
+  // ctx.fillStyle = "black";
+
+  // websocket_obj.game.left_pedal = 0.75
+  // console.log("websocket_obj.game.left_pedal: ", websocket_obj.game.left_pedal);
+  // websocket_obj.game.right_pedal = 0.75
+
+
+  // ctx.fillRect(canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
+  // ctx.fillRect(canvas.width - canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
+
+  // // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
+
+
+  // websocket_obj.game.game_id = gameId;
+  // websocket_obj.game.key_code = 0;
+  // websocket_obj.game.is_host = false;
+
+
+
+  // console.log("IN JOINGAME");
+
+  // async function updateCanvasSize() {
+  //   const canvas = document.getElementById("pongCanvas");
+  //   canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
+  //   canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
+
+  // }
+
+  // window.addEventListener("resize", updateCanvasSize);
+
+  // // window.addEventListener("load", updateCanvasSize);
+
+  // document.getElementById("invites-screen").classList.add("hidden");
+
+  // document.getElementById("pongCanvas").classList.remove("hidden");
+  // gameScreen.classList.add('show');
+  // gameScreen.classList.remove('hidden');
+  // // await sendDataToBackend('init_game');
+
+  // window.addEventListener('popstate', function(event) {
+  //     // Your code to handle the back button press here
+  //     console.log('Back button pressed!');
+      
+  // });
+
+
+  // document.addEventListener("keydown", async function(event) {
+  //     // Log the key code to the console
+  //     console.log("Key pressed: " + event.keyCode);
+  //     if (event.keyCode == 40 || event.keyCode == 38)
+  //     {
+  //         websocket_obj.game.key_code = event.keyCode;
+  //         // websocket_obj.game.game_id = gameId;
+  //         console.log("in key event listener:");
+
+  //         console.log(websocket_obj.game.is_host);
+
+  //         await sendDataToBackend('game_new_move');
+  //         websocket_obj.game.key_code = 0;
+  //     }
+  // });
+
+  // console.log('end of JoinGame');
 
 }
 

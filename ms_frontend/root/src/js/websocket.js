@@ -168,6 +168,7 @@ async function establishWebsocketConnection() {
         break
       case 'init_game':
         console.log(data);
+        joinedGameSuccessfully(websocket_obj.game.game_id)
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
         {
@@ -185,9 +186,8 @@ async function establishWebsocketConnection() {
         // websocket_obj.game.game_joined = true;
         break
       case 'game_start':
-         
-        console.log("GAME START");
         
+        console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
         startCountdownAnimation();
@@ -297,6 +297,10 @@ async function establishWebsocketConnection() {
       case 'recieve_history':
         console.log('recieve_history')
         console.log(data)
+        break
+      case 'already_in_game':
+        console.log('already_in_game')
+        requestInvites()
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')

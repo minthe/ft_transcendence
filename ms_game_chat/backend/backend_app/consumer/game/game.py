@@ -33,7 +33,9 @@ class _Game:
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['joined_players'] += 1
 
-
+    async def decrement_joined_players(cls):
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['joined_players'] -= 1
     async def reset_joined_players(cls):
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['joined_players'] = 0
@@ -108,7 +110,8 @@ class _Game:
                     self.game_states[self.game_id]['host_score'] == self.game_states[self.game_id]['score_limit']):
                 self.game_states[self.game_id]['game_active'] = False
                 # tourn_id = await self.matchResults(self.game_states[self.game_id])
-
+                            # await self.reset_joined_players()
+                # await self.reset_joined_players()
                 print("GAME OVER")
 
             print("GAME ACTIVE state = ")
@@ -161,6 +164,8 @@ class _Game:
                 )
                 try:
                     await self.remove_ended_match(self.user['user_id'], self.game_id)
+                    await self.reset_joined_players()
+
                 except Exception as e:
                     print(f"Error in game_over: {e}")
 
@@ -226,6 +231,14 @@ class _Game:
         
     async def send_opponent_disconnected(self, event):
         print("in opponent disconnected")
+        await self.decrement_joined_players()
+        print("after decrement")
+        print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        if self.game_states.get(self.game_id, {})['player_one'] == event['data']['user_id']:
+            self.game_states[self.game_id]['player_one'] = None
+        elif self.game_states.get(self.game_id, {})['player_two'] == event['data']['user_id']:
+            self.game_states[self.game_id]['player_two'] = None
+        await self.set_technical_winner(self.game_id, self.user['user_id'])
         await self.send(text_data=json.dumps({
             'type': 'opponent_disconnected',
 
@@ -260,6 +273,12 @@ class _Game:
         await self.send(text_data=json.dumps({
             'type': 'recieve_history',
             'history': event['data'],
+
+        }))
+    async def send_already_in_game(self, event):
+        print("in send_already_in_game")
+        await self.send(text_data=json.dumps({
+            'type': 'already_in_game',
 
         }))
 
@@ -313,11 +332,34 @@ class _Game:
                 'guest_score': 0,
                 'score_limit': 3,
                 'game_active': True,
+                'player_one': None,
+                'player_two': None
             }
 
 
     async def handle_send_init_game(self):
-        await self.init_game_struct()
+        if self.game_states.get(self.game_id, {}):
+            print("game ALREADY initialized")
+            print("self.game_states.get(self.game_id, {}).get('player_one')")
+            print(self.game_states.get(self.game_id, {}).get('player_one'))
+            print("self.game_states.get(self.game_id, {}).get('player_two')")
+            print(self.game_states.get(self.game_id, {}).get('player_two'))
+            if self.game_states.get(self.game_id, {}).get('player_one') == self.user['user_id'] or self.game_states.get(self.game_id, {}).get('player_two') == self.user['user_id']:
+                print("user already in game")
+                await self.channel_layer.send(
+                    self.channel_name,
+                    {
+                        'type': 'send.already.in.game',
+                    }
+        )
+                return None
+            elif self.game_states.get(self.game_id, {}).get('player_one') == None:
+                self.game_states[self.game_id]['player_one'] = self.user['user_id']
+            elif self.game_states.get(self.game_id, {}).get('player_two') == None:
+                self.game_states[self.game_id]['player_two'] = self.user['user_id']
+        else:
+            await self.init_game_struct()
+            self.game_states.get(self.game_id, {})['player_one'] = self.user['user_id']
         return_val = await self.get_host(self.game_id, self.user['user_id'])
         print("is host status:")
         print(return_val)
@@ -337,9 +379,10 @@ class _Game:
                 },
             }
         )
+        # if (self.game_states.get(self.game_id, {}).get('players_one') == self.user['user_id']):
         if (self.game_states.get(self.game_id, {}).get('joined_players') == 2):
             print("TWO PLAYERS\n")
-            await self.reset_joined_players()
+            # await self.reset_joined_players()
             await self.channel_layer.group_send(
                 self.game_group_id,
                 {
@@ -437,6 +480,18 @@ class _Game:
 
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
     
+    
+    @database_sync_to_async
+    def set_technical_winner(self, game_id, user_id):
+        game_instance = Game.objects.get(id=game_id)
+        if game_instance.hostId == user_id:
+            game_instance.winnerId = game_instance.guestId
+            game_instance.loserId = game_instance.hostId
+        else:
+            game_instance.winnerId = game_instance.hostId
+            game_instance.loserId = game_instance.guestId
+        game_instance.save()
+
     @database_sync_to_async
     def get_history(self, user_id):
         user_instance = MyUser.objects.get(user_id=user_id)

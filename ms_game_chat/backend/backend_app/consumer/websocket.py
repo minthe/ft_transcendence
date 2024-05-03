@@ -80,6 +80,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
                 {
                     'type': 'send.opponent.disconnected',
                     'data': {
+                        'user_id': self.user['user_id']
 
                     },
                 }
