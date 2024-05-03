@@ -36,7 +36,7 @@ async function joinedGameSuccessfully(gameId) {
 
 
 
-  console.log("IN JOINGAME");
+  console.log("IN joinedGameSuccessfully");
 
   async function updateCanvasSize() {
     const canvas = document.getElementById("pongCanvas");
@@ -55,12 +55,12 @@ async function joinedGameSuccessfully(gameId) {
   gameScreen.classList.add('show');
   gameScreen.classList.remove('hidden');
   // await sendDataToBackend('init_game');
-
-  window.addEventListener('popstate', function(event) {
-      // Your code to handle the back button press here
-      console.log('Back button pressed!');
-      
-  });
+  if (websocket_obj.game.active_state)
+    window.addEventListener('popstate', function(event) {
+        // Your code to handle the back button press here
+        console.log('Back button pressed!');
+        
+    });
 
 
     document.addEventListener("keydown", async function(event) {
@@ -80,6 +80,7 @@ async function joinedGameSuccessfully(gameId) {
     });
 
     console.log('end of JoinedGameSuccessfully');
+    // return true;
 }
 
 async function joinGame(gameId) {

@@ -63,6 +63,7 @@ websocket_obj = {
       ball_y: 0,
       host_score: 0,
       guest_score: 0,
+      active_state: false,
 
       // game_joined: false,
       // hostName: null,
@@ -168,7 +169,7 @@ async function establishWebsocketConnection() {
         break
       case 'init_game':
         console.log(data);
-        joinedGameSuccessfully(websocket_obj.game.game_id)
+        websocket_obj.game.active_state = true
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
         {
@@ -214,6 +215,8 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'game_over':
+        websocket_obj.game.active_state = false
+
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
