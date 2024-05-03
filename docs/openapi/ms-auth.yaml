@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.7'
+  version: '1.9.8'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -149,10 +149,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Missing or invalid JWT token
+          description: 2fa verification necessary
           content:
             application/json:
-              example: {"message": "Missing or invalid JWT token"}
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
         '503':
           description: Internal server error
           content:
