@@ -418,7 +418,7 @@ function checkForToken(popup) {
       // console.log('Error during login:', error);
       });
       // return false;
-  }, 1500); // Check every 1000 milliseconds (1 second)
+  }, 2000); // Check every 1000 milliseconds (1 second)
   // return true;
 }
 
