@@ -148,6 +148,9 @@ class _Game:
                 break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
                 print("in game_active = false")
+                print("self.game_states[self.game_id]")
+                print(self.game_states[self.game_id])
+                await self.setWinner(self.game_states[self.game_id])
                 tourn_id = await self.matchResults(self.game_states[self.game_id])
 
                 self.game_states.pop(self.game_id, None)
@@ -239,6 +242,7 @@ class _Game:
         elif self.game_states.get(self.game_id, {})['player_two'] == event['data']['user_id']:
             self.game_states[self.game_id]['player_two'] = None
         await self.set_technical_winner(self.game_id, self.user['user_id'])
+        await self.matchResults(self.game_states[self.game_id])
         await self.send(text_data=json.dumps({
             'type': 'opponent_disconnected',
 
@@ -525,6 +529,21 @@ class _Game:
         return { 'won_games': won_games, 'lost_games': lost_games, 'total_games': total_games }
 
     @database_sync_to_async
+    def setWinner(self, game_struct):
+        game_instance = Game.objects.get(id=self.game_id)
+        if game_struct['host_score'] == game_struct['score_limit']:
+            print("game_struct['host_score']")
+            game_instance.winnerId = game_instance.hostId
+            game_instance.loserId = game_instance.guestId
+        elif game_struct['guest_score'] == game_struct['score_limit']:
+            print("game_struct['guest_score']")
+            game_instance.winnerId = game_instance.guestId
+            game_instance.loserId = game_instance.hostId
+        # game_instance.date = timezone.now()
+        game_instance.date = timezone.localtime(timezone.now())
+        game_instance.save()
+
+    @database_sync_to_async
     def matchResults(self, game_struct):
         print("in matchResults")
         # game_instance = Game.objects.get(id=self.game_id)
@@ -557,17 +576,17 @@ class _Game:
         user_two.save()
 
 
-        if game_struct['host_score'] == game_struct['score_limit']:
-            print("game_struct['host_score']")
-            game_instance.winnerId = game_instance.hostId
-            game_instance.loserId = game_instance.guestId
-        elif game_struct['guest_score'] == game_struct['score_limit']:
-            print("game_struct['guest_score']")
-            game_instance.winnerId = game_instance.guestId
-            game_instance.loserId = game_instance.hostId
-        # game_instance.date = timezone.now()
-        game_instance.date = timezone.localtime(timezone.now())
-        game_instance.save()
+        # if game_struct['host_score'] == game_struct['score_limit']:
+        #     print("game_struct['host_score']")
+        #     game_instance.winnerId = game_instance.hostId
+        #     game_instance.loserId = game_instance.guestId
+        # elif game_struct['guest_score'] == game_struct['score_limit']:
+        #     print("game_struct['guest_score']")
+        #     game_instance.winnerId = game_instance.guestId
+        #     game_instance.loserId = game_instance.hostId
+        # # game_instance.date = timezone.now()
+        # game_instance.date = timezone.localtime(timezone.now())
+        # game_instance.save()
 
         if game_instance.tournId is not None:
             print("matchResults tourn")
