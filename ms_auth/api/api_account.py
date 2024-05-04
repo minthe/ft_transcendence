@@ -231,7 +231,7 @@ def oauth2_redirect(request):
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
 				second_factor_views.create_2fa(user_id)
-				return JsonResponse({'user_id': user_id, 'username': username, 'second_factor': True}, status=401)
+				return HttpResponse(status=200)
 
 			jwt_token = jwt.createToken(user_id)
 
