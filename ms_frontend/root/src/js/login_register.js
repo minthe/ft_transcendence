@@ -17,9 +17,9 @@ async function afterAuthLogin42(data) {
   initUserData(data, data.username)
   authSucces();
   await getTwoFaStatus();
+  clearLoginInput42();
 }
 
-//remove password
 function initUserData(data, username) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
@@ -51,6 +51,12 @@ function clearRegisterInput(usernameElement, passwordElement, mail) {
   usernameElement.value = "";
   passwordElement.value = "";
   mail.value = "";
+}
+
+function clearLoginInput42() {
+  document.getElementById('loginUsername').value = "";
+  document.getElementById('loginPassword').value = "";
+  document.getElementById('twoFaCode').value = '';
 }
 
 
@@ -292,134 +298,89 @@ function openAuthPopup() {
   const windowName = 'AuthWindow';
   const windowFeatures = `width=${window.outerWidth / 3},height=${window.outerHeight / 1.2}
   , left=${window.outerWidth / 2.85},top=${window.outerHeight / 9},resizable=yes`;
-
-
   const popup = window.open(url, windowName, windowFeatures);
+
   if (popup) {
     popup.focus();
     checkForToken(popup);
-      // popup.close();
-    
-  } else {
-    alert('Please allow popups for this website.');
   }
-  return popup;
+  else
+    alert('Please allow popups for this website.');
+  // return popup;
 }
 
-
-//2fa needed
-// function checkForToken(popup) {
-//   const url = `${window.location.origin}/user/login`
-//   const interval = setInterval(() => {
-//     fetch(url, {
-//       method: 'GET',
-//       headers: {
-//       'Content-Type': 'application/json',
-//       // 'Authorization':'Bearer {access-token}'
-//       // 'Authorization': `Basic ${btoa(`${usernameElement.value}:${passwordElement.value}`)}`
-//       },
-//     //   body: JSON.stringify({ username: usernameElement.value, password: passwordElement.value })
-//     })
-//     .then(async response => {
-//       if (!response.ok) {
-//         await logoutUser();
-//         throw new Error('User has no token');
-//       }
-//       const data = await response.json();
-//       console.log('whats in data: ', data);
-//       afterAuthLogin42(data);
-
-//       document.getElementById("reloadScreen").style.display = "block";
-//       setTimeout(function() {
-//         document.getElementById("reloadScreen").style.display = "none";
-//         hideDiv('userIsNotAuth');
-//         showDiv('userIsAuth');
-//       }, 500);
-//       popup.close();
-//       clearInterval(interval);
-//       })
-//       .catch(error => {
-//       // console.log('Error during login:', error);
-//       });
-//       // return false;
-//   }, 1000); // Check every 1000 milliseconds (1 second)
-//   // return true;
-// }
-
-
-
-
-
-
-
-
-
-
-
+let isFetching = false;
 
 function checkForToken(popup) {
   const url = `${window.location.origin}/user/login`
   const interval = setInterval(() => {
-    fetch(url, {
-      method: 'GET',
-      headers: {
-      'Content-Type': 'application/json',
-      },
-    })
-    .then(async response => {
-      const data = await response.json();
-      //check again
-      if (!response.ok && !data.second_factor) {
-        await logoutUser();
-        throw new Error('User has no token');
-      }
+    if (popup.closed) {
       clearInterval(interval);
-      popup.close();
-      if (data.second_factor) {
-        setUpTwoFaPage();
-        await verifyButtonClick();
-        if (checkTwoFaCode()) {
-          const url = `${window.location.origin}/user/2fa/verify`
-          return fetch(url, {
+      return ;
+    }
+    if (!isFetching) {
+      isFetching = true;
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(async response => {
+        const data = await response.json();
+        //check again
+        if (!response.ok && !data.second_factor) {
+          await logoutUser();
+          throw new Error('User has no token');
+        }
+        popup.close();
+        if (data.second_factor) {
+          setUpTwoFaPage();
+          await verifyButtonClick();
+          if (checkTwoFaCode()) {
+            const url = `${window.location.origin}/user/2fa/verify`
+            return fetch(url, {
               method: 'POST',
               headers: headerTwoFa(),
               body: JSON.stringify(bodyTwoFa(data.user_id))
-          })
-          .then(async response => {
-            if (!response.ok) {
+            })
+            .then(async response => {
+              if (!response.ok) {
                 return response.json().then(data => {
-                    console.log('that would be the error: ', data.message);
-                    loginErrors(data);
+                  loginErrors(data);
                 });
-            }
-            else {
+              }
+              else {
+                console.log('after 2fa data: ', data);
                 await afterAuthLogin42(data);
-                // setDownTwoFaPage();
-            }
-          });
+                setDownTwoFaPage();
+              }
+            });
           }
           data.message = 'Not enough digits or non numeric characters';
           loginErrors(data);
-      }
-      else {
+        }
+        else
         await afterAuthLogin42(data);
-      }
-      setDownTwoFaPage();
-      document.getElementById("reloadScreen").style.display = "block";
-      setTimeout(function() {
-        document.getElementById("reloadScreen").style.display = "none";
-        hideDiv('userIsNotAuth');
-        showDiv('userIsAuth');
-      }, 500);
-      
-      // clearInterval(interval);
+        document.getElementById("reloadScreen").style.display = "block";
+        setTimeout(function() {
+          document.getElementById("reloadScreen").style.display = "none";
+          hideDiv('userIsNotAuth');
+          showDiv('userIsAuth');
+        }, 500);
       })
       .catch(error => {
-      // console.log('Error during login:', error);
+        clearLoginInput42();
+        setDownTwoFaPage();
+        
+        // console.log('Error during login:', error);
+      })
+      .finally(() => {
+        isFetching = false;
       });
-      // return false;
-  }, 2000); // Check every 1000 milliseconds (1 second)
-  // return true;
+    }
+    
+  }, 2000);
 }
 
 
