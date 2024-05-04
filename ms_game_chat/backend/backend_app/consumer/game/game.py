@@ -139,7 +139,9 @@ class _Game:
                     }
                 )
                 print("SENT BALL UPDATE")
-                await asyncio.sleep(1 / 60)
+                # await asyncio.sleep(1 / 60)
+                await asyncio.sleep(0.01)
+
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
                 print("GAME ACTIVE")
 
@@ -289,6 +291,23 @@ class _Game:
 
         }))
 
+    async def handle_user_left_game(self):
+        if self.game_states.get(self.game_id, {})['player_one'] == self.user['user_id']:
+            self.game_states[self.game_id]['player_one'] = None
+        elif self.game_states.get(self.game_id, {})['player_two'] == self.user['user_id']:
+            self.game_states[self.game_id]['player_two'] = None
+        await self.decrement_joined_players()
+        # await self.set_technical_winner(self.game_id, self.user['user_id'])
+        # await self.channel_layer.group_send(
+        #     self.game_group_id,
+        #     {
+        #         'type': 'send.opponent.disconnected',
+        #         'data': {
+        #             'user_id': self.user['user_id']
+        #         },
+        #     }
+        # )
+
 
 
     async def handle_send_game_scene(self):
@@ -331,7 +350,8 @@ class _Game:
                 'ball_x': 2,  # Initial ball position
                 'ball_y': 1,  # Initial ball position
                 'ball_radius': 0.05,
-                'ball_speed': 0.015,
+                # 'ball_speed': 0.015,
+                # 'ball_speed': 1,
                 'ball_dx': 0.025,
                 'ball_dy': 0.025,
                 'joined_players': 0,
@@ -340,7 +360,8 @@ class _Game:
                 'score_limit': 3,
                 'game_active': True,
                 'player_one': None,
-                'player_two': None
+                'player_two': None,
+                'previous_join': 0
             }
 
 
@@ -403,7 +424,14 @@ class _Game:
             print("after TWO PLAYERS\n")
 
             # await self.game_loop()
-            asyncio.create_task(self.game_loop())
+            if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
+                asyncio.create_task(self.game_loop())
+                print("START GAME LOOP THREAD=====================")
+                print("self.game_states.get(self.game_id, {}).get('previous_join')")
+                print(self.game_states.get(self.game_id, {}).get('previous_join'))
+                self.game_states.get(self.game_id, {})['previous_join'] += 1
+            else:
+                print("game loop already running")
 
 
     async def handle_send_ball_update(self):
@@ -878,9 +906,9 @@ class _Game:
             print(user_id)
 
             if int(user_id) == int(host):
-                opponent = game_session.guestId
+                opponent = guest
             else:
-                opponent = game_session.hostId
+                opponent = host
             game_id = game_session.id
             print("game_id ivites")
             print(game_id)

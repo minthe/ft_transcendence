@@ -538,6 +538,13 @@ async function sendDataToBackend(request_type) {
             'game_id': 0,
           }
           break
+          case 'user_left_game':
+            type = 'user_left_game'
+            data = {
+              'user_id': websocket_obj.user_id,
+              'game_id': websocket_obj.game.game_id,
+            }
+            break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }

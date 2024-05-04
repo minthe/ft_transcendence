@@ -52,6 +52,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.game_id = 0
         self.game_group_id = None
         self.invited_id = 0
+        self.dis_user_id = 0
 
     async def connect(self):
         # token = self.scope['cookies'].get('jwt_token')
@@ -100,7 +101,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         what_type = text_data_json["type"]
 
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
@@ -180,6 +181,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             await self.handle_send_stats()
         elif what_type == 'send_history':
             await self.handle_send_history()
+        elif what_type == 'user_left_game':
+            self.game_id = game_id
+            await self.handle_user_left_game()
+            # await self.send_opponent_disconnected()
         else:
             print('IS SOMETHING ELSE')
 

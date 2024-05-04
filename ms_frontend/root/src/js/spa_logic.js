@@ -32,7 +32,9 @@ state.bodyText = document.body.innerHTML;
 // Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
-
+  if (websocket_obj.game.active_state === true)
+    websocket_obj.game.active_state = false
+    sendDataToBackend('user_left_game')
 
 //   const url = `${window.location.origin}/user/token/existence`
 //  fetch(url)
