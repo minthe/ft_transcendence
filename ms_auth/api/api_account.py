@@ -2,6 +2,8 @@ import json
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
+from django.core.cache import cache
+from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_http_methods
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
@@ -14,6 +16,12 @@ from intra42 import views as intra42_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
+
+def store_secret(id, secret, prefix):
+	cache.set(f'{prefix}_{id}', secret, 300)
+
+def get_secret(id, prefix):
+	return cache.get(f'{prefix}_{id}')
 
 @require_http_methods(["POST"])
 def register(request):
@@ -113,10 +121,29 @@ def login(request):
 			return response
 		elif request.method == "GET":
 			jwt_token = request.COOKIES.get('jwt_token')
+			id_cookie = request.COOKIES.get('id')
 			if jwt_token and jwt.validateToken(jwt_token):
 				user_id = jwt.getUserId(jwt_token)
 				username = user_views.getValue(user_id, 'username')
 
+				#2fa
+				if user_views.getValue(user_id, 'second_factor_enabled') == True:
+					second_factor_views.create_2fa(user_id)
+					return JsonResponse({'user_id': user_id, 'username': username, 'second_factor': True}, status=401)
+
+				second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
+				response = JsonResponse({'user_id': user_id, 'username': username, 'second_factor': second_factor_status})
+				jwt_token = jwt.createToken(user_id)
+				response.set_cookie('jwt_token', jwt_token, httponly=True)
+				response.status_code = 200
+				return response
+			elif id_cookie is not None:
+				secret = get_secret(id_cookie, 'oauth2_token')
+				user_data = intra42_views.getUserData(secret)
+				user_id = user_views.returnUserId(user_data['username'])
+				if not user_views.checkValueExists('user_id', user_id):
+					return JsonResponse({'message': 'User not found'}, status=404)
+				username = user_views.getValue(user_id, 'username')
 				#2fa
 				if user_views.getValue(user_id, 'second_factor_enabled') == True:
 					second_factor_views.create_2fa(user_id)
@@ -230,8 +257,13 @@ def oauth2_redirect(request):
 
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
+				id_hash = get_random_string(length=12)
+				store_secret(id_hash, access_token, 'oauth2_token')
+				print (f"token: {access_token}")
 				second_factor_views.create_2fa(user_id)
-				return HttpResponse(status=200)
+				response = HttpResponse(status=200)
+				response.set_cookie('id',id_hash, httponly=True, expires=300)
+				return response
 
 			jwt_token = jwt.createToken(user_id)
 
