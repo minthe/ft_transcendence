@@ -340,7 +340,17 @@ class _Game:
                 },
             }
         )
-
+    async def handle_request_score(self):
+        await self.channel_layer.send(
+            self.channel_name,
+            {
+                'type': 'send.score.update',
+                'data': {
+                    'host_score': self.game_states[self.game_id]['host_score'],
+                    'guest_score': self.game_states[self.game_id]['guest_score'],
+                },
+            }
+        )
 
     async def init_game_struct(self):
         if self.game_id not in self.game_states:
@@ -386,6 +396,7 @@ class _Game:
             elif self.game_states.get(self.game_id, {}).get('player_two') == None:
                 self.game_states[self.game_id]['player_two'] = self.user['user_id']
         else:
+            print("game NOT initialized")
             await self.init_game_struct()
             self.game_states.get(self.game_id, {})['player_one'] = self.user['user_id']
         return_val = await self.get_host(self.game_id, self.user['user_id'])
@@ -425,6 +436,7 @@ class _Game:
 
             # await self.game_loop()
             if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
+                await asyncio.sleep(3)
                 asyncio.create_task(self.game_loop())
                 print("START GAME LOOP THREAD=====================")
                 print("self.game_states.get(self.game_id, {}).get('previous_join')")

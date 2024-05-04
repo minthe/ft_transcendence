@@ -192,6 +192,7 @@ async function establishWebsocketConnection() {
         console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
+        sendDataToBackend('request_score')
         startCountdownAnimation();
         break
       case 'ball_update':
@@ -217,11 +218,12 @@ async function establishWebsocketConnection() {
         break
       case 'game_over':
         websocket_obj.game.active_state = false
-
+        
+        
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
-
+        
         document.getElementById('fireworkCanvas').style.zIndex = 1;
         activateFireworks();
         
@@ -540,6 +542,13 @@ async function sendDataToBackend(request_type) {
           break
           case 'user_left_game':
             type = 'user_left_game'
+            data = {
+              'user_id': websocket_obj.user_id,
+              'game_id': websocket_obj.game.game_id,
+            }
+            break
+          case 'request_score':
+            type = 'send_score'
             data = {
               'user_id': websocket_obj.user_id,
               'game_id': websocket_obj.game.game_id,
