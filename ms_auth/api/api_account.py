@@ -137,7 +137,7 @@ def login(request):
 				response.set_cookie('jwt_token', jwt_token, httponly=True)
 				response.status_code = 200
 				return response
-			elif id_cookie is not None:
+			elif id_cookie  and jwt_token is None:
 				secret = get_secret(id_cookie, 'oauth2_token')
 				user_data = intra42_views.getUserData(secret)
 				user_id = user_views.returnUserId(user_data['username'])
@@ -260,7 +260,7 @@ def oauth2_redirect(request):
 				id_hash = get_random_string(length=12)
 				store_secret(id_hash, access_token, 'oauth2_token')
 				print (f"token: {access_token}")
-				second_factor_views.create_2fa(user_id)
+				# second_factor_views.create_2fa(user_id)
 				response = HttpResponse(status=200)
 				response.set_cookie('id',id_hash, httponly=True, expires=300)
 				return response
