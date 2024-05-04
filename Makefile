@@ -24,6 +24,7 @@ clean: down
 fclean: clean
 	chmod +x delete_migrations.sh
 	bash delete_migrations.sh
+	$(eval project := $(notdir $(shell pwd)))
 	$(eval volumes := $(shell docker volume ls -q --filter name=$(project)*))
 	@if [ -n "$(volumes)" ]; then \
 		docker volume rm $(volumes); \

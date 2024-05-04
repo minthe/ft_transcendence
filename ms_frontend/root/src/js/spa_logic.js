@@ -71,13 +71,13 @@ async function handleClickEvent(event) {
 	if (event.target.closest('#homeButton'))
 		showSiteHideOthers('homeSite', 'homeButton');
   else if (event.target.closest('#gameButton'))
-      gameSiteClicked();
+    gameSiteClicked();
   else if (event.target.closest('#statsButton'))
 		showSiteHideOthers('statsSite', 'statsButton');
   else if (event.target.closest('#showChatButton'))
 		await chatSiteClicked();
   else if (event.target.closest('#profileButton'))
-		showSiteHideOthers('profileSite', 'profileButton');
+    profileButtonClicked();
   else if (event.target.closest('#creatorsButton'))
 		showSiteHideOthers('creatorsSite', 'creatorsButton');
   else if (event.target.closest('#logoutButton'))
@@ -125,22 +125,21 @@ async function handleClickEvent(event) {
     changeToLoginPageButton();
   else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-
-
-  // else if (event.target.closest('#twoFAButtonE'))
-  //   enableTwoFactor();
-  // else if (event.target.closest('#twoFAButtonD'))
-  //   disableTwoFactor();
-  else if (event.target.closest('#twoFAButtonE')) {
-    console.log('en button clicked');
+  else if (event.target.closest('#twoFAButtonE'))
     updateTwoFactor('PUT');
-  }
-  else if (event.target.closest('#twoFAButtonD')) {
-    console.log("dis button clicked");
+  else if (event.target.closest('#twoFAButtonD'))
     updateTwoFactor('DELETE');
-  }
 
 
-  else if (event.target.closest('#login42Button'))
-    loginWith42();
+    else if (event.target.closest('#login42Button'))
+      openAuthPopup();
+
+    else if (event.target.closest('#editButton'))
+      editProfile();
+    else if (event.target.closest('#saveButton'))
+      saveChanges();
+    else if (event.target.closest('#changeProfileImage'))
+      changeProfileImage();
+    // else if (event.target.closest('#login42Button'))
+  //   loginWith42();
 }

@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.6'
+  version: '1.9.9'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -140,19 +140,24 @@ paths:
         '200':
           description: User Account Data and fresh JWT token
           headers:
-            Set-Cookie:
+            Set-Cookie-JWT:
               schema:
                 type: string
                 example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
+            Set-Cookie-ID:
+              schema:
+                  type: string
+                  example: user_id=21f0j102di129u239; Secure; SameSite=None
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Missing or invalid JWT token
+          description: 2fa verification necessary
           content:
             application/json:
-              example: {"message": "Missing or invalid JWT token"}
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
         '503':
           description: Internal server error
           content:
@@ -195,12 +200,8 @@ paths:
           headers:
             Set-Cookie:
               schema:
-                type: string
-                example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
+                  type: string
+                  example: jwt_token=eyJhbGciOiJIUzICJ9.eyJ1c2VyShdg5MH0.abcdeuvwxyz; HttpOnly
         '302':
           description: Redirect to OAuth2 Provider
           headers:

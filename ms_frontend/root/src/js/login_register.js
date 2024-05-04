@@ -1,24 +1,32 @@
 
-async function afterAuthLogin(authMethod, data, usernameElement, passwordElement) {
-  initUserData(data, usernameElement.value, passwordElement.value)
+async function afterAuthLogin(data, usernameElement, passwordElement) {
+  initUserData(data, usernameElement.value)
   authSucces();
   await getTwoFaStatus();
-  if (authMethod === 'login')
-    clearLoginInput(usernameElement, passwordElement);
+  clearLoginInput(usernameElement, passwordElement);
 }
 
 async function afterAuthRegister(data, usernameElement, passwordElement, mail) {
-  initUserData(data, usernameElement.value, passwordElement.value)
+  initUserData(data, usernameElement.value)
   authSucces();
   await getTwoFaStatus();
   clearRegisterInput(usernameElement, passwordElement, mail);
 }
 
-function initUserData(data, username, password) {
+async function afterAuthLogin42(data) {
+  initUserData(data, data.username)
+  authSucces();
+  await getTwoFaStatus();
+  clearLoginInput42();
+}
+
+function initUserData(data, username) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
+
 	websocket_obj.username = username
-	websocket_obj.password = password
+
+
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
 
@@ -43,6 +51,12 @@ function clearRegisterInput(usernameElement, passwordElement, mail) {
   usernameElement.value = "";
   passwordElement.value = "";
   mail.value = "";
+}
+
+function clearLoginInput42() {
+  document.getElementById('loginUsername').value = "";
+  document.getElementById('loginPassword').value = "";
+  document.getElementById('twoFaCode').value = '';
 }
 
 
@@ -154,8 +168,8 @@ function loginUserButton() {
               });
           }
           else {
-                await afterAuthLogin('login', data, usernameElement, passwordElement);
-                setDownTwoFaPage();
+              await afterAuthLogin(data, usernameElement, passwordElement);
+              setDownTwoFaPage();
           }
       });
       }
@@ -163,11 +177,9 @@ function loginUserButton() {
       loginErrors(data);
     }
     else
-      await afterAuthLogin('login', data, usernameElement, passwordElement);
+      await afterAuthLogin(data, usernameElement, passwordElement);
   })
   .catch(error => {
-    console.log('error for less digits activated thrice');
-
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
     console.log('Error during login:', error);
@@ -281,118 +293,98 @@ async function logoutUser() {
 
 
 
-//change the header and body
-// function loginWith42() {
+function openAuthPopup() {
+  const url = `${window.location.origin}/user/oauth2/login`;
+  const windowName = 'AuthWindow';
+  const windowFeatures = `width=${window.outerWidth / 3},height=${window.outerHeight / 1.2}
+  , left=${window.outerWidth / 2.85},top=${window.outerHeight / 9},resizable=yes`;
+  const popup = window.open(url, windowName, windowFeatures);
 
-//   console.log('inside login for 42 #####');
-
-//   const url = `${window.location.origin}/user/oauth2/login`
-//   fetch(url, {
-//     method: 'POST',
-//     headers: headerLogin(),
-//     mode: 'no-cors'
-//     // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
-//   })
-//   .then(async response => {
-//     if (!response.ok) {
-//       loginErrors(response)
-//     }
-//     document.getElementById("wrong-password").classList.add("hidden");
-//     return response.json();
-//   })
-//   .then(async data => {
-//     if (data.second_factor) {
-//       document.getElementById('twoFAButtonE').classList.add('hidden');
-//       document.getElementById('twoFAButtonD').classList.remove('hidden');
-
-//       setUpTwoFaPage();
-//       await verifyButtonClick();
-//       if (two_fa_code.length === 6) {  
-//         const url = `${window.location.origin}/user/2fa/verify`
-//         fetch(url, {
-//             method: 'POST',
-//             headers: headerTwoFa(),
-//             body: JSON.stringify(bodyTwoFa())
-//           })
-//         .then(async response => {
-//           if (!response.ok) {
-//             // location.reload();
-//             throw new Error('2FA Code was not correct!');
-//           }
-//           afterAuthLogin('42Login', data);
-//           console.log("CORRECT 2FA CODE")
-//           setDownTwoFaPage();
-//         })
-//         .catch(error => {
-//           console.error('There was a problem with the fetch operation:', error);
-//           // document.getElementById('twoFA').classList.add('hidden');
-//           return ;//back to loginpage or 2fa page?
-//         });
-//       }
-//     }
-//     else
-//       afterAuth('42Login', data);
-
-//   })
-//   .catch(error => {
-//     // setErrorWithTimout('info_login', error, 9999999)
-//     console.log('Error during login:', error);
-//   });
-// }
-
-
-
-
-
-function loginWith42() {
-
-  const url = `${window.location.origin}/user/oauth2/login`
-  fetch(url, {
-    method: 'POST',
-    headers: headerLogin(),
-    // mode: 'no-cors'
-    // body: JSON.stringify(bodyLogin(usernameElement, passwordElement))
-  })
-  .then(async response => {
-    console.log('first then in 42 login###');
-    return response.json().then(data => {
-      return { ok: response.ok, status: response.status, data };
-    });
-  })
-  .then(async ({ok, status, data}) => {
-    console.log('before error detected');
-    if (!ok && status !== 401) {
-      console.log('error detected');
-      loginErrors(data)
-    }
-    document.getElementById("wrong-password").classList.add("hidden");
-    if (data.second_factor) {
-      showTwoFaDisableBtn();
-      setUpTwoFaPage();      
-      await verifyButtonClick();
-      if (checkTwoFaCode()) {
-        const url = `${window.location.origin}/user/2fa`
-        fetch(url, {
-            method: 'POST',
-            headers: headerTwoFa(),
-            body: JSON.stringify(bodyTwoFa(data.user_id))
-          })
-        .then(response => {
-          if (!response.ok) {
-            // location.reload();
-            throw new Error(response.data.message);
-          }
-          // afterAuthLogin('login42', data, usernameElement, passwordElement);
-          setDownTwoFaPage();
-        });
-      }
-    }
-    // else
-      // afterAuthLogin('login42', data, usernameElement, passwordElement);
-  })
-  .catch(error => {
-    // clearLoginInput(usernameElement, passwordElement);
-    // setErrorWithTimout('info_login', error, 9999999)
-    console.log('Error during login:', error);
-  });
+  if (popup) {
+    popup.focus();
+    checkForToken(popup);
+  }
+  else
+    alert('Please allow popups for this website.');
+  // return popup;
 }
+
+let isFetching = false;
+
+function checkForToken(popup) {
+  const url = `${window.location.origin}/user/login`
+  const interval = setInterval(() => {
+    if (popup.closed) {
+      clearInterval(interval);
+      return ;
+    }
+    if (!isFetching) {
+      isFetching = true;
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(async response => {
+        const data = await response.json();
+        //check again
+        if (!response.ok && !data.second_factor) {
+          await logoutUser();
+          throw new Error('User has no token');
+        }
+        popup.close();
+        if (data.second_factor) {
+          setUpTwoFaPage();
+          await verifyButtonClick();
+          if (checkTwoFaCode()) {
+            const url = `${window.location.origin}/user/2fa/verify`
+            return fetch(url, {
+              method: 'POST',
+              headers: headerTwoFa(),
+              body: JSON.stringify(bodyTwoFa(data.user_id))
+            })
+            .then(async response => {
+              if (!response.ok) {
+                return response.json().then(data => {
+                  loginErrors(data);
+                });
+              }
+              else {
+                console.log('after 2fa data: ', data);
+                await afterAuthLogin42(data);
+                setDownTwoFaPage();
+              }
+            });
+          }
+          data.message = 'Not enough digits or non numeric characters';
+          loginErrors(data);
+        }
+        else
+        await afterAuthLogin42(data);
+        document.getElementById("reloadScreen").style.display = "block";
+        setTimeout(function() {
+          document.getElementById("reloadScreen").style.display = "none";
+          hideDiv('userIsNotAuth');
+          showDiv('userIsAuth');
+        }, 500);
+      })
+      .catch(error => {
+        clearLoginInput42();
+        setDownTwoFaPage();
+        
+        // console.log('Error during login:', error);
+      })
+      .finally(() => {
+        isFetching = false;
+      });
+    }
+    
+  }, 2000);
+}
+
+
+
+
+
+

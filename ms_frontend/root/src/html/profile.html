@@ -5,8 +5,8 @@
         <input type="file" style="display: none;" accept="image/*">
         <img id="profilePicture" src="https://www.course-api.com/images/people/person-1.jpeg" class="profile-picture" alt="Profile Picture">
       </label>
-      <button id="twoFAButtonE" class="change-profile-btn btn btn-outline-dark two-fa">Enable 2FA</button>
-      <button id="twoFAButtonD" class="change-profile-btn btn btn-outline-secondary two-fa hidden">Disable 2FA</button>
+      <button id="twoFAButtonE" class="change-profile-btn btn btn-outline-dark two-fa profile-page-btn">Enable 2FA</button>
+      <button id="twoFAButtonD" class="change-profile-btn btn btn-outline-secondary two-fa hidden profile-page-btn">Disable 2FA</button>
       <div id="fileError" class="error-message" style="color: red; display: none;">Invalid file type. Please select an image file.</div>
     
       <h1 id="profileName" class="profile-name"></h1>
@@ -15,12 +15,21 @@
         <h2 class="section-heading">Details</h2>
         
         <ul class="details-list">
-          <li class="input-field"><strong style="color: #124457;">Email:</strong> <input id="email" class="input-field" value="john@example.com" readonly autocomplete="email"></li>
-          <li class="input-field"><strong style="color: #124457;">Game-Alias:</strong> <input id="gameAlias" class="input-field" value="" readonly></li>
-          <!-- <li class="input-field"><strong style="color: #124457;">Age:</strong> <input id="age" class="input-field" value="30" readonly></li> -->
+          <!-- <li class="input-field"> -->
+            <!-- <strong style="color: #124457;">E-mail:</strong>  -->
+            <label for="emailInput" class="form-label profile-label">E-Mail :</label>
+            <input id="email" class="form-control input-profile" value="test" readonly autocomplete="email">
+          <!-- </li> -->
+          <!-- <li class="input-field"> -->
+            <!-- <strong style="color: #124457;">Game-Alias:</strong>  -->
+            <label for="gameAliasInput" class="form-label profile-label">Game-Alias :</label>
+            <input id="gameAlias" class="form-control input-profile" value="test" readonly>
+          <!-- </li> -->
+          <!-- <li class="input-field"><strong style="color: #124457;">E-mail:</strong> <input id="email" class="form-control input-login" value="test" readonly autocomplete="email"></li>
+          <li class="input-field"><strong style="color: #124457;">Game-Alias:</strong> <input id="gameAlias" class="form-control input-login" value="test" readonly></li> -->
         </ul>
-        <button id="saveButton" class="btn btn-outline-secondary" style="display: none;">Save</button>
-        <button id="editButton" class="btn btn-outline-dark">Edit</button>
+        <button id="saveButton" class="btn btn-outline-secondary profile-page-btn" style="display: none;">Save</button>
+        <button id="editButton" class="btn btn-outline-dark profile-page-btn">Edit</button>
         <div id="wrongSavedInput" class="hidden" style="color: red; margin-top: 10px;">Malicious characters entered!</div>
         
         <div id="updateTwoFa" class="hidden" ></div>

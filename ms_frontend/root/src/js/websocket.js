@@ -5,7 +5,7 @@ websocket_obj = {
   active_game: null,
 
   username: null,
-  password: null,
+  // password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
   // avatar: null,
   blocked_by: [],
@@ -81,7 +81,9 @@ websocket_obj = {
   sender: null,
   websocket: null,
 
-  user_id: -1
+
+  //causes problems
+  user_id: 100
   // game_alias: 
   // mail
 }
@@ -221,15 +223,19 @@ async function establishWebsocketConnection() {
         document.getElementById('fireworkCanvas').style.zIndex = 1;
         activateFireworks();
         
+        let hostScoreElem = document.getElementById('score1');
+        let guestScoreElem = document.getElementById('score2');
+        if (hostScoreElem.textContent > guestScoreElem.textContent)
+          document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
+        else
+          document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
         console.log("GAME_OVER");
-        // document.getElementById("waitingScreen").style.display = "block";
 
         websocket_obj.game.hostname
 
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
-        // await updateScore();
         await updateScore();
         break
       case 'opponent_disconnected':
