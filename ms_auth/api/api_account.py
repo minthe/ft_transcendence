@@ -191,6 +191,7 @@ def oauth2_redirect(request):
 			user_data = intra42_views.getUserData(access_token)
 
 			if not user_views.checkValueExists('intra_id', user_data['intra_id']):
+
 				if settings.WELCOME_MAIL == True:
 					mail_views.send_welcome_email(user_data['username'], user_data['email'])
 				user_views.createIntraUser(user_data)
@@ -225,6 +226,7 @@ def oauth2_redirect(request):
 					return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 
 			user_id = user_views.returnUserId(user_data['username'])
+			username = user_views.getValue(user_id, 'username')
 
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
