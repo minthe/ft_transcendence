@@ -225,6 +225,12 @@ def oauth2_redirect(request):
 					return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 
 			user_id = user_views.returnUserId(user_data['username'])
+
+			#2fa
+			if user_views.getValue(user_id, 'second_factor_enabled') == True:
+				second_factor_views.create_2fa(user_id)
+				return JsonResponse({'user_id': user_id, 'username': username, 'second_factor': True}, status=401)
+
 			jwt_token = jwt.createToken(user_id)
 
 			response = HttpResponse(status=200)
