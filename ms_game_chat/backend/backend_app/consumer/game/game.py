@@ -151,7 +151,8 @@ class _Game:
                 print("self.game_states[self.game_id]")
                 print(self.game_states[self.game_id])
                 await self.setWinner(self.game_states[self.game_id])
-                tourn_id = await self.matchResults(self.game_states[self.game_id])
+                # tourn_id = await self.matchResults(self.game_states[self.game_id])
+                tourn_id = await self.matchResults()
 
                 self.game_states.pop(self.game_id, None)
                 print("111111")
@@ -242,7 +243,9 @@ class _Game:
         elif self.game_states.get(self.game_id, {})['player_two'] == event['data']['user_id']:
             self.game_states[self.game_id]['player_two'] = None
         await self.set_technical_winner(self.game_id, self.user['user_id'])
-        await self.matchResults(self.game_states[self.game_id])
+        # await self.matchResults(self.game_states.get(self.game_id, {}))
+        # await self.matchResults()
+
         await self.send(text_data=json.dumps({
             'type': 'opponent_disconnected',
 
@@ -487,7 +490,11 @@ class _Game:
     
     @database_sync_to_async
     def set_technical_winner(self, game_id, user_id):
+        print("in set_technical_winner")
+        print("game_id")
+        print(game_id)
         game_instance = Game.objects.get(id=game_id)
+        
         if game_instance.hostId == user_id:
             game_instance.winnerId = game_instance.guestId
             game_instance.loserId = game_instance.hostId
@@ -544,7 +551,7 @@ class _Game:
         game_instance.save()
 
     @database_sync_to_async
-    def matchResults(self, game_struct):
+    def matchResults(self):
         print("in matchResults")
         # game_instance = Game.objects.get(id=self.game_id)
         game_instance = Game.objects.get(id=self.game_id)

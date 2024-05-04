@@ -169,6 +169,7 @@ async function establishWebsocketConnection() {
         break
       case 'init_game':
         console.log(data);
+        joinedGameSuccessfully(websocket_obj.game.game_id)
         websocket_obj.game.active_state = true
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
