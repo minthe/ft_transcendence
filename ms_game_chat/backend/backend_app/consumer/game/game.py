@@ -856,25 +856,40 @@ class _Game:
             else:
                 guest = game_session.guestId
 
-            
+            if type(user_instance.user_id) == str:
+                if user_instance.user_id.isdigit():
+                    user_id = int(user_instance.user_id)
+                else:
+                    user_id = MyUser.objects.get(name=user_instance.name).user_id
+            else:
+                user_id = user_instance.user_id
+                
             # if game_session.hostId == user_instance.name:
             print("game_session.id")
             print(game_session.id)
             print("host")
+            print(type(host))
             print(host)
-            print("user_instance.user_id")
-            print(user_instance.user_id)
-            if int(user_instance.user_id) == int(host):
+            print("guest")
+            print(type(guest))
+            print(guest)
+            print("user_id new")
+            print(type(user_id))
+            print(user_id)
+
+            if int(user_id) == int(host):
                 opponent = game_session.guestId
             else:
                 opponent = game_session.hostId
             game_id = game_session.id
             print("game_id ivites")
             print(game_id)
-            if opponent.isdigit() or type(opponent) == int:
-                opponent_name = MyUser.objects.get(user_id=opponent)
-            else: 
-                opponent_name = MyUser.objects.get(name=opponent)
+
+            opponent_name = MyUser.objects.get(user_id=opponent)
+            # if opponent.isdigit() or type(opponent) == int:
+            #     opponent_name = MyUser.objects.get(user_id=opponent)
+            # else: 
+            #     opponent_name = MyUser.objects.get(name=opponent)
             # opponent_name = MyUser.objects.get(user_id=opponent.name)
             print("opponent_name")
             print(opponent_name.name)
@@ -884,6 +899,7 @@ class _Game:
                 'game_id': game_id
             })
         json_data = json.dumps(match_data)
+        print("-_-_-_-_-_-_-_/n")
         return json_data
 
 
