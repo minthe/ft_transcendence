@@ -548,7 +548,7 @@ async function sendDataToBackend(request_type) {
             }
             break
           case 'request_score':
-            type = 'send_score'
+            type = 'request_score'
             data = {
               'user_id': websocket_obj.user_id,
               'game_id': websocket_obj.game.game_id,

@@ -140,7 +140,7 @@ class _Game:
                 )
                 print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.1)
 
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
                 print("GAME ACTIVE")
@@ -149,6 +149,12 @@ class _Game:
                 print(f"Error in game_loop: {e}")
                 break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
+                print("game_active = false")
+                print(self.game_states[self.game_id]['canceled'])
+                if self.game_states[self.game_id]['canceled'] == True:
+                    print("game canceled")
+                    await self.init_game_struct()
+                    break
                 print("in game_active = false")
                 print("self.game_states[self.game_id]")
                 print(self.game_states[self.game_id])
@@ -292,11 +298,25 @@ class _Game:
         }))
 
     async def handle_user_left_game(self):
+        print("in handle_user_left_game")
+        print("self.game_states.get(self.game_id, {}).get('player_one')")
+        print(self.game_states.get(self.game_id, {}).get('player_one'))
+        print("self.game_states.get(self.game_id, {}).get('player_two')")
+        print(self.game_states.get(self.game_id, {}).get('player_two'))
         if self.game_states.get(self.game_id, {})['player_one'] == self.user['user_id']:
             self.game_states[self.game_id]['player_one'] = None
         elif self.game_states.get(self.game_id, {})['player_two'] == self.user['user_id']:
             self.game_states[self.game_id]['player_two'] = None
         await self.decrement_joined_players()
+        if (self.game_states.get(self.game_id, {})['player_one'] == None and self.game_states.get(self.game_id, {})['player_two'] == None):
+            print("no players left")
+            self.game_states[self.game_id]['canceled'] = True
+            await self.reset_joined_players()
+            # await self.init_game_struct()
+            self.game_states[self.game_id]['game_active'] = False
+
+
+
         # await self.set_technical_winner(self.game_id, self.user['user_id'])
         # await self.channel_layer.group_send(
         #     self.game_group_id,
@@ -353,26 +373,27 @@ class _Game:
         )
 
     async def init_game_struct(self):
-        if self.game_id not in self.game_states:
-            self.game_states[self.game_id] = {
-                'left_pedal': 0.75,
-                'right_pedal': 0.75,
-                'ball_x': 2,  # Initial ball position
-                'ball_y': 1,  # Initial ball position
-                'ball_radius': 0.05,
-                # 'ball_speed': 0.015,
-                # 'ball_speed': 1,
-                'ball_dx': 0.025,
-                'ball_dy': 0.025,
-                'joined_players': 0,
-                'host_score': 0,
-                'guest_score': 0,
-                'score_limit': 3,
-                'game_active': True,
-                'player_one': None,
-                'player_two': None,
-                'previous_join': 0
-            }
+        # if self.game_id not in self.game_states:
+        self.game_states[self.game_id] = {
+            'left_pedal': 0.75,
+            'right_pedal': 0.75,
+            'ball_x': 2,  # Initial ball position
+            'ball_y': 1,  # Initial ball position
+            'ball_radius': 0.05,
+            # 'ball_speed': 0.015,
+            # 'ball_speed': 1,
+            'ball_dx': 0.025,
+            'ball_dy': 0.025,
+            'joined_players': 0,
+            'host_score': 0,
+            'guest_score': 0,
+            'score_limit': 3,
+            'game_active': True,
+            'player_one': None,
+            'player_two': None,
+            'previous_join': 0,
+            'canceled': False
+        }
 
 
     async def handle_send_init_game(self):
@@ -388,8 +409,7 @@ class _Game:
                     self.channel_name,
                     {
                         'type': 'send.already.in.game',
-                    }
-        )
+                    })
                 return None
             elif self.game_states.get(self.game_id, {}).get('player_one') == None:
                 self.game_states[self.game_id]['player_one'] = self.user['user_id']
@@ -402,7 +422,12 @@ class _Game:
         return_val = await self.get_host(self.game_id, self.user['user_id'])
         print("is host status:")
         print(return_val)
-
+        print("self.game_states.get(self.game_id, {}).get('joined_players')")
+        print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        print("self.game_states.get(self.game_id, {}).get('player_one')")
+        print(self.game_states.get(self.game_id, {}).get('player_one'))
+        print("self.game_states.get(self.game_id, {}).get('player_two')")
+        print(self.game_states.get(self.game_id, {}).get('player_two'))
         await self.increment_joined_players()
         # self.game_states.get(self.game_id, {}).get('joined_players')
         print("self.joined_players")
@@ -568,9 +593,14 @@ class _Game:
 
     @database_sync_to_async
     def get_stats(self, user_id):
+        print("in get_stats")
+        print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)
-        won_games = user_instance.old_matches.filter(winnerId=user_id).count()
-        lost_games = user_instance.old_matches.filter(loserId=user_id).count()
+        # won_games = user_instance.old_matches.filter(winnerId=user_id).count()
+        # lost_games = user_instance.old_matches.filter(loserId=user_id).count()
+        print(user_instance.name)
+        won_games = user_instance.old_matches.filter(winnerId=user_instance.name).count()
+        lost_games = user_instance.old_matches.filter(loserId=user_instance.name).count()
         total_games = won_games + lost_games
 
         return { 'won_games': won_games, 'lost_games': lost_games, 'total_games': total_games }
