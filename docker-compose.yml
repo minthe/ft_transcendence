@@ -1,5 +1,7 @@
 version: '3.8'
 
+name: ft_transcendence
+
 services:
 # REST API DOCUMENTATION
   swagger:
