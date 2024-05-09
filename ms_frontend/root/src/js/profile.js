@@ -1,39 +1,4 @@
 
-function handleDOMChangesProfileBtn() {
-
-  const globalStatsButton = document.getElementById("globalStatsButton");
-  const statsButton = document.getElementById("yourStatsButton");
-  const userStats = document.getElementById("userStats");
-  const globalStats = document.getElementById("globalStats");
-
-
-
-
-  if (globalStatsButton) {
-    globalStatsButton.addEventListener('click', function() {
-      console.log("gloabl statst");
-      userStats.classList.add("hidden");
-      globalStats.classList.remove("hidden");
-    });
-
-    statsButton.addEventListener('click', function() {
-      console.log("normal stats");
-      globalStats.classList.add("hidden");
-      userStats.classList.remove("hidden");
-    });
-  }
-}
-  
-const observerProfile = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    handleDOMChangesProfileBtn();
-  });
-});
-
-// Start observing the DOM
-observerProfile.observe(document.body, { childList: true, subtree: true });
-
-
 //combine function with the one from twofa
 function updateProfileMessage(success, message) {
 	const twoFaStatus = document.getElementById('updateTwoFa');
@@ -186,5 +151,6 @@ async function getProfileData() {
 async function profileButtonClicked() {
   await getTwoFaStatus();
   await getProfileData();
+  document.getElementById('profileName').textContent = websocket_obj.username;
   showSiteHideOthers('profileSite', 'profileButton');
 }

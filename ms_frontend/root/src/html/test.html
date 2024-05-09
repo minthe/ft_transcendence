@@ -3,73 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rectangular Buttons Layout</title>
+<title>Corner Divs</title>
 <style>
-    body, html {
-        height: 100%;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f0f0f0;
-    }
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('../img/crayonPolarBearsPingPong.webp');
+    background-repeat: no-repeat;   /* Ensures the image doesn't repeat */
+  background-position: center;    /* Centers the image horizontally and vertically */
+  background-size: cover;
+  }
+  .corner-div {
+    position: absolute;
+    width: 10vw;
+    height: 8vh;
+    background-color: #124457;
+    color: #ef7267;
+    font-weight: bold;
+    font-size: 3vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: 10px solid #f8efb5;
 
-    .container {
-        position: relative;
-        width: 90vw;
-        height: 90vh;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: space-between;
-    }
+  }
+  .winner-div {
+    outline: 10px solid #131615;
 
-    .button {
-        width: 80px; 
-        height: 40px; 
-        background-color: #4CAF50;
-        color: white;
-        /* display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute; */
-        border: 2px solid #FFF; /* Adding a border for better visual separation */
-    }
+    position: absolute;
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    background-color: #ecc85d;
+    color: #124457;
+    font-weight: bold;
+    font-size: 3vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-transform: uppercase;
 
-    .left-top-player {
-        margin-top: 20px;
-        margin-left: 20px;
-    }
-    .right-top-player {
-        margin-top: 20px;
-        margin-right: 20px;
-    }
-    .left-bottom-player {
-        margin-bottom: 20px;
-        margin-left: 20px;
-    }
-    .right-bottom-player {
-        margin-bottom: 20px;
-        margin-right: 20px;
-    }
-
-
-    .center.top { top: 20%; left: 50%; transform: translateX(-50%); }
-    .center.middle { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-    .center.bottom { bottom: 20%; left: 50%; transform: translateX(-50%); }
+    box-shadow: 0 0 25px 30px #FFF700;
+  }
+  .top-left { top: 20vh; left: 20vw; }
+  .top-right { top: 20vh; right: 20vw; }
+  .bottom-left { bottom: 20vh; left: 20vw; }
+  .bottom-right { bottom: 20vh; right: 20vw; }
+  .left-center {
+    top: 45vh;
+    left: 37vw;
+  }
+  .right-center {
+    top: 45vh;
+    right: 37vw;
+  }
+  .winner-center {
+    top: 60vh;
+    left: 45vw;
+  }
+  
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="button left-top-player">Player 1</div>
-    <div class="button left-bottom-player">Player 2</div>
+<div id="playerTopLeft" class="corner-div top-left" style="color: #f8efb5;">Player 1</div>
+<div id="playerTopRight" class="corner-div top-right" style="color: #ef7267;">Player 3</div>
+<div id="playerBottomLeft" class="corner-div bottom-left" style="color: #ef7267;">Player 2</div>
+<div id="playerBottomRight" class="corner-div bottom-right" style="color: #f8efb5;">Player 4</div>
+<div id="playerLeftCenter" class="corner-div left-center">Win Game 1</div>
+<div id="playerRightCenter" class="corner-div right-center">Win Game 2</div>
+<div id="tournamentWinner" class="winner-div winner-center">Winner</div>
 
-    <div class="button right-top-player">Player 3</div>
-    <div class="button right-bottom-player">Player 4</div>
-
-    <!-- <div class="button center top">5</div>
-    <div class="button center middle">6</div>
-    <div class="button center bottom">7</div> -->
-</div>
 </body>
 </html>

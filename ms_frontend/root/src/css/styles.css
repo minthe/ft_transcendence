@@ -291,7 +291,6 @@ body, html {
   width:100vw;
   background-image: url('../img/homeScreenRacketsCrossing.webp');
   /* background-color: #124457; */
-  transition: margin-left 0.5s ease;
 }
 
 .user-name-display {
@@ -320,7 +319,6 @@ body, html {
   top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: margin-left 0.5s ease;
   box-shadow: 0 0 20px 4px rgba(236, 200, 93, 0.8),
   0 0 40px 8px rgba(236, 200, 93, 0.6),
   0 0 60px 12px rgba(236, 200, 93, 0.4);
@@ -382,7 +380,6 @@ body, html {
 
 .chat {
   height: 100vh;
-  transition: margin-left 0.5s ease;
 }
 
 .contacts-in-chat-profile {
@@ -691,12 +688,15 @@ body, html {
   height: 70vh;
   margin-left: 12vw;
   background-color: #f8efb5;
+  outline: 10px solid #131615;
 }
 
 .game-site {
   height: 100vh;
-  background-color: #124457;
-  transition: margin-left 0.5s ease;
+  /* background-color: #124457; */
+
+   background: url("../img/povPingPongPlayer.webp") no-repeat center;
+  background-size: cover;
 }
 
 .start-screen {
@@ -722,9 +722,11 @@ body, html {
   color: #f8efb5;
   border: none;
   width: 200px; /* Example width */
-  height: 50px; /* Example height */
+  height: 80px; /* Example height */
   background-color: #131615;
   box-shadow: 0 0 10px 2px rgba(236, 200, 93, 0.8);
+  font-weight: bold;
+  margin-right: 30px;
 }
 .start-screen-btn:hover {
   transform: scale(1.1); /* Scale the button by 10% when hovered over */
@@ -790,10 +792,13 @@ body, html {
 
 .game-screen {
   display: none;
-	align-items: center;
-	justify-content: space-between;
-	text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
 }
+
+/* .display-players {
+} */
 
 .playerInfo {
   flex: 1;
@@ -802,13 +807,21 @@ body, html {
   align-items: center;
   text-align: center;
   padding: 15px;
+  font-weight: bold;
 }
 
-.playerInfo p {
+.player-name {
   margin-top: 20px;
-  color: var(--clr-primary-5);
-  color: #ef7267;
-  text-shadow: 2px 2px 4px #ef7267;
+  color: #ecc85d;
+  /* text-shadow: 2px 2px 4px #ecc85d; */
+  text-shadow: 2px 2px 4px #131615;
+}
+
+.score-board {
+  font-size: 3vh;
+  margin-top: 20px;
+  color: #131615;
+  /* text-shadow: 2px 2px 4px #131615; */
 }
 
 .reloader {
@@ -948,11 +961,13 @@ body, html {
   object-fit: cover;
   border-radius: 50%;
   position: relative;
-  box-shadow: 0px 0px 10px #ef7267;
+  box-shadow: 0px 0px 10px #f8efb5;
 }
 
 .circular-image:hover {
-  box-shadow: 0 0 10px 2px rgba(239, 114, 103, 0.8), 0 0 20px 6px rgba(239, 114, 103, 0.6), 0 0 30px 10px rgba(239, 114, 103, 0.4);
+  box-shadow: 0 0 10px 2px rgba(248, 239, 181, 0.8), 
+  0 0 20px 6px rgba(248, 239, 181, 0.6), 
+  0 0 30px 10px rgba(248, 239, 181, 0.4);
 }
 
 
@@ -1042,7 +1057,6 @@ body, html {
 .profile-site {
   height: 100vh;
   width: 100vw;
-  transition: margin-left 0.5s ease;
 }
 
 
@@ -1088,6 +1102,8 @@ body, html {
   border-radius: 20px;
   background-color: #f8efb5;
   box-shadow: 0 0 10px 2px #124457;
+  margin-top: 25px;
+  font-weight: bold;
 }
 .stats-btn:hover {
   box-shadow: 
@@ -1124,19 +1140,33 @@ body, html {
 
 
 /* stats Page */
+
+.user-stats {
+  width: 40vw;
+}
+
+.user-history {
+  /* max-width: 80vw; */
+  width: 60vw;
+  height: 80vh;
+}
+
+.scroll-history {
+  overflow-y: auto;
+  height: calc(80vh - 160px);
+}
+
 .stats-site {
   /* background-size: cover;
   background-position: center; */
   height: 100vh;
   width: 100vw;
-  transition: margin-left 0.5s ease;
   /* background-image: url('../img/statsSiteBackground.webp'); */
 }
 
 .panel {
 
-  max-width: 600px;
-  /* max-height: 800px; */
+  /* max-width: 600px; */
   margin: 50px auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -1144,7 +1174,6 @@ body, html {
 
   border: 1px solid #ccc;
   padding: 20px;
-  width: 40vw;
   outline: 4px solid #131615;
 
 }
@@ -1275,12 +1304,13 @@ margin-right: 10px; */
   max-height: 20vh;
   border-radius: 50%;
   margin-bottom: 4vh;
-  outline: 4px solid #124457;
+  outline: 6px solid #124457;
 }
 .github-profile a,
 .github-profile-row2 a {
   text-decoration: none;
   font-size: 3vh;
+  font-weight: bold;
   color: #131615; 
 }
 

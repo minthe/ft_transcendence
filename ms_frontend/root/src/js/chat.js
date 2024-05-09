@@ -93,7 +93,7 @@ async function handleClickedOnChatElement(chat_obj) {
   const chat_avatar = document.getElementById('chat_avatar');
 
   console.log('which chat is it: ', chat_obj.chat_name);
-  if (!state.chatOpen || state.chatObj.chat_name !== chat_obj.chat_name) {
+  if (!userState.chatOpen || userState.chatObj.chat_name !== chat_obj.chat_name) {
     showDiv('messageSide')
 
     // const chat_avatar = document.getElementById('chat_avatar')
@@ -125,18 +125,18 @@ async function handleClickedOnChatElement(chat_obj) {
     await sendDataToBackend('get_chat_messages')
 
     
-    state.chatOpen = true;
+    userState.chatOpen = true;
   }
-  else if (state.chatOpen) {
+  else if (userState.chatOpen) {
     console.log('goes back to default and closes');
     hideDiv('messageSide');
     document.getElementById('right-heading-name').textContent = "";
     chat_avatar.src = "../img/playPongLogoWhite.webp";
-    state.chatOpen = false;
+    userState.chatOpen = false;
   }
-  if (state.currPage !== 'group_chat' || state.chatObj.chat_name !== chat_obj.chat_name) {
-    state.currPage = 'group_chat';
-    state.chatObj = chat_obj;
+  if (userState.currPage !== 'group_chat' || userState.chatObj.chat_name !== chat_obj.chat_name) {
+    userState.currPage = 'group_chat';
+    userState.chatObj = chat_obj;
     handleButtonClick("");
   }
 }
@@ -383,13 +383,9 @@ async function chatSiteClicked() {
   document.getElementById('right-heading-name').textContent = "";
   chat_avatar.src = "../img/playPongLogoWhite.webp";
   
-  state.chatOpen = false;
+  userState.chatOpen = false;
 }
 
-function invSiteClicked() {
-  state.currPage = 'invites';
-  handleButtonClick("");
-}
 
 async function sendMessage() {
   const isBlocked = websocket_obj.blocked_by && websocket_obj.blocked_by.includes(websocket_obj.chat_name);

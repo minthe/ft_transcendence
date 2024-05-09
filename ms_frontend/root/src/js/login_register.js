@@ -34,7 +34,7 @@ function initUserData(data, username) {
   document.getElementById('profileName').textContent = websocket_obj.username;
   // if (!websocket_obj.game_alias)
 
-    document.getElementById('gameAlias').value = websocket_obj.username;
+  // document.getElementById('gameAlias').value = websocket_obj.username;
 
   // document.getElementById("profilePicture").src = websocket_obj.profile_picture;
 
@@ -65,8 +65,15 @@ function authSucces() {
   document.getElementById('displayUserName').textContent = 'Hey '+ websocket_obj.username +' 🫠';
 
   establishWebsocketConnection()
-  state.bodyText = document.body.innerHTML;
-  window.history.replaceState(state, null, "");
+  userState.userName = websocket_obj.username;
+  userState.bodyText = document.body.innerHTML;
+  // handleButtonClick("");
+
+  if (userState.currPage === 'loginPage' || userState.currPage === 'RegisterPage')
+    userState.currPage = 'homeSite'
+  // window.history.go(-logedOutSpaCount);
+  // logedOutSpaCount = 0;
+  window.history.replaceState(userState, null, "");
 }
 
 function loginErrors(data) {
@@ -231,18 +238,19 @@ function changeToLoginPageButton() {
   document.getElementById('registerPassword').value  = null;
   document.getElementById("registerUsername").style.border = "";
   document.getElementById("registerPassword").style.border = "";
+  // spaNotLogedIn('loginPage');
 }
 
 function showRegisterPage() {
   hideDiv('loginPage')
   console.log("in the show function");
-  // document.getElementById('loginPagePopUp').classList.add('hidden');
   showDiv('registerPage')
   document.getElementById("wrong-password").classList.add("hidden");
   document.getElementById('loginUsername').value = null;
   document.getElementById('loginPassword').value  = null;
   document.getElementById("loginUsername").style.border = "";
   document.getElementById("loginPassword").style.border = "";
+  // spaNotLogedIn('registerPage');
 }
 
 
@@ -267,6 +275,7 @@ async function logoutUser() {
     }
 
     // let websocket_obj = null
+    localStorage.clear();
     showDiv('userIsNotAuth')
     hideDiv('userIsAuth')
     document.cookie = 'test' + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';

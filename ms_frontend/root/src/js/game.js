@@ -79,16 +79,6 @@ async function joinGame(gameId) {
 }
 
 
-async function requestHistory() {
-  console.log('In requestHistory');
-  await sendDataToBackend('request_history');
-}
-async function requestStats() {
-  console.log('In requestStats');
-  await sendDataToBackend('request_stats');
-}
-
-
 async function requestInvites() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("invites-screen").classList.remove("hidden");
@@ -98,8 +88,8 @@ async function requestInvites() {
 
 async function requestTourns() {
   console.log('In requestTourns');
-  // document.getElementById("start-screen").classList.add("hidden");
-  // document.getElementById("invites-screen").classList.remove("hidden");
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("tournInvitesScreen").classList.remove("hidden");
   await sendDataToBackend('request_tourns');
 }
 
@@ -161,21 +151,21 @@ async function generateFrontendRepresentation(data) {
   // });
 }
 
-// async function renderTourns() {
-//   console.log('In renderTourns');
-//   if (websocket_obj.game.tourns != 0)
-//   {
-//     const container = document.getElementById('game-session-container');
-//     container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
+async function renderTourns() {
+  console.log('In renderTourns');
+  if (websocket_obj.game.tourns != 0)
+  {
+    const container = document.getElementById('tournGameSessionContainer');
+    container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
 
-//     container.querySelectorAll('.join-game-btn').forEach(button => {
-//       button.addEventListener('click', async function() {
-//         const gameId = this.getAttribute('data-gameid');
-//         joinGame(gameId);
-//       });
-//     });
-//   }
-// }
+    container.querySelectorAll('.join-game-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const gameId = this.getAttribute('data-gameid');
+        joinGame(gameId);
+      });
+    });
+  }
+}
 
 
 
@@ -479,9 +469,45 @@ async function launchGame()
 function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('invites-screen').classList.add('hidden');
+  document.getElementById('tournInvitesScreen').classList.add('hidden');
   document.getElementById('waitingScreen').classList.add('hidden');
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('winningScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
   showSiteHideOthers('gameSite', 'gameButton');
+}
+
+function invSiteClicked() {
+  userState.currPage = 'invites';
+  handleButtonClick("");
+}
+
+function tournInvSiteClicked() {
+  userState.currPage = 'invitesTourn';
+  handleButtonClick(""); 
+}
+
+
+function gameOver() {
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('pongCanvas').classList.add('hidden');
+  document.getElementById('winningScreen').classList.remove('hidden');
+
+  document.getElementById('fireworkCanvas').style.zIndex = 1;
+  activateFireworks();
+  
+  let hostScoreElem = document.getElementById('score1');
+  let guestScoreElem = document.getElementById('score2');
+  if (hostScoreElem.textContent > guestScoreElem.textContent)
+    document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
+  else
+    document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
+  console.log("GAME_OVER");
+
+  websocket_obj.game.hostname
+
+  websocket_obj.game.host_score = 0
+  websocket_obj.game.guest_score = 0
+  websocket_obj.game.game_id = 0
+  updateScore();
 }

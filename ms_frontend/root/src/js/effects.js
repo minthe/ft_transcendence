@@ -146,7 +146,7 @@ function stopFirework() {
 	document.getElementById('fireworkCanvas').style.zIndex = -1;
 	document.getElementById('winningScreen').classList.add('hidden');
 	document.getElementById('endScreen').classList.remove('hidden');
-	state.currPage = 'endScreen';
+	userState.currPage = 'endScreen';
 	handleButtonClick("");
 }
 
@@ -205,16 +205,18 @@ let currentSentence = 0;
 
 function changeText() {
     const textElement = document.getElementById('text');
-    textElement.style.opacity = 0;  // Hide text to reset animation
-    setTimeout(() => {
-        textElement.textContent = sentences[currentSentence];
-        textElement.style.opacity = 1;
-        textElement.style.animation = 'none';  // Reset animation
-        textElement.offsetHeight;  // Trigger reflow
-        textElement.style.animation = null;  // Re-apply animation
-
-        currentSentence = (currentSentence + 1) % sentences.length;
-    }, 1500);  // Wait a bit longer for the animation to finish
+	if (textElement) {
+		textElement.style.opacity = 0;  // Hide text to reset animation
+		setTimeout(() => {
+			textElement.textContent = sentences[currentSentence];
+			textElement.style.opacity = 1;
+			textElement.style.animation = 'none';  // Reset animation
+			textElement.offsetHeight;  // Trigger reflow
+			textElement.style.animation = null;  // Re-apply animation
+	
+			currentSentence = (currentSentence + 1) % sentences.length;
+		}, 1500);  // Wait a bit longer for the animation to finish
+	}
 }
 
 setInterval(changeText, 5000);
