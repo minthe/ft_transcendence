@@ -74,7 +74,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
         if self.game_group_id is not None and self.game_id is not None:
-            self.game_states[self.game_id]['game_active'] = False
+            # self.game_states[self.game_id]['game_active'] = False
 
             await self.channel_layer.group_send(
                 self.game_group_id,

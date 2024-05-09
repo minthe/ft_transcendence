@@ -250,14 +250,25 @@ class _Game:
             self.game_states[self.game_id]['player_one'] = None
         elif self.game_states.get(self.game_id, {})['player_two'] == event['data']['user_id']:
             self.game_states[self.game_id]['player_two'] = None
-        await self.set_technical_winner(self.game_id, self.user['user_id'])
-        # await self.matchResults(self.game_states.get(self.game_id, {}))
-        # await self.matchResults()
 
-        await self.send(text_data=json.dumps({
-            'type': 'opponent_disconnected',
+        if (self.game_states.get(self.game_id, {})['player_one'] == None and self.game_states.get(self.game_id, {})['player_two'] == None):
+            print("no players left")
+            self.game_states[self.game_id]['canceled'] = True
+            await self.reset_joined_players()
+            # await self.init_game_struct()
+            self.game_states[self.game_id]['game_active'] = False
 
-        }))
+        # await self.set_technical_winner(self.game_id, self.user['user_id'])
+
+        # self.game_states[self.game_id]['canceled'] = True
+        # await self.reset_joined_players()
+        # # await self.init_game_struct()
+        # self.game_states[self.game_id]['game_active'] = False
+
+        # await self.send(text_data=json.dumps({
+        #     'type': 'opponent_disconnected',
+
+        # }))
 
     async def send_request_invites(self, event):
         print("in send_request_invites")
