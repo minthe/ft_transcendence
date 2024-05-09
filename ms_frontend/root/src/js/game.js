@@ -274,7 +274,7 @@ async function renderInvites() {
 
     // const container = document.getElementById('game-session-container');
     // container.innerHTML = htmlContent;
-
+    // websocket_obj.game.active_game = false;
     const username = websocket_obj.username;
     const matches = websocket_obj.game.invites;
     console.log(matches);

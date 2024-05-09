@@ -153,7 +153,7 @@ class _Game:
                 print(self.game_states[self.game_id]['canceled'])
                 if self.game_states[self.game_id]['canceled'] == True:
                     print("game canceled")
-                    await self.init_game_struct()
+                    await self.clear_game_struct()
                     break
                 print("in game_active = false")
                 print("self.game_states[self.game_id]")
@@ -372,8 +372,8 @@ class _Game:
             }
         )
 
-    async def init_game_struct(self):
-        # if self.game_id not in self.game_states:
+    async def clear_game_struct(self):
+        print("in clear_game_struct")
         self.game_states[self.game_id] = {
             'left_pedal': 0.75,
             'right_pedal': 0.75,
@@ -394,6 +394,33 @@ class _Game:
             'previous_join': 0,
             'canceled': False
         }
+        print("self.game_states[self.game_id]")
+        print(self.game_states[self.game_id])
+        print(self.game_states)
+        print(self.game_id)
+
+    async def init_game_struct(self):
+        if self.game_id not in self.game_states:
+            self.game_states[self.game_id] = {
+                'left_pedal': 0.75,
+                'right_pedal': 0.75,
+                'ball_x': 2,  # Initial ball position
+                'ball_y': 1,  # Initial ball position
+                'ball_radius': 0.05,
+                # 'ball_speed': 0.015,
+                # 'ball_speed': 1,
+                'ball_dx': 0.025,
+                'ball_dy': 0.025,
+                'joined_players': 0,
+                'host_score': 0,
+                'guest_score': 0,
+                'score_limit': 3,
+                'game_active': True,
+                'player_one': None,
+                'player_two': None,
+                'previous_join': 0,
+                'canceled': False
+            }
 
 
     async def handle_send_init_game(self):
@@ -469,6 +496,11 @@ class _Game:
                 self.game_states.get(self.game_id, {})['previous_join'] += 1
             else:
                 print("game loop already running")
+        print("END OF SEND INIT GAME")
+        print("self.game_states.get(self.game_id, {}).get('player_one')")
+        print(self.game_states.get(self.game_id, {}).get('player_one'))
+        print("self.game_states.get(self.game_id, {}).get('player_two')")
+        print(self.game_states.get(self.game_id, {}).get('player_two'))
 
 
     async def handle_send_ball_update(self):

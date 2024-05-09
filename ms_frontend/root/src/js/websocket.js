@@ -53,17 +53,17 @@ websocket_obj = {
 
   game: [
     {
-      game_id: null,
+      game_id: 0,
       invites: 0,
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
       is_host: false,
+      active_state: false,
       ball_x: 0,
       ball_y: 0,
       host_score: 0,
       guest_score: 0,
-      active_state: false,
 
       // game_joined: false,
       // hostName: null,
@@ -546,6 +546,7 @@ async function sendDataToBackend(request_type) {
               'user_id': websocket_obj.user_id,
               'game_id': websocket_obj.game.game_id,
             }
+            websocket_obj.game.game_id = 0
             break
           case 'request_score':
             type = 'request_score'
