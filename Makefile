@@ -1,7 +1,7 @@
 .PHONY: re all build stop up down clean fclean
 
 all: build up
-re: fclean all
+re: clean all
 build:
 	chmod +x setup.sh
 	bash setup.sh
@@ -14,8 +14,7 @@ down:
 	docker compose down --remove-orphans
 
 clean: down
-	$(eval project := $(notdir $(shell pwd)))
-	$(eval images := $(shell docker image ls -q --filter=reference="$(project)*"))
+	$(eval images := $(shell docker image ls -q --filter=reference='ft_transcendence*'))
 	@if [ -n "$(images)" ]; then \
 		docker rmi -f $(images); \
 	else \
@@ -24,8 +23,7 @@ clean: down
 fclean: clean
 	chmod +x delete_migrations.sh
 	bash delete_migrations.sh
-	$(eval project := $(notdir $(shell pwd)))
-	$(eval volumes := $(shell docker volume ls -q --filter name=$(project)*))
+	$(eval volumes := $(shell docker volume ls -q --filter name='ft_transcendence*'))
 	@if [ -n "$(volumes)" ]; then \
 		docker volume rm $(volumes); \
 	else \
