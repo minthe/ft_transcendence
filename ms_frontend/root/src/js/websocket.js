@@ -217,25 +217,23 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'game_over':
-        websocket_obj.game.active_state = false
-        
-        
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
         
         document.getElementById('fireworkCanvas').style.zIndex = 1;
-        activateFireworks();
+        if (websocket_obj.game.active_state === true && websocket_obj.game.game_id === data.game_id)
+          activateFireworks();
         
         console.log("GAME_OVER");
         // document.getElementById("waitingScreen").style.display = "block";
 
         websocket_obj.game.hostname
+        websocket_obj.game.active_state = false
 
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
-        // await updateScore();
         await updateScore();
         break
       case 'opponent_disconnected':
@@ -540,21 +538,25 @@ async function sendDataToBackend(request_type) {
             'game_id': 0,
           }
           break
-          case 'user_left_game':
-            type = 'user_left_game'
-            data = {
-              'user_id': websocket_obj.user_id,
-              'game_id': websocket_obj.game.game_id,
-            }
-            websocket_obj.game.game_id = 0
-            break
-          case 'request_score':
-            type = 'request_score'
-            data = {
-              'user_id': websocket_obj.user_id,
-              'game_id': websocket_obj.game.game_id,
-            }
-            break
+        case 'user_left_game':
+          type = 'user_left_game'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': websocket_obj.game.game_id,
+          }
+          websocket_obj.game.active_state = false
+
+          websocket_obj.game.host_score = 0
+          websocket_obj.game.guest_score = 0
+          websocket_obj.game.game_id = 0
+          break
+        case 'request_score':
+          type = 'request_score'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': websocket_obj.game.game_id,
+          }
+          break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
