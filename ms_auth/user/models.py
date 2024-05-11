@@ -27,9 +27,6 @@ class User(models.Model):
 	def generate_random_password(self, length=12):
 		return get_random_string(length)
 
-	def set_default_avatar(self):
-		self.avatar = f"https://{settings.CURRENT_HOST}{settings.LOC_AVATAR}{settings.AVATAR_DEFAULT}"
-
 	@classmethod
 	def get_highest_user_id(cls):
 		highest_id = cls.objects.aggregate(max_id=models.Max('user_id'))['max_id']
