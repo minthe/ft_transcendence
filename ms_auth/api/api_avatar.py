@@ -1,6 +1,5 @@
-import json, base64
+import json, base64, os
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from urllib.request import Request, urlopen
 from user import views as user_views
@@ -30,8 +29,16 @@ def avatar(request):
 				format, imgstr = avatar_binary.split(';base64,')
 				ext = format.split('/')[-1]
 
-				data = ContentFile(base64.b64decode(imgstr), name=f'temp_file.{ext}')
-				user_views.updateValue(user_id, 'avatar_binary', data.read())
+				filename = 'file.' + ext
+				random = "23f2f9230f2093uf"
+				user_views.updateValue(user_id, 'avatar', filename)
+				
+				save_folder = f"/static_files/{random}/avatar/"
+				if not os.path.exists(save_folder):
+					os.makedirs(save_folder)
+
+				with open(os.path.join(save_folder, filename), "wb") as f:
+					f.write(base64.b64decode(imgstr))
 
 				# print (f"avatar_binary: {user_views.getValue(user_id, 'avatar_binary')}")
 
@@ -61,10 +68,9 @@ def avatar(request):
 				return JsonResponse({'message': 'avatar is required'}, status=400)
 
 		if request.method == 'GET': # TODO valentin change later to url that points to the avatar stored as file
-			avatar_binary = user_views.getValue(user_id, 'avatar_binary')
-			if avatar_binary:
-				avatar_base64 = base64.b64encode(avatar_binary).decode('utf-8')
-				return JsonResponse({'avatar': avatar_base64}, status=200)
+			avatar = user_views.getValue(user_id, 'avatar')
+			if avatar:
+				return JsonResponse({'avatar': avatar}, status=200)
 			else:
 				return JsonResponse({'message': 'Avatar not found'}, status=404)
 		else:

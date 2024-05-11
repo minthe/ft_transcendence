@@ -12,7 +12,6 @@ class User(models.Model):
 	username = models.CharField(max_length=255, unique=True, null=True)
 	password = models.CharField(max_length=255, null=True)
 	avatar = models.CharField(max_length=2000, null=True)
-	avatar_binary = models.BinaryField(null=True, blank=True)
 	email = models.CharField(max_length=255, unique=True, null=True)
 	alias = models.CharField(max_length=255, unique=True, null=True)
 
