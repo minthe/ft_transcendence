@@ -179,7 +179,7 @@ class _Game:
                 )
                 try:
                     await self.remove_ended_match(self.user['user_id'], self.game_id)
-                    await self.reset_joined_players()
+                    # await self.reset_joined_players()
 
                 except Exception as e:
                     print(f"Error in game_over: {e}")
@@ -189,6 +189,8 @@ class _Game:
                 break
 
         print("-----GAME LOOP OVER-----")
+        self.game_states.get(self.game_id, {}).get('game_loop_task').cancel()
+        self.game_states[self.game_id]['game_loop_task'] = None
 
 
     async def send_game_scene(self, event):
@@ -246,9 +248,9 @@ class _Game:
         
     async def send_opponent_disconnected(self, event):
         print("in opponent disconnected")
-        await self.decrement_joined_players()
-        print("after decrement")
-        print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        # await self.decrement_joined_players()
+        # print("after decrement")
+        # print(self.game_states.get(self.game_id, {}).get('joined_players'))
         if self.game_states.get(self.game_id, {})['player_one'] == event['data']['user_id']:
             self.game_states[self.game_id]['player_one'] = None
         elif self.game_states.get(self.game_id, {})['player_two'] == event['data']['user_id']:
@@ -257,7 +259,7 @@ class _Game:
         if (self.game_states.get(self.game_id, {})['player_one'] == None and self.game_states.get(self.game_id, {})['player_two'] == None):
             print("no players left")
             self.game_states[self.game_id]['canceled'] = True
-            await self.reset_joined_players()
+            # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.game_id]['game_active'] = False
 
@@ -321,12 +323,12 @@ class _Game:
             self.game_states[self.game_id]['player_one'] = None
         elif self.game_states.get(self.game_id, {})['player_two'] == self.user['user_id']:
             self.game_states[self.game_id]['player_two'] = None
-        await self.decrement_joined_players()
+        # await self.decrement_joined_players()
         await self.channel_layer.group_discard(self.game_group_id, self.channel_name)
         if (self.game_states.get(self.game_id, {})['player_one'] == None and self.game_states.get(self.game_id, {})['player_two'] == None):
             print("no players left")
             self.game_states[self.game_id]['canceled'] = True
-            await self.reset_joined_players()
+            # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.game_id]['game_active'] = False
         
@@ -423,8 +425,6 @@ class _Game:
                 'ball_x': 2,  # Initial ball position
                 'ball_y': 1,  # Initial ball position
                 'ball_radius': 0.05,
-                # 'ball_speed': 0.015,
-                # 'ball_speed': 1,
                 'ball_dx': 0.025,
                 'ball_dy': 0.025,
                 'joined_players': 0,
@@ -435,7 +435,8 @@ class _Game:
                 'player_one': None,
                 'player_two': None,
                 'previous_join': 0,
-                'canceled': False
+                'canceled': False,
+                'game_loop_task': None
             }
 
 
@@ -471,10 +472,10 @@ class _Game:
         print(self.game_states.get(self.game_id, {}).get('player_one'))
         print("self.game_states.get(self.game_id, {}).get('player_two')")
         print(self.game_states.get(self.game_id, {}).get('player_two'))
-        await self.increment_joined_players()
+        # await self.increment_joined_players()
         # self.game_states.get(self.game_id, {}).get('joined_players')
-        print("self.joined_players")
-        print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        # print("self.joined_players")
+        # print(self.game_states.get(self.game_id, {}).get('joined_players'))
 
         await self.channel_layer.send(
             self.channel_name,
@@ -487,7 +488,8 @@ class _Game:
             }
         )
         # if (self.game_states.get(self.game_id, {}).get('players_one') == self.user['user_id']):
-        if (self.game_states.get(self.game_id, {}).get('joined_players') == 2):
+        # if (self.game_states.get(self.game_id, {}).get('joined_players') == 2):
+        if (self.game_states.get(self.game_id, {}).get('player_one') != None and self.game_states.get(self.game_id, {}).get('player_two') != None):
             print("TWO PLAYERS\n")
             # await self.reset_joined_players()
             await self.channel_layer.group_send(
@@ -503,16 +505,22 @@ class _Game:
             print("after TWO PLAYERS\n")
 
             # await self.game_loop()
-            if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
+            # if self.game_states[self.game_id]['game_loop_task'] is None or self.game_states[self.game_id]['game_loop_task'].done():
+            if self.game_states.get(self.game_id, {}).get('game_loop_task') is None:
                 await asyncio.sleep(3)
-                asyncio.create_task(self.game_loop())
                 print("START GAME LOOP THREAD=====================")
-                print("self.game_states.get(self.game_id, {}).get('previous_join')")
-                print(self.game_states.get(self.game_id, {}).get('previous_join'))
-                self.game_states.get(self.game_id, {})['previous_join'] += 1
-            else:
-                asyncio.create_task(self.game_loop())
-                print("game loop already running")
+                self.game_states[self.game_id]['game_loop_task'] = asyncio.create_task(self.game_loop())
+
+            # if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
+            #     await asyncio.sleep(3)
+            #     asyncio.create_task(self.game_loop())
+            #     print("START GAME LOOP THREAD=====================")
+            #     print("self.game_states.get(self.game_id, {}).get('previous_join')")
+            #     print(self.game_states.get(self.game_id, {}).get('previous_join'))
+            #     self.game_states.get(self.game_id, {})['previous_join'] += 1
+            # else:
+            #     asyncio.create_task(self.game_loop())
+            #     print("game loop already running")
         print("END OF SEND INIT GAME")
         print("self.game_states.get(self.game_id, {}).get('player_one')")
         print(self.game_states.get(self.game_id, {}).get('player_one'))
