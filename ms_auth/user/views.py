@@ -55,7 +55,7 @@ def createUser(data):
 	user.email = data['email']
 	user.set_password(data['password'])
 	user.second_factor_enabled = False
-	user.avatar = f"https://api.dicebear.com/8.x/pixel-art/svg?seed={data['username']}"
+	user.avatar = f"https://api.dicebear.com/8.x/{settings.AVATAR_STYLE}/svg?seed={data['username']}"
 	max_id = User.get_highest_user_id()
 	if max_id and max_id >= 2:
 		user.user_id = max_id + 1

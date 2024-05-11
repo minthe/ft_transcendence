@@ -76,7 +76,7 @@ services:
       context: ms_auth
     volumes:
       - ./ms_auth:/code
-      - static_files:/static_files
+      - static_files:/static
     networks:
       app_net:
         ipv4_address: 172.16.10.5

@@ -29,18 +29,16 @@ def avatar(request):
 				format, imgstr = avatar_binary.split(';base64,')
 				ext = format.split('/')[-1]
 
-				filename = 'file.' + ext
-				random = "23f2f9230f2093uf"
-				user_views.updateValue(user_id, 'avatar', filename)
+				filename = f"{user_views.getValue(user_id, 'username')}.{ext}"
 				
-				save_folder = f"/static_files/{random}/avatar/"
+				save_folder = f"{settings.LOC_AVATAR}/{user_views.getValue(user_id, 'id')}/"
 				if not os.path.exists(save_folder):
 					os.makedirs(save_folder)
 
 				with open(os.path.join(save_folder, filename), "wb") as f:
 					f.write(base64.b64decode(imgstr))
 
-				# print (f"avatar_binary: {user_views.getValue(user_id, 'avatar_binary')}")
+				user_views.updateValue(user_id, 'avatar', os.path.join(save_folder, filename))
 
 				# Request an GAME_CHAT service
 				avatar = user_views.getValue(user_id, 'avatar') # TODO valentin update with new avatar
