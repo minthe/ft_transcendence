@@ -38,7 +38,7 @@ def avatar(request):
 				with open(os.path.join(save_folder, filename), "wb") as f:
 					f.write(base64.b64decode(imgstr))
 
-				user_views.updateValue(user_id, 'avatar', os.path.join(save_folder, filename))
+				user_views.updateValue(user_id, 'avatar', f"https://{settings.CURRENT_HOST}{save_folder}{filename}")
 
 				# Request an GAME_CHAT service
 				avatar = user_views.getValue(user_id, 'avatar') # TODO valentin update with new avatar
