@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.9'
+  version: '1.9.10'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -292,7 +292,7 @@ paths:
           description: OK
           content:
             application/json:
-              example: {"message": "https://example.com/static/avatar/MoonDog_3fFJ93fjoiedfwe3d.jpg"}
+              example: {"message": "https://example.com/static/avatar/97994ba2-9ef9-4b54-af1c-74e52f43ad24/username.jpg"}
         '401':
           description: Missing or invalid JWT token
           content:
@@ -353,7 +353,7 @@ paths:
           description: OK
           content:
             application/json:
-              example: {"avatar": "https://example.com/static/avatar/MoonDog_3fFJ93fjoiedfwe3d.jpg", "email": "mail@example.com", "alias": "MoonDog"}
+              example: {"avatar": "https://example.com/static/avatar/97994ba2-9ef9-4b54-af1c-74e52f43ad24/username.jpg", "email": "mail@example.com", "alias": "MoonDog"}
         '401':
           description: Missing or invalid JWT token
           content:
