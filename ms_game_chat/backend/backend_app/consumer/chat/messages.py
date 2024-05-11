@@ -118,6 +118,32 @@ class _Message:
             return f'something big in createMessage: {e}'
 
     @database_sync_to_async
+    def create_message_chatbot(self, other_user_name, invited_user_name):
+        try:
+
+            # user_instance = MyUser.objects.get(name=invited_user)
+            chat_name = 'CHAT_BOT'
+            # chat_instance = user_instance.chats.get(chatName=chat_name)
+            # print(f"Chat id i got from get_chat_id_with_name: {chat_instance.id}")
+            # self.my_group_id = 'group_%s' % chat_instance.id
+
+            user_instance = MyUser.objects.get(name=invited_user_name)
+            chat_instance = user_instance.chats.get(chatName=chat_name)
+
+            specific_timestamp = timezone.now()
+            text = other_user_name + " invited you to a tournament. Yes you are " + invited_user_name + " right??"
+
+            new_message = Message.objects.create(senderId=chat_instance.id, sender=chat_name, text=text,
+                                                 timestamp=specific_timestamp)
+
+            chat_instance.messages.add(new_message.id)
+            new_message.save()
+            chat_instance.save()
+            return 'ok'
+        except Exception as e:
+            return f'something big in create_message_chatbot: {e}'
+
+    @database_sync_to_async
     def get_chat_messages(self, chat_id):
         chat_instance = Chat.objects.get(id=chat_id)
         messages_in_chat = chat_instance.messages.all()

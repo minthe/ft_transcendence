@@ -4,6 +4,8 @@ websocket_obj = {
 
   active_game: null,
 
+  other_user_name: null,
+
   username: null,
   // password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
@@ -90,6 +92,7 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
+  // chat_bott = new WebSocket(`wss://${window.location.hostname}/ws/init/1/`);
   console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
     // renderProfile()
@@ -254,6 +257,8 @@ async function establishWebsocketConnection() {
         await sendDataToBackend('get_blocked_user')
         break
       case 'message_save_success':
+        console.log("message save success")
+        await renderMessages()
         break
       case 'blocked_by_user':
         websocket_obj.blocked_by = data.blocked_by
@@ -303,6 +308,20 @@ async function establishWebsocketConnection() {
       case 'recieve_history':
         console.log('recieve_history')
         console.log(data)
+        break
+      case 'inform_chatbot':
+        // console.log('received user id: ', data.user_id)
+        if (websocket_obj.user_id === data.user_id) {
+          console.log("I AM ", websocket_obj.username)
+          console.log("LOOL ", data.other_user_name, " invited you to tourn")
+          websocket_obj.other_user_name = data.other_user_name
+          const chat = websocket_obj.chat_data.find(chat => chat.chat_name === 'CHAT_BOT');
+          const found = chat ? chat.chat_id : null;
+          websocket_obj.chat_id = found
+          console.log("CHECK 1: USER_NAME: ", websocket_obj.user_name)
+          console.log("CHECK 2: OTHER USER NAME: ", websocket_obj.other_user_name)
+          await sendDataToBackend('save_chatbot_message')
+        }
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -534,6 +553,24 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
+          }
+          break
+        case 'inform_chatbot':
+          type = 'new_tournament_chatbot'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'invited_user_name': websocket_obj.invited_id,
+            'current_user_name': websocket_obj.username
+          }
+          break
+        case 'save_chatbot_message':
+          type = 'save_chatbot_message'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'other_user_name': websocket_obj.other_user_name,
+            'current_user_name': websocket_obj.username,
           }
           break
         default:

@@ -151,12 +151,58 @@ class _Chat:
         }))
 
 
+    async def handle_new_tournament_chatbot(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        invited_user_name = text_data_json["data"]["invited_user_name"]
+        current_user_name = text_data_json["data"]["current_user_name"]
+
+        print("INVITED USER: ", invited_user_name)
+        print("CURRENT USER: ", current_user_name)
+
+        invited_user_id = await self.get_id_with_name(invited_user_name)
+        current_user_id = await self.get_id_with_name(current_user_name)
+        # # Use await to call the async method in the synchronous context
+        # response_message = await self.create_message_chatbot(current_user_name, invited_user_name)
+
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.inform.chatbot',
+                'data': {
+                    'message': 'ok',
+                    'user_id': invited_user_id,
+                    'other_user_id': current_user_id,
+                    'other_user_name': current_user_name
+                },
+            }
+        )
+
+    async def handle_save_chatbot_message(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        other_user_name = text_data_json["data"]["other_user_name"]
+        # print("CHECK 3: OTHER USER NAME: ", other_user_name)
+        current_user_name = text_data_json["data"]["current_user_name"]
+        # print("CHECK 4: CURRENT USER NAME: ", current_user_name)
+        response_message = await self.create_message_chatbot(other_user_name, current_user_name)
+        print("after create message in chatbot, response: ", response_message)
+        await self.send(text_data=json.dumps({
+            'type': 'message_save_success',
+            'message': response_message
+        }))
 # ---------- SEND FUNCTIONS ---------------------------------------
     async def send_current_users_chats(self, event):
         await self.send(text_data=json.dumps({
             'type': 'current_users_chats',
             'user_id': event['data']['user_id'],
             'users_chats': event['data']['users_chats']
+        }))
+
+    async def send_inform_chatbot(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'inform_chatbot',
+            'user_id': event['data']['user_id'],
+            'other_user_id': event['data']['other_user_id'],
+            'other_user_name': event['data']['other_user_name']
         }))
 
     async def send_user_left_chat(self, event):
@@ -278,6 +324,16 @@ class _Chat:
             user_id = user_instance.user_id  # changed id to user_id
             return user_id
         except Exception as e:
+            return -1
+
+    @database_sync_to_async
+    def get_chat_id_with_name(self, chat_name):
+        try:
+            chat_instance = Chat.objects.get(name=chat_name)
+            chat_id = chat_instance.chat_id  # changed id to chat_id
+            return chat_id
+        except Exception as e:
+            print(f"something wrong in get_chat_id_with_name: {e}")
             return -1
 
     @database_sync_to_async

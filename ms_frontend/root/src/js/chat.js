@@ -454,6 +454,19 @@ async function challengeTournClicked() {
   websocket_obj.invited_id = invited_username 
 //   websocket_obj.invited_id = websocket_obj.chat_name
 
+    console.log("INFOM CHATBOT")
+    console.log("INVITED USER: ", websocket_obj.invited_id)
+    console.log("CURRENT USER: ", websocket_obj.username)
+    // 'user_id': websocket_obj.user_id,
+    //         'chat_id': websocket_obj.chat_id,
+    //         'sender': websocket_obj.sender,
+    //         'message': websocket_obj.message,
+
+
+
+
+
+  await sendDataToBackend('inform_chatbot')
   await sendDataToBackend('join_tournament');
 
 }
