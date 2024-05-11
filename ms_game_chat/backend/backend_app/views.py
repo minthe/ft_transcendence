@@ -87,6 +87,7 @@ def createChatBot(chat_name):
     chat_bot = MyUser()
     chat_bot.user_id = 1
     chat_bot.name = chat_name
+    # chat_bot.avatar = f"https://api.dicebear.com/8.x/{settings.AVATAR_STYLE_BOT}/svg?seed=ChatBot"
     chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
     chat_bot.alias = chat_name
     chat_bot.save()
