@@ -441,6 +441,15 @@ class _Game:
 
 
     async def handle_send_init_game(self):
+        active_game = await self.check_active_games()
+        if active_game:
+            print("active game")
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    'type': 'send.already.in.game',
+                })
+            return None
         if self.game_states.get(self.game_id, {}):
             print("game ALREADY initialized")
             print("self.game_states.get(self.game_id, {}).get('player_one')")
@@ -610,6 +619,30 @@ class _Game:
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
     
     
+    @database_sync_to_async
+    def check_active_games(self):
+        print("in check_active_games")
+        print("self.user['user_id']")
+        print(self.user['user_id'])
+        user_instance = MyUser.objects.get(user_id=self.user['user_id'])
+        print("user_instance")
+        print(user_instance)
+        active_games = user_instance.new_matches.all()
+        print("active_games")
+        print(active_games)
+        print(type(self.game_id))
+        for game in active_games:
+            # print(type(str(game.id)))
+            if str(game.id) in self.game_states:
+                print("game.id")
+                print(game.id)
+                print(game)
+                if self.game_states.get(str(game.id), {}).get('player_one') == self.user['user_id'] or self.game_states.get(str(game.id), {}).get('player_two') == self.user['user_id']:
+                    print("user already in game")
+                    return True
+        return False
+
+
     @database_sync_to_async
     def set_technical_winner(self, game_id, user_id):
         print("in set_technical_winner")

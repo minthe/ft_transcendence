@@ -87,13 +87,13 @@ async function joinGame(gameId) {
 
     console.log('In joinGame');
     console.log('websocket_obj.game.active_state: ', websocket_obj.game.active_state);
-    if (websocket_obj.game.active_state == false)
-    {
-        console.log('In joinGame');
-        websocket_obj.game.game_id = gameId;
-        await sendDataToBackend('init_game');
-        websocket_obj.game.active_state = true;
-    }
+    // if (websocket_obj.game.active_state == false)
+    // {
+    console.log('In joinGame');
+    websocket_obj.game.game_id = gameId;
+    await sendDataToBackend('init_game');
+    websocket_obj.game.active_state = true;
+    // }
   
 
 
