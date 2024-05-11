@@ -396,7 +396,7 @@ class _Chat:
             result = str(avatar_url) if avatar_url else None
         else:
             print("Invalid URL")
-            result = '../../backend' + str(avatar_url) if avatar_url else None # doesnt work if avatar is url
+            result = str(avatar_url) if avatar_url else None # doesnt work if avatar is url
         return result
 
 
