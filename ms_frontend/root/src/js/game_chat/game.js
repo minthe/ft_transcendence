@@ -1,10 +1,10 @@
 
 function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
-  if (document.getElementById('createGameButton'))
-    document.getElementById('createGameButton').addEventListener('click', createGame);
-  if (document.getElementById('tournamentsContainer'))
-    document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
+  // if (document.getElementById('createGameButton'))
+  //   document.getElementById('createGameButton').addEventListener('click', createGame);
+  // if (document.getElementById('tournamentsContainer'))
+  //   document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
 
 }
 
@@ -52,10 +52,18 @@ async function joinGame(gameId) {
   // window.addEventListener("load", updateCanvasSize);
 
   document.getElementById("invites-screen").classList.add("hidden");
+  document.getElementById('displayTourn').classList.add('hidden');
 
   document.getElementById("pongCanvas").classList.remove("hidden");
+
   gameScreen.classList.add('show');
   gameScreen.classList.remove('hidden');
+
+
+  document.getElementById('mainSidebar').classList.add('hidden');
+  document.getElementById('siteContent').classList.remove('site-content');
+  document.getElementById('siteContent').classList.add('site-content-game');
+
   await sendDataToBackend('init_game');
 
   document.addEventListener("keydown", async function(event) {
@@ -79,16 +87,6 @@ async function joinGame(gameId) {
 }
 
 
-async function requestHistory() {
-  console.log('In requestHistory');
-  await sendDataToBackend('request_history');
-}
-async function requestStats() {
-  console.log('In requestStats');
-  await sendDataToBackend('request_stats');
-}
-
-
 async function requestInvites() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("invites-screen").classList.remove("hidden");
@@ -98,8 +96,10 @@ async function requestInvites() {
 
 async function requestTourns() {
   console.log('In requestTourns');
-  // document.getElementById("start-screen").classList.add("hidden");
-  // document.getElementById("invites-screen").classList.remove("hidden");
+  if (userState.currPage !== 'tournPage') {
+    document.getElementById("start-screen").classList.add("hidden");
+    document.getElementById("tournInvitesScreen").classList.remove("hidden");
+  }
   await sendDataToBackend('request_tourns');
 }
 
@@ -161,39 +161,13 @@ async function generateFrontendRepresentation(data) {
   // });
 }
 
-// async function renderTourns() {
-//   console.log('In renderTourns');
-//   if (websocket_obj.game.tourns != 0)
-//   {
-//     const container = document.getElementById('game-session-container');
-//     container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
-
-//     container.querySelectorAll('.join-game-btn').forEach(button => {
-//       button.addEventListener('click', async function() {
-//         const gameId = this.getAttribute('data-gameid');
-//         joinGame(gameId);
-//       });
-//     });
-//   }
-// }
-
-
 
 
 async function renderInvites() {
-  // console.log(websocket_obj.game);
-
-  if (websocket_obj.game.invites != 0)
-  {
-    // const htmlContent = await response.text();
-
-    // const container = document.getElementById('game-session-container');
-    // container.innerHTML = htmlContent;
-
-    const username = websocket_obj.username;
     const matches = websocket_obj.game.invites;
     console.log(matches);
     const container = document.getElementById('game-session-container');
+
     container.innerHTML = generateHTMLContentInv(matches);
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
@@ -205,22 +179,24 @@ async function renderInvites() {
           joinGame(gameId); // Call your function with gameId
       });
     });
-  }
+  // }
 }
 
 function generateHTMLContentInv(matches) {
   let htmlContent = '';
+  console.log('length of matches : ', matches.length);
   if (matches.length > 0) {
     htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
     matches.forEach(match => {
       htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
-      htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button></li>`;
+      htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>`;
 
     });
     htmlContent += '</ul>';
-  } else {
-    htmlContent = '<p>No matches found.</p>';
   }
+  // else {
+  //   htmlContent = '<p>No matches found.</p>';
+  // }
   return htmlContent;
 }
 
@@ -479,9 +455,50 @@ async function launchGame()
 function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('invites-screen').classList.add('hidden');
+  document.getElementById('tournInvitesScreen').classList.add('hidden');
+  document.getElementById('displayTourn').classList.add('hidden');
   document.getElementById('waitingScreen').classList.add('hidden');
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('winningScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
   showSiteHideOthers('gameSite', 'gameButton');
+}
+
+function invSiteClicked() {
+  userState.currPage = 'invites';
+  handleButtonClick("");
+}
+
+function tournInvSiteClicked() {
+  userState.currPage = 'invitesTourn';
+  handleButtonClick(""); 
+}
+
+
+function gameOver() {
+  document.getElementById('mainSidebar').classList.remove('hidden');
+  document.getElementById('siteContent').classList.add('site-content');
+  document.getElementById('siteContent').classList.remove('site-content-game');
+
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('pongCanvas').classList.add('hidden');
+  document.getElementById('winningScreen').classList.remove('hidden');
+
+  document.getElementById('fireworkCanvas').style.zIndex = 1;
+  activateFireworks();
+  
+  let hostScoreElem = document.getElementById('score1');
+  let guestScoreElem = document.getElementById('score2');
+  if (hostScoreElem.textContent > guestScoreElem.textContent)
+    document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
+  else
+    document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
+  console.log("GAME_OVER");
+
+  websocket_obj.game.hostname
+
+  websocket_obj.game.host_score = 0
+  websocket_obj.game.guest_score = 0
+  websocket_obj.game.game_id = 0
+  updateScore();
 }

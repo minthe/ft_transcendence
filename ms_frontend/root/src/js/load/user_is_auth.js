@@ -31,7 +31,7 @@ async function enterKeyEvent() {
       RegisterUserButton();
   }
   else if (!document.getElementById('chat').classList.contains('hidden')
-    && state.chatOpen && !document.getElementById('sendMessageButton').disabled) {
+    && userState.chatOpen && !document.getElementById('sendMessageButton').disabled) {
       console.log('enter on message!!!!!!!!!!!!');
       await sendMessage();
   }
@@ -42,10 +42,10 @@ async function enterKeyEvent() {
 
 
 function showSiteHideOthers(site_to_show, btnToColor) {
-  if (state.currPage === site_to_show)
+  if (userState.currPage === site_to_show)
     return ;
   
-  // state.bodyText = document.body.innerHTML;
+  // userState.bodyText = document.body.innerHTML;
   changeCurrSite(site_to_show);
   changeCurrBtn(btnToColor);
   handleButtonClick("");
@@ -57,7 +57,7 @@ function changeCurrSite(site_to_show) {
     if (site === site_to_show) showDiv(site)
     else hideDiv(site)
   });
-  state.currPage = site_to_show;
+  userState.currPage = site_to_show;
 }
 
 function changeCurrBtn(btnToColor) {  

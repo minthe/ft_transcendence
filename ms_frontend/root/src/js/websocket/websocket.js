@@ -1,3 +1,4 @@
+
 websocket_obj = {
   // profile_picture: null,
   // file_data: null,
@@ -85,11 +86,15 @@ websocket_obj = {
 
 
   //causes problems
-  user_id: 100
+  user_id: null,
   // game_alias: 
   // mail
-}
 
+  game_stats: null,
+  history: null,
+  
+  tourns: [] 
+}
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
   console.log('what is in web: ', websocket_obj.websocket);
@@ -217,27 +222,7 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'game_over':
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('pongCanvas').classList.add('hidden');
-        document.getElementById('winningScreen').classList.remove('hidden');
-
-        document.getElementById('fireworkCanvas').style.zIndex = 1;
-        activateFireworks();
-        
-        let hostScoreElem = document.getElementById('score1');
-        let guestScoreElem = document.getElementById('score2');
-        if (hostScoreElem.textContent > guestScoreElem.textContent)
-          document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
-        else
-          document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
-        console.log("GAME_OVER");
-
-        websocket_obj.game.hostname
-
-        websocket_obj.game.host_score = 0
-        websocket_obj.game.guest_score = 0
-        websocket_obj.game.game_id = 0
-        await updateScore();
+        gameOver();
         break
       case 'opponent_disconnected':
         console.log("YOUR APPONENT LEFT THE GAME");
@@ -295,16 +280,23 @@ async function establishWebsocketConnection() {
         // console.log('DATA: ', websocket_obj.game.invites[0])
         // console.log('DATA: ', websocket_obj.game.invites[0][1])
         // console.log('DATA: ', websocket_obj.game.invites[0][0])
-        generateFrontendRepresentation(websocket_obj.game.invites)
+        // generateFrontendRepresentation(websocket_obj.game.invites)
+        if (userState.currPage !== 'tournPage')
+          renderTourns();
+        else
+          joinTourn(userState.tournId, websocket_obj.game.invites);
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_stats':
         console.log('recieve_stats')
         console.log(data)
+        websocket_obj.game_stats = data.stats;
+        // getUserStats(data.stats);
         break
       case 'recieve_history':
         console.log('recieve_history')
         console.log(data)
+        websocket_obj.history = data.history;
         break
       case 'inform_chatbot':
         if (websocket_obj.user_id === data.user_id) {

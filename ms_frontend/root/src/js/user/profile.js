@@ -1,38 +1,5 @@
-
-function handleDOMChangesProfileBtn() {
-
-  const globalStatsButton = document.getElementById("globalStatsButton");
-  const statsButton = document.getElementById("yourStatsButton");
-  const userStats = document.getElementById("userStats");
-  const globalStats = document.getElementById("globalStats");
-
-
-
-
-  if (globalStatsButton) {
-    globalStatsButton.addEventListener('click', function() {
-      console.log("gloabl statst");
-      userStats.classList.add("hidden");
-      globalStats.classList.remove("hidden");
-    });
-
-    statsButton.addEventListener('click', function() {
-      console.log("normal stats");
-      globalStats.classList.add("hidden");
-      userStats.classList.remove("hidden");
-    });
-  }
-}
-  
-const observerProfile = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    handleDOMChangesProfileBtn();
-  });
-});
-
-// Start observing the DOM
-observerProfile.observe(document.body, { childList: true, subtree: true });
-
+let emailBeforeEdit;
+let gameAliasBeforeEdit;
 
 //combine function with the one from twofa
 function updateProfileMessage(success, message) {
@@ -49,8 +16,6 @@ function updateProfileMessage(success, message) {
 	twoFaStatus.textContent = message;
 }
 
-let emailBeforeEdit;
-let gameAliasBeforeEdit;
 
 function editProfile() {
   emailBeforeEdit = document.getElementById('email').value;
@@ -140,11 +105,11 @@ function changeProfileImage() {
         body: JSON.stringify(bodyProfilePictureChange(dataURI))
       })
       .then(async response => {
+        const data = await response.json();
         if (!response.ok) {
-          const data = await response.json();
           throw Error(data.message);
         }
-        document.getElementById('profilePicture').src = dataURI;
+        document.getElementById('profilePicture').src = data.avatar;
         updateProfileMessage(true, "Avatar updated successfully");
       })
       .catch(error => {
@@ -186,5 +151,6 @@ async function getProfileData() {
 async function profileButtonClicked() {
   await getTwoFaStatus();
   await getProfileData();
+  document.getElementById('profileName').textContent = websocket_obj.username;
   showSiteHideOthers('profileSite', 'profileButton');
 }
