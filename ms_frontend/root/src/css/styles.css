@@ -895,7 +895,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   /* height: 35vw;
   margin: 0 auto; */
 
-  margin-left: 12vw;
+  margin-left: 15.5vw;
   background-color: #f8efb5;
   outline: 10px solid #131615;
 }
@@ -1241,6 +1241,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .change-profile-image {
+  background-color: #124457;
   width: 15vh; /* Adjust size as needed */
   height: 15vh; /* Adjust size as needed */
   overflow: hidden;

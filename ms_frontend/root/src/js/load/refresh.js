@@ -146,7 +146,6 @@ function checkPageState() {
 				// spaNotLogedIn('registerPage');
 				// showRegisterPage();
 			}
-			console.log('kurwa page: ', userState.currPageNotLogedIn);
 			// else
 			// 	spaNotLogedIn(userState.currPage);
 			throw new Error(response.message);

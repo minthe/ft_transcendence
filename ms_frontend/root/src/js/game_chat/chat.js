@@ -270,6 +270,7 @@ async function renderChat() {
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
     let chatName = document.createElement('div');
     chatName.textContent = chat.chat_name;
+
     chat_element.addEventListener('click', async function () {
       await handleClickedOnChatElement(chat);
     });
@@ -394,19 +395,19 @@ async function sendMessage() {
       return
     }
   const messageInput = document.getElementById('messageInput');
-    if (containsSQLInjection(messageInput.value)) {
-      setTimeout(function () {
-        messageInput.value = '';
-        messageInput.style.color = 'white';
-        messageInput.removeAttribute('readonly')
-        document.getElementById('sendMessageButton').disabled = false;
-      }, 2000);
-      document.getElementById('sendMessageButton').disabled = true;
-      messageInput.setAttribute('readonly', true);
-      messageInput.style.color = 'red';
-      messageInput.value = 'Message contains invalid characters';
-      return;
-    }
+    // if (containsSQLInjection(messageInput.value)) {
+    //   setTimeout(function () {
+    //     messageInput.value = '';
+    //     messageInput.style.color = 'white';
+    //     messageInput.removeAttribute('readonly')
+    //     document.getElementById('sendMessageButton').disabled = false;
+    //   }, 2000);
+    //   document.getElementById('sendMessageButton').disabled = true;
+    //   messageInput.setAttribute('readonly', true);
+    //   messageInput.style.color = 'red';
+    //   messageInput.value = 'Message contains invalid characters';
+    //   return;
+    // }
     websocket_obj.message = document.getElementById('messageInput').value
 
 
@@ -508,10 +509,13 @@ async function unblockUserClicked() {
 
 async function rightHeadingClicked() {
   const state = document.getElementById('right-heading-name').dataset.state
+  const chatName = document.getElementById('backdropPrivateProfileLabel').textContent;
   console.log('STATE: ', state)
 
-  if (state === 'private')
-    await showPrivateChatModal()
-  else
-    await showPublicChatModal()
+  if(chatName !== 'CHAT_BOT') {
+    if (state === 'private')
+      await showPrivateChatModal()
+    else
+      await showPublicChatModal()
+  }
 }

@@ -1,3 +1,5 @@
+let emailBeforeEdit;
+let gameAliasBeforeEdit;
 
 //combine function with the one from twofa
 function updateProfileMessage(success, message) {
@@ -14,8 +16,6 @@ function updateProfileMessage(success, message) {
 	twoFaStatus.textContent = message;
 }
 
-let emailBeforeEdit;
-let gameAliasBeforeEdit;
 
 function editProfile() {
   emailBeforeEdit = document.getElementById('email').value;

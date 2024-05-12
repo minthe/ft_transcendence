@@ -84,7 +84,7 @@ websocket_obj = {
 
 
   //causes problems
-  user_id: 100,
+  user_id: null,
   // game_alias: 
   // mail
 

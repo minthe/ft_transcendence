@@ -164,19 +164,10 @@ async function generateFrontendRepresentation(data) {
 
 
 async function renderInvites() {
-  // console.log(websocket_obj.game);
-
-  if (websocket_obj.game.invites != 0)
-  {
-    // const htmlContent = await response.text();
-
-    // const container = document.getElementById('game-session-container');
-    // container.innerHTML = htmlContent;
-
-    const username = websocket_obj.username;
     const matches = websocket_obj.game.invites;
     console.log(matches);
     const container = document.getElementById('game-session-container');
+
     container.innerHTML = generateHTMLContentInv(matches);
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
@@ -188,11 +179,12 @@ async function renderInvites() {
           joinGame(gameId); // Call your function with gameId
       });
     });
-  }
+  // }
 }
 
 function generateHTMLContentInv(matches) {
   let htmlContent = '';
+  console.log('length of matches : ', matches.length);
   if (matches.length > 0) {
     htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
     matches.forEach(match => {
@@ -201,9 +193,10 @@ function generateHTMLContentInv(matches) {
 
     });
     htmlContent += '</ul>';
-  } else {
-    htmlContent = '<p>No matches found.</p>';
   }
+  // else {
+  //   htmlContent = '<p>No matches found.</p>';
+  // }
   return htmlContent;
 }
 

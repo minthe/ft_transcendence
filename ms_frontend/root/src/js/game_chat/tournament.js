@@ -32,9 +32,10 @@ function generateHTMLContentTourns(matches) {
  
 	  });
 	  htmlContent += '</ul>';
-	} else {
-	  htmlContent = '<p>No matches found.</p>';
 	}
+	// else {
+	//   htmlContent = '<p>No matches found.</p>';
+	// }
 	return htmlContent;
 }
 
