@@ -384,11 +384,6 @@ async function chatSiteClicked() {
   userState.chatOpen = false;
 }
 
-function invSiteClicked() {
-  state.currPage = 'invites';
-  handleButtonClick("");
-}
-
 async function sendMessage() {
   const isBlocked = websocket_obj.blocked_by && websocket_obj.blocked_by.includes(websocket_obj.chat_name);
     if (isBlocked) {
