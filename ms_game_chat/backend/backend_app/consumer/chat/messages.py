@@ -74,6 +74,36 @@ class _Message:
             }
         )
 
+    async def handle_messages_in_chat_read(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        chat_id = text_data_json["data"]["chat_id"]
+        response = await self.set_messages_in_chat_read(user_id, chat_id)
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.message.in.chat.read',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+                'data': {
+                    'message': response,
+                    'user_id': user_id
+                },
+            }
+        )
+
+    async def handle_messages_in_chat_unread(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        chat_id = text_data_json["data"]["chat_id"]
+        response = await self.set_messages_in_chat_unread(user_id, chat_id)
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.message.in.chat.read',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+                'data': {
+                    'message': response,
+                    'user_id': user_id
+                },
+            }
+        )
+
 # ---------- SEND FUNCTIONS ---------------------------------------
     async def send_chat_messages(self, event):
         await self.send(text_data=json.dumps({
@@ -99,6 +129,13 @@ class _Message:
             'type': 'online_stats_on_disconnect',
             'online_stats': event['data']['online_stats']
         }))
+
+    async def send_message_in_chat_read(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'set_message_stat',
+            'message': event['data']['message'],
+            'user_id': event['data']['user_id']
+        }))
 # ---------- DATABASE REQUEST FUNCTIONS -----------------------------
 
     @database_sync_to_async
@@ -113,6 +150,10 @@ class _Message:
             chat_instance = Chat.objects.get(id=chat_id)
             chat_instance.messages.add(new_message.id)
             new_message.save()
+
+            chat_instance = user_instance.objects.get(id=chat_id)
+            chat_instance.is_read = False
+
             return 'ok'
         except Exception as e:
             return f'something big in createMessage: {e}'
@@ -134,4 +175,28 @@ class _Message:
         return message_data
 
 
+    @database_sync_to_async
+    def set_messages_in_chat_read(self, user_id, chat_id):
+        try:
+            user_instance = MyUser.objects.get(user_id=user_id)
+            chat_instance = user_instance.chats.get(id=chat_id)
+            chat_instance.is_read = True
+            chat_instance.save()
+            return 'ok'
+        except Exception as e:
+            print(f'something big in set_messages_in_chat_read: {e}')
+            return f'something big in set_messages_in_chat_read: {e}'
+
+
+    @database_sync_to_async
+    def set_messages_in_chat_unread(self, user_id, chat_id):
+        try:
+            user_instance = MyUser.objects.get(user_id=user_id)
+            chat_instance = user_instance.chats.get(id=chat_id)
+            chat_instance.is_read = False
+            chat_instance.save()
+            return 'ok'
+        except Exception as e:
+            print(f'something big in set_messages_in_chat_unread: {e}')
+            return f'something big in set_messages_in_chat_unread: {e}'
 # ---------- UTILS FUNCTIONS ----------------------------------------

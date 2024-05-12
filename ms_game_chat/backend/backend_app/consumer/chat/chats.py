@@ -220,7 +220,8 @@ class _Chat:
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
                 'last_message': self.get_last_message_in_chat(chat.id),
                 'isPrivate': chat.isPrivate,
-                'avatar': self.getAvatar(chat_name)
+                'avatar': self.getAvatar(chat_name),
+                'is_read': self.get_is_read_stat(chat.id, user_id)
             })
         return user_chats
 
@@ -408,5 +409,8 @@ class _Chat:
         except ValidationError:
             return False
 
-
-
+    def get_is_read_stat(self, chat_id, user_id):
+        user_instance = MyUser.objects.get(user_id=user_id)
+        chat_instance = user_instance.chats.get(id=chat_id)
+        is_read = chat_instance.is_read
+        return is_read

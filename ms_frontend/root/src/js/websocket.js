@@ -39,6 +39,7 @@ websocket_obj = {
       isPrivate: null,
       last_message: null,
       avatar: null,
+      is_read: null,
     }
   ],
   messages: [
@@ -304,6 +305,11 @@ async function establishWebsocketConnection() {
         console.log('recieve_history')
         console.log(data)
         break
+      case 'set_message_stat':
+        if (websocket_obj.user_id !== data.user_id) {
+          await sendDataToBackend('get_current_users_chats')
+        }
+        break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
         console.log('DATA: ', data)
@@ -363,7 +369,6 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'get_current_users_chats':
-          console.log('HERE: ', websocket_obj.user_id)
           type = 'send_current_users_chats'
           data = {
             'user_id': websocket_obj.user_id,
@@ -534,6 +539,20 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
+          }
+          break
+        case 'messages_in_chat_read':
+          type = 'messages_in_chat_read'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'messages_in_chat_unread':
+          type = 'messages_in_chat_unread'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
           }
           break
         default:
