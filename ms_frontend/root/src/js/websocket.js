@@ -55,12 +55,13 @@ websocket_obj = {
 
   game: [
     {
-      game_id: null,
+      game_id: 0,
       invites: 0,
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
       is_host: false,
+      active_state: false,
       ball_x: 0,
       ball_y: 0,
       host_score: 0,
@@ -171,6 +172,8 @@ async function establishWebsocketConnection() {
         break
       case 'init_game':
         console.log(data);
+        websocket_obj.game.active_state = true
+        joinedGameSuccessfully(websocket_obj.game.game_id)
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
         {
@@ -188,11 +191,11 @@ async function establishWebsocketConnection() {
         // websocket_obj.game.game_joined = true;
         break
       case 'game_start':
-         
-        console.log("GAME START");
         
+        console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
+        sendDataToBackend('request_score')
         startCountdownAnimation();
         break
       case 'ball_update':
@@ -220,9 +223,13 @@ async function establishWebsocketConnection() {
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
-
+        
+        console.log("before fireworks")
+        console.log(websocket_obj.game.game_id)
+        console.log(data.game_id)
         document.getElementById('fireworkCanvas').style.zIndex = 1;
-        activateFireworks();
+        if (websocket_obj.game.game_id === data.game_id)
+            activateFireworks();
         
         let hostScoreElem = document.getElementById('score1');
         let guestScoreElem = document.getElementById('score2');
@@ -233,6 +240,7 @@ async function establishWebsocketConnection() {
         console.log("GAME_OVER");
 
         websocket_obj.game.hostname
+        websocket_obj.game.active_state = false
 
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
