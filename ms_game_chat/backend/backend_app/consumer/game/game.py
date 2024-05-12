@@ -132,6 +132,10 @@ class _Game:
                 await self.calculate_ball_state()
                 print("SENDING BALL UPDATE")
                 print(self.game_group_id)
+                print(self.user)
+                print(self.game_states.get(self.game_id, {}).get('group_id'))
+
+
                 await self.channel_layer.group_send(
                     # self.game_group_id,
                     self.game_states.get(self.game_id, {}).get('group_id'),
@@ -146,7 +150,7 @@ class _Game:
                 print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
                 # await asyncio.sleep(0.01)
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
 
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
                 print("GAME ACTIVE")
@@ -173,7 +177,7 @@ class _Game:
 
                 await self.channel_layer.group_send(
                     # self.game_group_id,
-                    self.game_states.get(self.game_id, {}).get('group_id')                    
+                    self.game_states.get(self.game_id, {}).get('group_id'),
                     {
                         'type': 'send.game.over',
                         'data': {
@@ -650,6 +654,8 @@ class _Game:
                 print(game)
                 if self.game_states.get(str(game.id), {}).get('player_one') == self.user['user_id'] or self.game_states.get(str(game.id), {}).get('player_two') == self.user['user_id']:
                     print("user already in game")
+                elif self.game_states.get(str(game.id), {}).get('game_active') == True and str(game.id) != str(self.game_id):
+                    print("finish current game first!")
                     return True
         return False
 
@@ -970,6 +976,8 @@ class _Game:
                 winner_id = game_session.winnerId
                 loser_id = game_session.loserId
                 stage = game_session.stage
+                alias_one = MyUser.objects.get(user_id=player_one).alias
+                alias_two = MyUser.objects.get(user_id=player_two).alias
                 # i = i + 1
 
                 
