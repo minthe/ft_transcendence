@@ -5,7 +5,7 @@ re: fclean all
 build:
 	chmod +x setup.sh
 	bash setup.sh
-	docker compose build
+	docker compose build 
 stop:
 	docker compose stop
 up:
@@ -30,3 +30,9 @@ fclean: clean
 	else \
 		echo "fclean: no volumes to remove"; \
 	fi
+
+perge: 
+	docker rm -f $(docker ps -aq) 2>/dev/null || true
+	docker rmi -f $(docker images -aq) 2>/dev/null || true
+	docker volume rm $(docker volume ls -q) 2>/dev/null || true
+	docker network rm $(docker network ls -q) 2>/dev/null || true
