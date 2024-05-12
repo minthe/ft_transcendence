@@ -1,18 +1,17 @@
 <!-- <div class="test-div-for-side"> -->
   <ul class="nav sidebar-nav test-list">
     <li>
-      <button aria-label="Home" id="homeButton" class="sidebar-btn-profile" style="background-color: #ef7267;">
-        <i class="bi bi-house-door"></i>
-      </button>
-    </li>
-
-    <li>
       <button aria-label="Profile" id="profileButton" class="sidebar-btn-profile">
         <i class="bi bi-person"></i>
       </button>
     </li>
     
   
+    <li>
+      <button aria-label="Home" id="homeButton" class="sidebar-btn-profile" style="background-color: #ef7267;">
+        <i class="bi bi-house-door"></i>
+      </button>
+    </li>
   
     <li>
       <button aria-label="Chat" id="showChatButton" class="sidebar-btn-profile">
@@ -46,20 +45,19 @@
 
     
 <div class="site-content">
+  <div id="profileSite" class="profile-site hidden"></div>
+
   <div id="homeSite" class="home">
     <br><h1 id="displayUserName" class="user-name-display"></h1><br>
 
-
+      <div id="centered-image" class="centered-image">
+        <!-- <img src="./ballWithEye.jpg" alt="Centered Image"> -->
+      </div>
 
     <div id="showUserProfile" class="">
       <button type="button" id="logoutButton" class="btn btn-danger logout-btn">Logout</button>
     </div>
-    <div class="text-container">
-      <span id="text"></span>
-    </div>
   </div>
-  <div id="profileSite" class="profile-site hidden"></div>
-
   <div id="chat" class="chat hidden"></div>
 
   <!--NEW GAME HERE-->

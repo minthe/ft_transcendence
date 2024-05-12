@@ -1,9 +1,93 @@
 
 let two_fa_code = '';
+
+// function enableTwoFactor() {
+// 	const url = `${window.location.origin}/user/2fa`
+  
+// 	changeToTwoFa();
+// 	fetch(url, {
+// 	  method: 'PUT',
+// 	//   headers: headerEnableTwoFa()
+// 	})
+// 	.then(async function(response) {
+// 	  if (response.ok) {
+// 		await verifyButtonProfileClick();
+// 		if (checkTwoFaCode()) {
+// 		  return fetch(url, {
+// 			method: 'POST',
+// 			headers: headerTwoFa(),
+// 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
+// 		  })
+// 		  .then(async responseTwoFa => {
+// 			if (!responseTwoFa.ok) 
+// 				return { twoFaUpdated: false};
+// 			return { twoFaUpdated: true};
+// 		  });
+// 		}
+// 	  }
+// 	  return { twoFaUpdated: true};
+// 	})
+// 	.then(result => {
+// 		if (!result.twoFaUpdated)
+// 			throw Error("update failed");
+// 		updateTwoFaStatus(true);
+// 		showTwoFaDisableBtn();
+// 		changeToProfile();
+// 	})
+// 	.catch(error => {
+// 		changeToProfile();
+// 		updateTwoFaStatus(false);
+// 		console.error('There was a problem with the fetch operation:', error);
+// 	});
+// 	// changeToProfile();
+// }
+  
+// function disableTwoFactor() {
+// 	const url = `${window.location.origin}/user/2fa`;
+	
+// 	changeToTwoFa();
+// 	fetch(url, {
+// 		method: 'Delete',
+// 		// headers: headerDisableTwoFa()
+// 	})
+// 	.then(async function(response) {
+// 	  if (response.ok) {
+// 		await verifyButtonProfileClick();
+// 		if (checkTwoFaCode()) {
+// 		  return fetch(url, {
+// 			method: 'POST',
+// 			headers: headerTwoFa(),
+// 			body: JSON.stringify(bodyTwoFa(websocket_obj.user_id))
+// 		  })
+// 		  .then(function(responseTwoFa) {
+// 			if (!responseTwoFa.ok)
+// 				return { twoFaUpdated: false};
+// 				//   throw new Error(responseTwoFa.status);
+// 			return { twoFaUpdated: true};
+// 		  });
+// 		}
+// 	  }
+// 	  return { twoFaUpdated: true};
+// 	})
+// 	.then(result => {
+// 		if (!result.twoFaUpdated)
+// 			throw Error("update failed");
+// 		updateTwoFaStatus(true);
+// 		showTwoFaEnableBtn();
+// 		changeToProfile();
+// 	})
+// 	.catch(function(error) {
+// 		changeToProfile();
+// 		updateTwoFaStatus(false);
+// 		console.error('Error processing your request:', error);
+// 	});
+// 	// changeToProfile();
+// }
   
 function updateTwoFaStatus(success, message) {
 	const twoFaStatus = document.getElementById('updateTwoFa');
 
+	// if (success) {
 	setTimeout(function() {
 	twoFaStatus.classList.add('hidden');
 	}, 2500);
@@ -13,6 +97,15 @@ function updateTwoFaStatus(success, message) {
 	else
 		twoFaStatus.style.color = 'red';
 	twoFaStatus.textContent = message;
+	// }
+	// else {
+	// 	setTimeout(function() {
+	// 	twoFaStatus.classList.add('hidden');
+	// 	}, 2500);
+	// 	twoFaStatus.classList.remove('hidden');
+	// 	twoFaStatus.style.color = 'red';
+	// 	twoFaStatus.textContent = 'Failed to Update 2FA';
+	// }
 }
   
   
@@ -47,10 +140,6 @@ function checkTwoFaCode() {
 	return true;
 }
 
-// function cleanup() {
-// 	button.removeEventListener('click', handleVerification);
-// 	document.removeEventListener('keypress', handleVerification);
-// }
 
 function verifyButtonClick() {
 	return new Promise(resolve => {
@@ -58,15 +147,6 @@ function verifyButtonClick() {
 			two_fa_code = document.getElementById('twoFaCode').value;
 			resolve();
 		});
-		document.addEventListener('keypress', async function(event) {
-			if (event.key === 'Enter' || event.keyCode === 13) {
-				event.preventDefault();
-				two_fa_code = document.getElementById('twoFaCode').value;
-				resolve();
-			}
-		});
-
-        
 	});
 }
 
@@ -76,16 +156,11 @@ function verifyButtonProfileClick() {
 			two_fa_code = document.getElementById('twoFaCodeProfile').value;
 			resolve();
 		});
-		document.addEventListener('keypress', async function(event) {
-			if (event.key === 'Enter' || event.keyCode === 13) {
-				event.preventDefault();
-				two_fa_code = document.getElementById('twoFaCodeProfile').value;
-				resolve();
-			}
-		});
 	});
 }
 
+
+// needs to be added in login, refresh and spa logic
 async function getTwoFaStatus() {
 	const url = `${window.location.origin}/user/2fa`
 	fetch(url, {
@@ -136,10 +211,9 @@ function updateTwoFactor(correctMethod) {
 					body: JSON.stringify(bodyUpdateTwoFa())
 				})
 				.then(async responseTwoFa => {
-					if (!responseTwoFa.ok) {
-						const data = await responseTwoFa.json();
+					const data = await responseTwoFa.json();
+					if (!responseTwoFa.ok) 
 						return { twoFaUpdated: false, message: data.message};
-					}
 					return { twoFaUpdated: true, message: 'Updated 2FA succesfully'};
 				});
 			}

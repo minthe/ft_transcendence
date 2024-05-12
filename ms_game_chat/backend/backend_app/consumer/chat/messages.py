@@ -18,7 +18,7 @@ class _Message:
         await self.channel_layer.group_send(
             'channel_zer0',
             {
-                'type': 'send.online.stats',
+                'type': 'send.online.stats',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
                 'data': {
                     'online_stats': online_stats
                 },
@@ -36,7 +36,7 @@ class _Message:
         await self.channel_layer.group_send(
             'channel_zer0',
             {
-                'type': 'send.online.stats.on.disconnect',
+                'type': 'send.online.stats.on.disconnect',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
                 'data': {
                     'online_stats': online_stats
                 },
@@ -66,7 +66,7 @@ class _Message:
         await self.channel_layer.group_send(
             self.my_group_id,
             {
-                'type': 'send.chat.messages',
+                'type': 'send.chat.messages',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
                 'data': {
                     'chat_id': chat_id,
                     'message_data': message_data,
@@ -106,7 +106,7 @@ class _Message:
         try:
             if not text:
                 return 'Message is empty'
-            user_instance = MyUser.objects.get(user_id=user_id)
+            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
             specific_timestamp = timezone.now()
             new_message = Message.objects.create(senderId=user_id, sender=user_instance.name, text=text,
                                                  timestamp=specific_timestamp)
@@ -116,23 +116,6 @@ class _Message:
             return 'ok'
         except Exception as e:
             return f'something big in createMessage: {e}'
-
-    @database_sync_to_async
-    def create_message_chatbot(self, other_user_name, invited_user_name):
-        try:
-            chat_name = 'CHAT_BOT'
-            user_instance = MyUser.objects.get(name=invited_user_name)
-            chat_instance = user_instance.chats.get(chatName=chat_name)
-            specific_timestamp = timezone.now()
-            text = "Hey, " + other_user_name + " invited you to a tournament! Go to the Game interface to play."
-            new_message = Message.objects.create(senderId=chat_instance.id, sender=chat_name, text=text,
-                                                 timestamp=specific_timestamp)
-            chat_instance.messages.add(new_message.id)
-            new_message.save()
-            chat_instance.save()
-            return 'ok'
-        except Exception as e:
-            return f'something big in create_message_chatbot: {e}'
 
     @database_sync_to_async
     def get_chat_messages(self, chat_id):
@@ -149,3 +132,6 @@ class _Message:
             for message in messages_in_chat
         ]
         return message_data
+
+
+# ---------- UTILS FUNCTIONS ----------------------------------------

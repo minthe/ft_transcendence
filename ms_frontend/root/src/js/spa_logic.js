@@ -32,7 +32,20 @@ state.bodyText = document.body.innerHTML;
 // Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
+  console.log(websocket_obj.game.active_state)
+  console.log(websocket_obj.game)
 
+  if (websocket_obj.game.active_state === true)
+  {  console.log('You left the game!')
+    console.log(websocket_obj.game.active_state)
+    websocket_obj.game.active_state = false
+    sendDataToBackend('user_left_game')
+  }
+  else
+  {
+    console.log('onpop ignored')
+
+  }
 
 //   const url = `${window.location.origin}/user/token/existence`
 //  fetch(url)
@@ -71,13 +84,13 @@ async function handleClickEvent(event) {
 	if (event.target.closest('#homeButton'))
 		showSiteHideOthers('homeSite', 'homeButton');
   else if (event.target.closest('#gameButton'))
-    gameSiteClicked();
+      gameSiteClicked();
   else if (event.target.closest('#statsButton'))
 		showSiteHideOthers('statsSite', 'statsButton');
   else if (event.target.closest('#showChatButton'))
 		await chatSiteClicked();
   else if (event.target.closest('#profileButton'))
-    profileButtonClicked();
+		showSiteHideOthers('profileSite', 'profileButton');
   else if (event.target.closest('#creatorsButton'))
 		showSiteHideOthers('creatorsSite', 'creatorsButton');
   else if (event.target.closest('#logoutButton'))
@@ -125,21 +138,22 @@ async function handleClickEvent(event) {
     changeToLoginPageButton();
   else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-  else if (event.target.closest('#twoFAButtonE'))
+
+
+  // else if (event.target.closest('#twoFAButtonE'))
+  //   enableTwoFactor();
+  // else if (event.target.closest('#twoFAButtonD'))
+  //   disableTwoFactor();
+  else if (event.target.closest('#twoFAButtonE')) {
+    console.log('en button clicked');
     updateTwoFactor('PUT');
-  else if (event.target.closest('#twoFAButtonD'))
+  }
+  else if (event.target.closest('#twoFAButtonD')) {
+    console.log("dis button clicked");
     updateTwoFactor('DELETE');
+  }
 
 
-    else if (event.target.closest('#login42Button'))
-      openAuthPopup();
-
-    else if (event.target.closest('#editButton'))
-      editProfile();
-    else if (event.target.closest('#saveButton'))
-      saveChanges();
-    else if (event.target.closest('#changeProfileImage'))
-      changeProfileImage();
-    // else if (event.target.closest('#login42Button'))
-  //   loginWith42();
+  else if (event.target.closest('#login42Button'))
+    loginWith42();
 }

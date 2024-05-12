@@ -4,8 +4,6 @@ RUN apk update; apk upgrade; apk add nginx; apk add openssl; apk add --no-cache 
 
 COPY ./nginx_start.sh /nginx_start.sh
 
-WORKDIR /usr/share/nginx/html
-
 # EXPOSE 4242
 
 CMD ["/nginx_start.sh"]

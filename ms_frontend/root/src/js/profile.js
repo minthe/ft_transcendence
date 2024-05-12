@@ -1,13 +1,31 @@
+function handleDOMChangesProfile() {
+
+}
 
 function handleDOMChangesProfileBtn() {
-
+  const editButton = document.getElementById("editButton");
+  const saveButton = document.getElementById("saveButton");
   const globalStatsButton = document.getElementById("globalStatsButton");
   const statsButton = document.getElementById("yourStatsButton");
   const userStats = document.getElementById("userStats");
   const globalStats = document.getElementById("globalStats");
 
 
+  const profileImageInput = document.querySelector('.change-profile-image input[type="file"]');
+  
+  if (profileImageInput) {
+    addNewProfileImage(profileImageInput);
+  }
 
+
+  if (editButton) {
+    editButton.addEventListener('click', function () {
+      toggleEdit();
+    });
+    saveButton.addEventListener('click', function () {
+      saveChanges();
+    });
+  }
 
   if (globalStatsButton) {
     globalStatsButton.addEventListener('click', function() {
@@ -26,6 +44,7 @@ function handleDOMChangesProfileBtn() {
   
 const observerProfile = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
+    handleDOMChangesProfile();
     handleDOMChangesProfileBtn();
   });
 });
@@ -34,27 +53,52 @@ const observerProfile = new MutationObserver(function(mutations) {
 observerProfile.observe(document.body, { childList: true, subtree: true });
 
 
-//combine function with the one from twofa
-function updateProfileMessage(success, message) {
-	const twoFaStatus = document.getElementById('updateTwoFa');
+function addNewProfileImage(profileImageInput) {
+//   profileImageInput.addEventListener("change", function() {
+//     const file = this.files[0];
 
-	setTimeout(function() {
-	twoFaStatus.classList.add('hidden');
-	}, 2500);
-	twoFaStatus.classList.remove('hidden');
-	if (success)
-		twoFaStatus.style.color = 'green';
-	else
-		twoFaStatus.style.color = 'red';
-	twoFaStatus.textContent = message;
+
+//     if (file) {
+//       if (!file.type.startsWith('image/')) {
+//         setTimeout(function () {document.getElementById('fileError').style.display = 'none';}, 3000);
+//         document.getElementById('fileError').style.display = 'block';
+//         return;
+//       }
+//       // console.log('this is the file type: ', file.type);
+//       const reader = new FileReader();
+//       websocket_obj.profile_picture = websocket_obj.username + '.' + file.type.substring(6);
+//       // websocket_obj.file_data = e.target.result;
+//       reader.readAsDataURL(file);
+//       reader.onload = function(e) {
+//         const dataURI = e.target.result;
+  
+//         // Send the data URI to the Django backend
+//         // fetch(`${window.location.origin}/game/create/${websocket_obj.username}/`);
+//         fetch(`/user/picture/${username}/`, { // Using template literal to construct the URL
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({ data_uri: dataURI, file_name: websocket_obj.profile_picture, file_type: file.type.substring(6)}),
+//           // body: JSON.stringify({ data_uri: dataURI }),
+//       })
+//       .then(response => response.json())
+//       .then(data => {
+//           console.log(data.message);
+//           // Handle response from backend if needed
+//       })
+//       .catch(error => console.error('Error:', error));
+
+
+
+//         document.getElementById('profilePicture').src = websocket_obj.profile_picture;
+//       };
+//       // sendDataToBackend('new_profile_picture')
+//     }
+//   });
 }
 
-let emailBeforeEdit;
-let gameAliasBeforeEdit;
-
-function editProfile() {
-  emailBeforeEdit = document.getElementById('email').value;
-  gameAliasBeforeEdit = document.getElementById('gameAlias').value;
+function toggleEdit() {
   let inputs = document.querySelectorAll('input[readonly]');
 
   inputs.forEach(input => input.removeAttribute('readonly'));
@@ -71,120 +115,13 @@ function saveChanges() {
       document.getElementById('wrongSavedInput').classList.add('hidden');
     }, 3000);
     document.getElementById('wrongSavedInput').classList.remove('hidden');
-    mail.value = emailBeforeEdit;
-    gameAlias.value = gameAliasBeforeEdit;
-    mail.setAttribute('readonly', true);
-    gameAlias.setAttribute('readonly', true);
-    editButton.style.display = 'block';
-    saveButton.style.display = 'none';
-    return ;
+    //mail.value = websocket_obj.mail;
+    //gameAlias = websocket_obj.gameAlias;
   }
-
-  const url = `${window.location.origin}/user/profile`
-  fetch (url, {
-    method: 'PUT',
-    header: headerProfileChange(),
-    body: JSON.stringify(bodyProfileChange(mail.value, gameAlias.value))
-  })
-  .then(async response => {
-    if (!response.ok) {
-      const data = await response.json();
-      throw Error(data.message);
-    }
-    updateProfileMessage(true, "Profile updated successfully");
-  })
-  .catch(error => {
-    mail.value = emailBeforeEdit;
-    gameAlias.value = gameAliasBeforeEdit;
-    updateProfileMessage(false, error);
-    console.error('There was a problem with the fetch operation:', error);
-  });
-
   mail.setAttribute('readonly', true);
   gameAlias.setAttribute('readonly', true);
+
+  //sendNewDataToBackend
   editButton.style.display = 'block';
   saveButton.style.display = 'none';
-}
-
-
-//fetch to get picture, gamealias, mail
-//fetch for new picture
-//fetch for gameAlias and Mail
-
-
-function changeProfileImage() {
-  const profileImageInput = document.querySelector('.change-profile-image input[type="file"]');
-  
-  profileImageInput.addEventListener("change", function() {
-    const file = this.files[0];
-
-
-  if (file) {
-    if (!file.type.startsWith('image/')) {
-      setTimeout(function () {document.getElementById('fileError').style.display = 'none';}, 3000);
-      document.getElementById('fileError').style.display = 'block';
-      return;
-    }
-    // console.log('this is the file type: ', file.type);
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-    reader.onload = function(e) {
-      const dataURI = e.target.result;
-
-    
-      const url = `${window.location.origin}/user/avatar`
-      fetch (url, {
-        method: 'PUT',
-        header: headerProfilePictureChange(),
-        body: JSON.stringify(bodyProfilePictureChange(dataURI))
-      })
-      .then(async response => {
-        if (!response.ok) {
-          const data = await response.json();
-          throw Error(data.message);
-        }
-        document.getElementById('profilePicture').src = dataURI;
-        updateProfileMessage(true, "Avatar updated successfully");
-      })
-      .catch(error => {
-        updateProfileMessage(false, error);
-        console.error('There was a problem with the fetch operation:', error);
-      });
-
-
-    };
-  }
-});
-}
-
-
-
-//needs to be called when clicked on profile page, traversing in spa or refresh
-async function getProfileData() {
-  const url = `${window.location.origin}/user/profile`
-  fetch (url, {
-    method: 'GET',
-    // header: headerProfilePictureChange(),
-  })
-  .then(async response => {
-    const data = await response.json();
-    if (!response.ok)
-      throw Error(data.message);
-    console.log('data for profile: ', data);
-    document.getElementById('profilePicture').src = data.avatar;
-    document.getElementById("email").value = data.email;
-    document.getElementById("gameAlias").value = data.alias;
-    // updateProfileMessage(true, "Avatar updated successfully");
-  })
-  .catch(error => {
-    // updateProfileMessage(false, error);
-    console.error('There was a problem with the fetch operation:', error);
-  });
-}
-
-async function profileButtonClicked() {
-  await getTwoFaStatus();
-  await getProfileData();
-  showSiteHideOthers('profileSite', 'profileButton');
 }

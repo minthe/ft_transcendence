@@ -1,75 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rectangular Buttons Layout</title>
-<style>
-    body, html {
-        height: 100%;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f0f0f0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Input 2FA Simulation</title>
+    <style>
+        .centered-form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-    .container {
-        position: relative;
-        width: 90vw;
-        height: 90vh;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: space-between;
-    }
-
-    .button {
-        width: 80px; 
-        height: 40px; 
-        background-color: #4CAF50;
-        color: white;
-        /* display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute; */
-        border: 2px solid #FFF; /* Adding a border for better visual separation */
-    }
-
-    .left-top-player {
-        margin-top: 20px;
-        margin-left: 20px;
-    }
-    .right-top-player {
-        margin-top: 20px;
-        margin-right: 20px;
-    }
-    .left-bottom-player {
-        margin-bottom: 20px;
-        margin-left: 20px;
-    }
-    .right-bottom-player {
-        margin-bottom: 20px;
-        margin-right: 20px;
-    }
-
-
-    .center.top { top: 20%; left: 50%; transform: translateX(-50%); }
-    .center.middle { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-    .center.bottom { bottom: 20%; left: 50%; transform: translateX(-50%); }
-</style>
+        #codeInput {
+            font-size: 32px;
+            letter-spacing: 10px; /* Creates space between characters */
+            width: 200px; /* Adjust width as needed */
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="button left-top-player">Player 1</div>
-    <div class="button left-bottom-player">Player 2</div>
+    <form id="authForm" class="centered-form">
+        <input type="text" id="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+    </form>
 
-    <div class="button right-top-player">Player 3</div>
-    <div class="button right-bottom-player">Player 4</div>
+    <script>
+        const input = document.getElementById('codeInput');
 
-    <!-- <div class="button center top">5</div>
-    <div class="button center middle">6</div>
-    <div class="button center bottom">7</div> -->
-</div>
+        input.addEventListener('input', function(e) {
+            const value = input.value;
+            input.value = value.replace(/[^0-9]/g, ''); // Allow only numbers
+            if (value.length === 6) {
+                // Optionally trigger any action when all 6 digits are entered
+                console.log('Complete code:', value);
+            }
+        });
+
+        // Optional: Automatically focus the input on page load
+        window.onload = function() {
+            input.focus();
+        };
+    </script>
 </body>
 </html>

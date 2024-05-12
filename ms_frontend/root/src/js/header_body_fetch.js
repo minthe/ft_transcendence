@@ -62,33 +62,3 @@ function bodyUpdateTwoFa() {
 		"code": two_fa_code
 	};
 }
-
-
-function headerProfileChange() {
-	return {
-		'accept': 'application/json', 
-  		'Content-Type': 'application/json',
-		'Authorization':'Bearer {access-token}'
-	};
-}
-
-function bodyProfileChange(mail, gameAlias) {
-	return {
-		"email": mail,
-		"alias": gameAlias
-	};
-}
-
-function headerProfilePictureChange() {
-	return {
-		'accept': 'application/json',
-		'Content-Type': 'application/json',
-		'Authorization':'Bearer {access-token}'
-	};
-}
-
-function bodyProfilePictureChange(dataURI) {
-	return {
-		"avatar": dataURI
-	};
-}

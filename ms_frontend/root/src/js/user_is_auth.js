@@ -14,10 +14,8 @@ function addEventListenersIsAuth() {
   
 
   document.addEventListener('keypress', async function(event) {
-      if (event.key === 'Enter' || event.keyCode === 13) {
-        event.preventDefault();
-        await enterKeyEvent();
-      }
+      if (event.key === 'Enter' || event.keyCode === 13)
+          await enterKeyEvent();
   });
 }
 
@@ -31,10 +29,8 @@ async function enterKeyEvent() {
       RegisterUserButton();
   }
   else if (!document.getElementById('chat').classList.contains('hidden')
-    && state.chatOpen && !document.getElementById('sendMessageButton').disabled) {
-      console.log('enter on message!!!!!!!!!!!!');
-      await sendMessage();
-  }
+    && state.chatOpen && !document.getElementById('sendMessageButton').disabled)
+    await sendMessage();
   else if (!document.getElementById('profileSite').classList.contains('hidden')
     && document.getElementById('saveButton').style.display !== 'none')
     saveChanges();

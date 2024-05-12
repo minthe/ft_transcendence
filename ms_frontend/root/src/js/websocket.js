@@ -4,10 +4,8 @@ websocket_obj = {
 
   active_game: null,
 
-  other_user_name: null,
-
   username: null,
-  // password: null,
+  password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
   // avatar: null,
   blocked_by: [],
@@ -55,12 +53,13 @@ websocket_obj = {
 
   game: [
     {
-      game_id: null,
+      game_id: 0,
       invites: 0,
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
       is_host: false,
+      active_state: false,
       ball_x: 0,
       ball_y: 0,
       host_score: 0,
@@ -83,9 +82,7 @@ websocket_obj = {
   sender: null,
   websocket: null,
 
-
-  //causes problems
-  user_id: 100
+  user_id: -1
   // game_alias: 
   // mail
 }
@@ -95,12 +92,13 @@ async function establishWebsocketConnection() {
   console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
     // renderProfile()
-    sendDataToBackend('get_all_user')
-    sendDataToBackend('get_avatar')
+    sendDataToBackend('get_all_user') // NEW since 03.02 | this should also happen on refresh!
+    sendDataToBackend('get_avatar')// NEW since 07.02
   };
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
+    // console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
         if (data.chat_id === websocket_obj.chat_id) {
@@ -171,6 +169,8 @@ async function establishWebsocketConnection() {
         break
       case 'init_game':
         console.log(data);
+        websocket_obj.game.active_state = true
+        joinedGameSuccessfully(websocket_obj.game.game_id)
         document.getElementById("waitingScreen").style.display = "block";
         if (data.is_host === 'True')
         {
@@ -188,11 +188,11 @@ async function establishWebsocketConnection() {
         // websocket_obj.game.game_joined = true;
         break
       case 'game_start':
-         
-        console.log("GAME START");
         
+        console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
+        sendDataToBackend('request_score')
         startCountdownAnimation();
         break
       case 'ball_update':
@@ -220,19 +220,19 @@ async function establishWebsocketConnection() {
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
-
-        document.getElementById('fireworkCanvas').style.zIndex = 1;
-        activateFireworks();
         
-        let hostScoreElem = document.getElementById('score1');
-        let guestScoreElem = document.getElementById('score2');
-        if (hostScoreElem.textContent > guestScoreElem.textContent)
-          document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
-        else
-          document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
+        console.log("before fireworks")
+        console.log(websocket_obj.game.game_id)
+        console.log(data.game_id)
+        document.getElementById('fireworkCanvas').style.zIndex = 1;
+        if (websocket_obj.game.game_id === data.game_id)
+            activateFireworks();
+        
         console.log("GAME_OVER");
+        // document.getElementById("waitingScreen").style.display = "block";
 
         websocket_obj.game.hostname
+        websocket_obj.game.active_state = false
 
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
@@ -255,7 +255,6 @@ async function establishWebsocketConnection() {
         await sendDataToBackend('get_blocked_user')
         break
       case 'message_save_success':
-        await renderMessages()
         break
       case 'blocked_by_user':
         websocket_obj.blocked_by = data.blocked_by
@@ -306,14 +305,9 @@ async function establishWebsocketConnection() {
         console.log('recieve_history')
         console.log(data)
         break
-      case 'inform_chatbot':
-        if (websocket_obj.user_id === data.user_id) {
-          websocket_obj.other_user_name = data.other_user_name
-          const chat = websocket_obj.chat_data.find(chat => chat.chat_name === 'CHAT_BOT');
-          const found = chat ? chat.chat_id : null;
-          websocket_obj.chat_id = found
-          await sendDataToBackend('save_chatbot_message')
-        }
+      case 'already_in_game':
+        console.log('already_in_game')
+        requestInvites()
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -547,22 +541,23 @@ async function sendDataToBackend(request_type) {
             'game_id': 0,
           }
           break
-        case 'inform_chatbot':
-          type = 'new_tournament_chatbot'
+        case 'user_left_game':
+          type = 'user_left_game'
           data = {
             'user_id': websocket_obj.user_id,
-            'chat_id': websocket_obj.chat_id,
-            'invited_user_name': websocket_obj.invited_id,
-            'current_user_name': websocket_obj.username
+            'game_id': websocket_obj.game.game_id,
           }
+          websocket_obj.game.active_state = false
+
+          websocket_obj.game.host_score = 0
+          websocket_obj.game.guest_score = 0
+          websocket_obj.game.game_id = 0
           break
-        case 'save_chatbot_message':
-          type = 'save_chatbot_message'
+        case 'request_score':
+          type = 'request_score'
           data = {
             'user_id': websocket_obj.user_id,
-            'chat_id': websocket_obj.chat_id,
-            'other_user_name': websocket_obj.other_user_name,
-            'current_user_name': websocket_obj.username,
+            'game_id': websocket_obj.game.game_id,
           }
           break
         default:

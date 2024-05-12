@@ -21,8 +21,6 @@ EMAIL_USE_TLS = True  # Use TLS for security
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-AVATAR_STYLE_BOT = os.environ.get('AVATAR_STYLE_BOT')
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # == /Users/mmensing/Desktop/CODE/TRANSCENDENCE/TEST_ENVIRONMENT/backend
