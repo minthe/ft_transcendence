@@ -92,17 +92,15 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
-  // chat_bott = new WebSocket(`wss://${window.location.hostname}/ws/init/1/`);
   console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
     // renderProfile()
-    sendDataToBackend('get_all_user') // NEW since 03.02 | this should also happen on refresh!
-    sendDataToBackend('get_avatar')// NEW since 07.02
+    sendDataToBackend('get_all_user')
+    sendDataToBackend('get_avatar')
   };
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-    // console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
         if (data.chat_id === websocket_obj.chat_id) {
@@ -257,7 +255,6 @@ async function establishWebsocketConnection() {
         await sendDataToBackend('get_blocked_user')
         break
       case 'message_save_success':
-        console.log("message save success")
         await renderMessages()
         break
       case 'blocked_by_user':
@@ -310,16 +307,11 @@ async function establishWebsocketConnection() {
         console.log(data)
         break
       case 'inform_chatbot':
-        // console.log('received user id: ', data.user_id)
         if (websocket_obj.user_id === data.user_id) {
-          console.log("I AM ", websocket_obj.username)
-          console.log("LOOL ", data.other_user_name, " invited you to tourn")
           websocket_obj.other_user_name = data.other_user_name
           const chat = websocket_obj.chat_data.find(chat => chat.chat_name === 'CHAT_BOT');
           const found = chat ? chat.chat_id : null;
           websocket_obj.chat_id = found
-          console.log("CHECK 1: USER_NAME: ", websocket_obj.user_name)
-          console.log("CHECK 2: OTHER USER NAME: ", websocket_obj.other_user_name)
           await sendDataToBackend('save_chatbot_message')
         }
         break

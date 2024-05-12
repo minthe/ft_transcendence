@@ -92,18 +92,14 @@ async function renderProfile() {
 async function handleClickedOnChatElement(chat_obj) {
   const chat_avatar = document.getElementById('chat_avatar');
 
-  console.log('which chat is it: ', chat_obj.chat_name);
+  // console.log('which chat is it: ', chat_obj.chat_name);
   if (!state.chatOpen || state.chatObj.chat_name !== chat_obj.chat_name) {
     showDiv('messageSide')
-
-    // const chat_avatar = document.getElementById('chat_avatar')
-    if (!chat_obj.isPrivate) {
-      // avatar for group picture
+    if (!chat_obj.isPrivate) { // avatar for group picture:
       chat_avatar.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
     } else if (chat_obj.avatar) {
       chat_avatar.src = chat_obj.avatar
-    } else {
-      // default avatar
+    } else { // default avatar:
       chat_avatar.src = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
     }
     document.getElementById('right-heading-name').textContent = chat_obj.chat_name
@@ -117,18 +113,14 @@ async function handleClickedOnChatElement(chat_obj) {
     websocket_obj.chat_id = chat_obj.chat_id;
     websocket_obj.chat_name = chat_obj.chat_name;
 
-    // console.log('chat obj### : ', chat_obj.chat_id);
-    // console.log('chat name### : ', chat_obj.chat_name);
-
     await sendDataToBackend('get_online_stats')
     await sendDataToBackend('get_user_in_current_chat')
     await sendDataToBackend('get_chat_messages')
 
-    
     state.chatOpen = true;
   }
   else if (state.chatOpen) {
-    console.log('goes back to default and closes');
+    // console.log('goes back to default and closes');
     hideDiv('messageSide');
     document.getElementById('right-heading-name').textContent = "";
     chat_avatar.src = "../img/playPongLogoWhite.webp";
@@ -140,13 +132,6 @@ async function handleClickedOnChatElement(chat_obj) {
     handleButtonClick("");
   }
 }
-
-
-
-
-
-
-
 
 async function renderMessages() {
   let myArray = websocket_obj.messages.message_data;
@@ -179,7 +164,10 @@ async function renderMessages() {
       function hasMatchingUserId(user) {
         return user.user_id === currentUserId;
       }
-      if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
+      if (myArray[i].sender === 'CHAT_BOT') {
+        titleElement.textContent = myArray[i].sender + ' 👾';
+      }
+      else if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
         titleElement.textContent = myArray[i].sender + ' 🟢';
       } else {
         titleElement.textContent = myArray[i].sender + ' 🔴';
@@ -251,13 +239,11 @@ async function renderChat() {
     avatarIcon.classList.add('avatar-icon');
     const avatarImg = document.createElement('img');
 
-    if (!chat.isPrivate) {
-      // avatar for group picture
+    if (!chat.isPrivate) { // avatar for group picture:
       avatarImg.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
     } else if (chat.avatar) {
       avatarImg.src = chat.avatar
-    } else {
-      // default avatar
+    } else { // default avatar:
       avatarImg.src = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
     }
     avatarIcon.appendChild(avatarImg);
@@ -347,7 +333,6 @@ function parseTimeString(timeString) {
   return new Date(year, month - 1, day, hours, minutes);
 }
 
-
 function findOtherUserName(users, username) {
 	for (let i = 0; i < users.length; i++) {
 		if (users[i].user_name !== username) {
@@ -357,32 +342,14 @@ function findOtherUserName(users, username) {
 	return null; // Return null if the username is not found
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async function chatSiteClicked() {
   await sendDataToBackend('get_current_users_chats')
   await sendDataToBackend('get_blocked_by_user')
-  await sendDataToBackend('get_blocked_user') // NEW since 02.02
+  await sendDataToBackend('get_blocked_user')
   showSiteHideOthers('chat', 'showChatButton')
   hideDiv('messageSide');
   document.getElementById('right-heading-name').textContent = "";
   chat_avatar.src = "../img/playPongLogoWhite.webp";
-  
   state.chatOpen = false;
 }
 
@@ -413,8 +380,6 @@ async function sendMessage() {
     }
     websocket_obj.message = document.getElementById('messageInput').value
 
-
-
     websocket_obj.sender = websocket_obj.username
     document.getElementById('messageInput').value = ''
     await sendDataToBackend('send_chat_message')
@@ -439,7 +404,6 @@ async function openChat() {
     hideDiv('create_chat_alert')
   }
 }
-
 
 async function challengeTournClicked() {
   console.log('In inviting through chat')
