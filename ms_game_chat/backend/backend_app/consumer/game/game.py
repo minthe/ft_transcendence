@@ -124,14 +124,17 @@ class _Game:
     async def game_loop(self):
         # game_status = self.game_states.get(self.game_id, {}).get('game_active')
         while True:
+            print(self.game_states.get(self.game_id, {}).get('game_loop_task'))
             # print("game_status")
             # print(game_status)
             try:
                 print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
                 print("SENDING BALL UPDATE")
+                print(self.game_group_id)
                 await self.channel_layer.group_send(
-                    self.game_group_id,
+                    # self.game_group_id,
+                    self.game_states.get(self.game_id, {}).get('group_id'),
                     {
                         'type': 'send.ball.update',
                         'data': {
@@ -142,6 +145,7 @@ class _Game:
                 )
                 print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
+                # await asyncio.sleep(0.01)
                 await asyncio.sleep(1)
 
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
@@ -168,7 +172,8 @@ class _Game:
                 print("111111")
 
                 await self.channel_layer.group_send(
-                    self.game_group_id,
+                    # self.game_group_id,
+                    self.game_states.get(self.game_id, {}).get('group_id')                    
                     {
                         'type': 'send.game.over',
                         'data': {
@@ -189,8 +194,9 @@ class _Game:
                 break
 
         print("-----GAME LOOP OVER-----")
-        self.game_states.get(self.game_id, {}).get('game_loop_task').cancel()
+        print(self.game_states.get(self.game_id, {}).get('game_loop_task'))
         self.game_states[self.game_id]['game_loop_task'] = None
+        # self.game_states.get(self.game_id, {}).get('game_loop_task').cancel()
 
 
     async def send_game_scene(self, event):
@@ -243,6 +249,7 @@ class _Game:
         print("IN SEND BALL UPDATE")
         await self.send(text_data=json.dumps({
             'type': 'game_over',
+            'game_id': event['data']['game_id'],
 
         }))
         
@@ -410,7 +417,9 @@ class _Game:
             'player_one': None,
             'player_two': None,
             'previous_join': 0,
-            'canceled': False
+            'canceled': False,
+            'game_loop_task': None,
+            'group_id': None,
         }
         print("self.game_states[self.game_id]")
         print(self.game_states[self.game_id])
@@ -436,7 +445,9 @@ class _Game:
                 'player_two': None,
                 'previous_join': 0,
                 'canceled': False,
-                'game_loop_task': None
+                'game_loop_task': None,
+                'group_id': self.game_group_id,
+
             }
 
 

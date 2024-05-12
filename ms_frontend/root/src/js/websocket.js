@@ -221,9 +221,12 @@ async function establishWebsocketConnection() {
         document.getElementById('pongCanvas').classList.add('hidden');
         document.getElementById('winningScreen').classList.remove('hidden');
         
+        console.log("before fireworks")
+        console.log(websocket_obj.game.game_id)
+        console.log(data.game_id)
         document.getElementById('fireworkCanvas').style.zIndex = 1;
-        if (websocket_obj.game.active_state === true && websocket_obj.game.game_id === data.game_id)
-          activateFireworks();
+        if (websocket_obj.game.game_id === data.game_id)
+            activateFireworks();
         
         console.log("GAME_OVER");
         // document.getElementById("waitingScreen").style.display = "block";

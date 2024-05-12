@@ -30,7 +30,7 @@ async function joinedGameSuccessfully(gameId) {
   // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
 
 
-  websocket_obj.game.game_id = gameId;
+//   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
   websocket_obj.game.is_host = false;
 

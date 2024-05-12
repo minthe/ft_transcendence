@@ -149,20 +149,23 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         game_id = text_data_json["data"]["game_id"]
         print(type(game_id))
         print(game_id)
-        if game_id != '0':
+        if int(game_id) != 0:
             print('creating group')
             self.game_group_id = 'group_%s' % game_id
+        else:
+            self.game_group_id = None
 
-        print(self.game_group_id)
+        if self.game_group_id:
+            print(self.game_group_id)
+            await self.channel_layer.group_add(
+            self.game_group_id,
+            self.channel_name
+            )
+        else:
+            print('NO GAME GROUP ID')
         print(self.user)
         print('______________\n')
 
-        # await self.init_game_struct()
-
-        await self.channel_layer.group_add(
-            self.game_group_id,
-            self.channel_name
-        )
         if what_type == 'send_game_scene':
             self.key_code = text_data_json["data"]["key_code"]
             self.prev_pos = text_data_json["data"]["prev_pos"]
@@ -174,7 +177,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             self.game_id = game_id
             await self.handle_send_ball_update()
         elif what_type == 'send_request_invites':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_send_invites()
         elif what_type == 'send_request_tourns':
             self.game_id = game_id
