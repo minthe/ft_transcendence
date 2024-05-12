@@ -2,6 +2,7 @@
 async function updatePage() {
 
     if (userState.userName === websocket_obj.username) {
+
 		if (userState.currPage === 'homeSite') {
 			showSiteHideOthers('homeSite', 'homeButton');
 
@@ -35,17 +36,25 @@ async function updatePage() {
 			await requestInvites();
 		if (userState.currPage === 'invitesTourn')
 			await requestTourns();
+		if (userState.currPage === 'tournPage') {
+			await requestTourns();
+													// websocket_obj.game.invites
+			// console.log('waht is in web invites: ', websocket_obj.game.invites);
+			// joinTourn(userState.tournId, websocket_obj.game.invites);
+		}
+
 		render(userState);
 		if (userState.currPage === 'chat') {
-		hideDiv('messageSide');
-		document.getElementById('right-heading-name').textContent = "";
-		chat_avatar.src = "../img/ballWithEye.jpg";
+			hideDiv('messageSide');
+			document.getElementById('right-heading-name').textContent = "";
+			// chat_avatar.src = "../img/ballWithEye.jpg";
 		}
 	}
 	else {
 		console.log('goes into else of popstate');
 		// showSiteHideOthers('homeSite');
-		showSiteHideOthersSpa('homeSite')
+		showSiteHideOthersSpa('homeSite');
+		document.getElementById('displayUserName').innerHTML = 'Hey '+ websocket_obj.username +' 🫠';
 		userState.bodyText = document.body.innerHTML;
 		userState.userName = websocket_obj.username;
 		window.history.replaceState(userState, null, "");
@@ -106,17 +115,38 @@ function checkPageState() {
 			userState.userName = null;
 			console.log('reload not success');
 
-			// if (userState.currPage === null) {
-			// 	userState.currPage = 'loginPage'
-			// 	window.history.replaceState(userState, null, "");
-			// }
-			// else if (userState.currPage === 'loginPage'){
-			// 	changeToLoginPageButton();
-			// }
-			// else {
-			// 	showRegisterPage();
-			// }
-			// console.log('kurwa page: ', userState.currPage);
+			//problem of storing currPage from before maybe new var in userState needed
+			if (userState.currPageNotLogedIn === null) {
+				userState.currPageNotLogedIn = 'loginPage'
+				window.history.replaceState(userState, null, "");
+			}
+			else if (userState.currPageNotLogedIn === 'loginPage'){
+				showDiv('loginPage')
+				hideDiv('registerPage')
+				document.getElementById("wrong-register").classList.add("hidden");
+				document.getElementById('registerUsername').value = null;
+				document.getElementById('registerPassword').value  = null;
+				document.getElementById("registerUsername").style.border = "";
+				document.getElementById("registerPassword").style.border = "";
+				
+				
+				// spaNotLogedIn('loginPage');
+				// changeToLoginPageButton();
+			}
+			else if (userState.currPageNotLogedIn === 'registerPage') {
+				hideDiv('loginPage')
+				console.log("in the show function");
+				showDiv('registerPage')
+				document.getElementById("wrong-password").classList.add("hidden");
+				document.getElementById('loginUsername').value = null;
+				document.getElementById('loginPassword').value  = null;
+				document.getElementById("loginUsername").style.border = "";
+				document.getElementById("loginPassword").style.border = "";
+				
+				// spaNotLogedIn('registerPage');
+				// showRegisterPage();
+			}
+			console.log('kurwa page: ', userState.currPageNotLogedIn);
 			// else
 			// 	spaNotLogedIn(userState.currPage);
 			throw new Error(response.message);

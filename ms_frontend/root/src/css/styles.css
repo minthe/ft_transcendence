@@ -1,58 +1,4 @@
-/*
-=============== 
-Fonts
-===============
-*/
-/* @import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,700&display=swap"); */
 
-/*
-=============== 
-Variables
-===============
-*/
-
-:root {
-  /* dark shades of primary color*/
-  --clr-primary-1: hsl(205, 86%, 17%);
-  --clr-primary-2: hsl(205, 77%, 27%);
-  --clr-primary-3: hsl(205, 72%, 37%);
-  --clr-primary-4: hsl(205, 63%, 48%);
-  /* primary/main color */
-  --clr-primary-5: hsl(205, 78%, 60%);
-  /* lighter shades of primary color */
-  --clr-primary-6: hsl(205, 89%, 70%);
-  --clr-primary-7: hsl(205, 90%, 76%);
-  --clr-primary-8: hsl(205, 86%, 81%);
-  --clr-primary-9: hsl(205, 90%, 88%);
-  --clr-primary-10: hsl(205, 100%, 96%);
-  /* darkest grey - used for headings */
-  --clr-grey-1: hsl(209, 61%, 16%);
-  --clr-grey-2: hsl(211, 39%, 23%);
-  --clr-grey-3: hsl(209, 34%, 30%);
-  --clr-grey-4: hsl(209, 28%, 39%);
-  /* grey used for paragraphs */
-  --clr-grey-5: hsl(210, 22%, 49%);
-  --clr-grey-6: hsl(209, 23%, 60%);
-  --clr-grey-7: hsl(211, 27%, 70%);
-  --clr-grey-8: hsl(210, 31%, 80%);
-  --clr-grey-9: hsl(212, 33%, 89%);
-  --clr-grey-10: hsl(210, 36%, 96%);
-  --clr-white: #fff;
-  --clr-red-dark: hsl(360, 67%, 44%);
-  --clr-red-light: hsl(360, 71%, 66%);
-  --clr-green-dark: hsl(125, 67%, 44%);
-  --clr-green-light: hsl(125, 71%, 66%);
-  --clr-black: #222;
-  --ff-primary: "Roboto", sans-serif;
-  --ff-secondary: "Open Sans", sans-serif;
-  --transition: all 0.3s linear;
-  --spacing: 0.1rem;
-  --radius: 0.25rem;
-  --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  --max-width: 1170px;
-  --fixed-width: 620px;
-}
 
 .color1 {color: #131615;}
 .color2 {color: #124457;}
@@ -682,10 +628,273 @@ body, html {
 
 
 /* game page */
+.display-tourn {
+  height: 100%;
+  background-image: url('../img/championsTrophie.webp');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+}
+
+.basic-tourn-element {
+  /* margin-left: 3.5vw; */
+  position: absolute;
+  text-transform: uppercase;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+}
+
+.corner-div {
+  width: 10vw;
+  height: 10vw;
+  background-color: grey;
+  font-size: 2vh;
+  outline: 10px solid #f8efb5;
+  border-radius: 50%;
+  color: #f8efb5;
+  /* color: #131615; */
+}
+
+.winner-div {
+  outline: 10px solid #131615;
+  width: 12vw;
+  height: 12vw;
+  border-radius: 50%;
+  background-color: #ecc85d;
+  color: #124457;
+  font-size: 3vh;
+  box-shadow: 0 0 25px 30px #FFF700;
+}
+
+
+.top-left {
+  top: 16vh;
+  left: 13.5vw;
+}
+
+.top-right {
+  top: 16vh;
+  right: 6.5vw;
+}
+
+.bottom-left {
+  bottom: 24vh;
+  left: 13.5vw;
+}
+
+.bottom-right {
+  bottom: 24vh;
+  right: 6.5vw;
+}
+
+.left-center {
+  top: 36vh;
+  left: 37.5vw;
+}
+
+.right-center {
+  top: 36vh;
+  right: 30.5vw;
+}
+
+.winner-center {
+  top: 64vh;
+  left: 47.5vw;
+}
+
+/* .join-game-div {
+  position: absolute;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  outline: 10px solid #131615;
+} */
+
+
+.loser-tourn-game {
+  color:#ef7267;
+  outline: 10px solid #ef7267;
+  background-color: grey;
+}
+.winner-tourn-game {
+  color: limegreen;
+  outline: 10px solid limegreen;
+  background-color: grey;
+}
+
+
+/* .arrow-tourn {
+  color: #ecc85d;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bi-arrow-right-rotate::before {
+    left: 25vw;
+    top: 30vh;
+    color: limegreen;
+    font-size: 13vh;
+    transform: rotate(30deg);
+}
+.bi-arrow-right-rotate-two::before {
+    margin-left: 25vw;
+    color: limegreen;
+    font-size: 13vh;
+    margin-top: 50vh;
+    transform: rotate(-30deg);
+}
+
+.bi-arrow-left-rotate::before {
+    left: 70vw;
+    color: limegreen;
+    font-size: 13vh;
+    top: 50vh;
+    transform: rotate(-150deg);
+}
+.bi-arrow-left-rotate-two::before {
+  left: 70vw;
+  top: 30vh;
+  font-size: 13vh;
+  transform: rotate(150deg);
+}
+
+.bi-arrow-left-center-rotate::before {
+  left: 42vw;
+  top: 55vh;
+  font-size: 8vh;
+  transform: rotate(55deg);
+}
+
+.bi-arrow-right-center-rotate::before {
+  right: 42vw;
+  top: 55vh;
+  font-size: 8vh;
+  transform: rotate(125deg);
+} */
+
+.bi-arrow-right-rotate::before {
+  position: absolute;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+
+    left: 28.5vw;
+    top: 30vh;
+    color: limegreen;
+    font-size: 13vh;
+    transform: rotate(30deg);
+    color: #ecc85d;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  }
+  .bi-arrow-right-rotate-two::before {
+    position: absolute;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+    left: 28.5vw;
+    color: limegreen;
+    font-size: 13vh;
+    margin-top: 50vh;
+    transform: rotate(-30deg);
+    color: #ecc85d;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  }
+
+.bi-arrow-left-rotate::before {
+  position: absolute;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+    left: 73.5vw;
+    color: limegreen;
+    font-size: 13vh;
+    top: 50vh;
+    transform: rotate(-150deg);
+    color: #ecc85d;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+.bi-arrow-left-rotate-two::before {
+position: absolute;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  left: 73.5vw;
+  top: 30vh;
+  font-size: 13vh;
+  transform: rotate(150deg);
+  color: #ecc85d;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+
+}
+
+.bi-arrow-left-center-rotate::before {
+position: absolute;
+font-weight: bold;
+
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+left: 45.5vw;
+top: 55vh;
+font-size: 8vh;
+transform: rotate(55deg);
+color: #ecc85d;
+text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+
+}
+
+.bi-arrow-right-center-rotate::before {
+position: absolute;
+font-weight: bold;
+
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+right: 39.5vw;
+top: 55vh;
+font-size: 8vh;
+transform: rotate(125deg);
+color: #ecc85d;
+text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+
+}
+
+
+
+
+
+
+
+
+
 
 #pongCanvas {
   width: 70vw;
   height: 70vh;
+  /* height: 35vw;
+  margin: 0 auto; */
+
   margin-left: 12vw;
   background-color: #f8efb5;
   outline: 10px solid #131615;
@@ -1332,6 +1541,10 @@ margin-right: 10px; */
 .site-content {
   width: 93vw;
   margin-left: 7vw;
+}
+
+.site-content-game {
+  width: 100vw;
 }
 
 .test-div-for-side {

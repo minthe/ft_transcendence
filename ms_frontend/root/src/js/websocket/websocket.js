@@ -89,9 +89,10 @@ websocket_obj = {
   // mail
 
   game_stats: null,
-  history: null
+  history: null,
+  
+  tourns: [] 
 }
-
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
   console.log('what is in web: ', websocket_obj.websocket);
@@ -278,7 +279,10 @@ async function establishWebsocketConnection() {
         // console.log('DATA: ', websocket_obj.game.invites[0][1])
         // console.log('DATA: ', websocket_obj.game.invites[0][0])
         // generateFrontendRepresentation(websocket_obj.game.invites)
-        renderTourns();
+        if (userState.currPage !== 'tournPage')
+          renderTourns();
+        else
+          joinTourn(userState.tournId, websocket_obj.game.invites);
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_stats':

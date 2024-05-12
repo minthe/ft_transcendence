@@ -1,10 +1,10 @@
 
 function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
-  if (document.getElementById('createGameButton'))
-    document.getElementById('createGameButton').addEventListener('click', createGame);
-  if (document.getElementById('tournamentsContainer'))
-    document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
+  // if (document.getElementById('createGameButton'))
+  //   document.getElementById('createGameButton').addEventListener('click', createGame);
+  // if (document.getElementById('tournamentsContainer'))
+  //   document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
 
 }
 
@@ -52,10 +52,18 @@ async function joinGame(gameId) {
   // window.addEventListener("load", updateCanvasSize);
 
   document.getElementById("invites-screen").classList.add("hidden");
+  document.getElementById('displayTourn').classList.add('hidden');
 
   document.getElementById("pongCanvas").classList.remove("hidden");
+
   gameScreen.classList.add('show');
   gameScreen.classList.remove('hidden');
+
+
+  document.getElementById('mainSidebar').classList.add('hidden');
+  document.getElementById('siteContent').classList.remove('site-content');
+  document.getElementById('siteContent').classList.add('site-content-game');
+
   await sendDataToBackend('init_game');
 
   document.addEventListener("keydown", async function(event) {
@@ -88,8 +96,10 @@ async function requestInvites() {
 
 async function requestTourns() {
   console.log('In requestTourns');
-  document.getElementById("start-screen").classList.add("hidden");
-  document.getElementById("tournInvitesScreen").classList.remove("hidden");
+  if (userState.currPage !== 'tournPage') {
+    document.getElementById("start-screen").classList.add("hidden");
+    document.getElementById("tournInvitesScreen").classList.remove("hidden");
+  }
   await sendDataToBackend('request_tourns');
 }
 
@@ -151,23 +161,6 @@ async function generateFrontendRepresentation(data) {
   // });
 }
 
-async function renderTourns() {
-  console.log('In renderTourns');
-  if (websocket_obj.game.tourns != 0)
-  {
-    const container = document.getElementById('tournGameSessionContainer');
-    container.innerHTML = generateHTMLContentTourns(websocket_obj.game.tourns);
-
-    container.querySelectorAll('.join-game-btn').forEach(button => {
-      button.addEventListener('click', async function() {
-        const gameId = this.getAttribute('data-gameid');
-        joinGame(gameId);
-      });
-    });
-  }
-}
-
-
 
 
 async function renderInvites() {
@@ -204,7 +197,7 @@ function generateHTMLContentInv(matches) {
     htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
     matches.forEach(match => {
       htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
-      htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button></li>`;
+      htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>`;
 
     });
     htmlContent += '</ul>';
@@ -470,6 +463,7 @@ function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('invites-screen').classList.add('hidden');
   document.getElementById('tournInvitesScreen').classList.add('hidden');
+  document.getElementById('displayTourn').classList.add('hidden');
   document.getElementById('waitingScreen').classList.add('hidden');
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('winningScreen').classList.add('hidden');
@@ -489,6 +483,10 @@ function tournInvSiteClicked() {
 
 
 function gameOver() {
+  document.getElementById('mainSidebar').classList.remove('hidden');
+  document.getElementById('siteContent').classList.add('site-content');
+  document.getElementById('siteContent').classList.remove('site-content-game');
+
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('pongCanvas').classList.add('hidden');
   document.getElementById('winningScreen').classList.remove('hidden');

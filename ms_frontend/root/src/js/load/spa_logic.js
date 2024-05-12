@@ -3,8 +3,10 @@ let userState = {
   currPage: null,
   chatObj: {},
   chatOpen: false,
-  userName: null
+  userName: null,
   
+  tournId: null,
+  currPageNotLogedIn: null
 }
 // groupChatName: "",
 //   idxState : 0
@@ -25,7 +27,7 @@ function handleButtonClick(url) {
 
 
 
-userState.bodyText = document.body.innerHTML;
+  userState.bodyText = document.body.innerHTML;
 
 // userState.currPage = url;
   window.history.pushState(userState, null, url);
@@ -37,6 +39,8 @@ userState.bodyText = document.body.innerHTML;
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
 
+  if (event.state)
+    userState = event.state;
 
   const url = `${window.location.origin}/user/token/existence`
   fetch(url)
@@ -45,8 +49,6 @@ window.onpopstate = async function (event) {
         location.reload();
         throw new Error('Token could not be deleted!');
       }
-      if (event.state)
-        userState = event.state;
       updatePage();
     })
     .catch(error => {
@@ -192,8 +194,9 @@ let logedOutSpaCount = 0;
 
 function spaNotLogedIn(site_to_show) {
   logedOutSpaCount++;
-  userState.currPage = site_to_show;
+  userState.currPageNotLogedIn = site_to_show;
   handleButtonClick("");
+
   // if (site_to_show === 'registerPage')
   //   window.history.replaceState(userState, null, "");
   
