@@ -13,12 +13,10 @@ from backend_app.consumer.chat.messages import _Message
 from backend_app.consumer.chat.chats import _Chat
 from backend_app.consumer.game.game import _Game
 from channels.generic.websocket import AsyncWebsocketConsumer
-
 from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
-
 
 # @jwt.token_required
 
@@ -66,7 +64,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
         self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
         self.channels.append(self.channel_of_user)
-        await self.handle_send_online_stats()# ??
+        await self.handle_send_online_stats()
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -74,17 +72,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.handle_send_online_stats_on_disconnect()
         if self.game_group_id is not None and self.game_id is not None:
             self.game_states[self.game_id]['game_active'] = False
-
             await self.channel_layer.group_send(
                 self.game_group_id,
                 {
                     'type': 'send.opponent.disconnected',
                     'data': {
-
                     },
                 }
             )
-
 
     async def receive(self, text_data):
         token = self.scope['cookies'].get('jwt_token')
@@ -137,6 +132,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
                 await self.handle_unblock_user(text_data_json)
             elif what_type == 'get_avatar':
                 await self.handle_get_avatar(text_data_json)
+            elif what_type == 'new_tournament_chatbot':
+                await self.handle_new_tournament_chatbot(text_data_json)
+            elif what_type == 'save_chatbot_message':
+                await self.handle_save_chatbot_message(text_data_json)
             else:
                 print('IS SOMETHING ELSE')
 
@@ -182,13 +181,9 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         else:
             print('IS SOMETHING ELSE')
 
-
-# ---------------------------- HANDLE FUNCTIONS ---------------------------
-
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
     @database_sync_to_async
     def group_exists(self, group_name):
         channel_layer = get_channel_layer()
         return channel_layer.group_exists(group_name)
-
