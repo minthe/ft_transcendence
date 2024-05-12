@@ -105,11 +105,11 @@ function changeProfileImage() {
         body: JSON.stringify(bodyProfilePictureChange(dataURI))
       })
       .then(async response => {
+        const data = await response.json();
         if (!response.ok) {
-          const data = await response.json();
           throw Error(data.message);
         }
-        document.getElementById('profilePicture').src = dataURI;
+        document.getElementById('profilePicture').src = data.avatar;
         updateProfileMessage(true, "Avatar updated successfully");
       })
       .catch(error => {
