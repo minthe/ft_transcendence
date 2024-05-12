@@ -24,7 +24,7 @@ class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
     isPrivate = models.BooleanField(default=False)
     messages = models.ManyToManyField('Message', blank=True)
-
+    is_read = models.BooleanField(default=True)
 
 class Message(models.Model):
     senderId = models.CharField("senderId", max_length=50)

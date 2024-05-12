@@ -112,6 +112,11 @@ async function handleClickedOnChatElement(chat_obj) {
     websocket_obj.chat_id = chat_obj.chat_id;
     websocket_obj.chat_name = chat_obj.chat_name;
 
+
+    // console.log('chat obj### : ', chat_obj.chat_id);
+    // console.log('chat name### : ', chat_obj.chat_name);
+
+    await sendDataToBackend('messages_in_chat_read') // NEW SINCE 12.05.2024
     await sendDataToBackend('get_online_stats')
     await sendDataToBackend('get_user_in_current_chat')
     await sendDataToBackend('get_chat_messages')
@@ -131,6 +136,13 @@ async function handleClickedOnChatElement(chat_obj) {
     handleButtonClick("");
   }
 }
+
+
+
+
+
+
+
 
 async function renderMessages() {
   let myArray = websocket_obj.messages.message_data;
@@ -254,11 +266,29 @@ async function renderChat() {
     const nameCol = document.createElement('div');
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
     let chatName = document.createElement('div');
+
+    let read_stat  = document.createElement('div');
+    read_stat.classList.add('col-sm-8', 'col-xs-8', 'red-dot');
+
+    if (chat.id === websocket_obj.chat_id) {
+      read_stat.classList.add('hide-dot');
+    } else {
+      if (chat.is_read) {
+          read_stat.classList.add('hide-dot');
+      } else {
+        read_stat.classList.remove('hide-dot');
+      }
+    }
+
     chatName.textContent = chat.chat_name;
 
     chat_element.addEventListener('click', async function () {
       await handleClickedOnChatElement(chat);
+      read_stat.classList.add('hide-dot');
     });
+    rowDiv.appendChild(read_stat)
+
+
     nameCol.appendChild(chatName);
     const timeCol = document.createElement('div');
     timeCol.classList.add('col-sm-4', 'col-xs-4', 'pull-right', 'sideBar-time');
@@ -354,7 +384,6 @@ async function chatSiteClicked() {
   userState.chatOpen = false;
 }
 
-
 async function sendMessage() {
   const isBlocked = websocket_obj.blocked_by && websocket_obj.blocked_by.includes(websocket_obj.chat_name);
     if (isBlocked) {
@@ -379,6 +408,7 @@ async function sendMessage() {
 
     websocket_obj.sender = websocket_obj.username
     document.getElementById('messageInput').value = ''
+    await sendDataToBackend('messages_in_chat_unread')
     await sendDataToBackend('send_chat_message')
     await sendDataToBackend('get_online_stats')
     await sendDataToBackend('get_chat_messages')

@@ -59,7 +59,7 @@ def createChatWithChatBot(user_id):
                 JsonResponse({'message': delete_later}, status=499) # delete later, debug
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)
-        new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
+        new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True, is_read=False)
         new_chat.save()
         user_instance.chats.add(new_chat.id)
         user_instance.save()
