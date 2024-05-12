@@ -21,6 +21,8 @@ services:
         ipv4_address: 172.16.10.2
     expose:
       - 8080
+    depends_on:
+     - vault_store_secrets
 
 # MICROSERVICE API-GATEWAY
   api_gateway:
@@ -42,6 +44,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.3
     depends_on:
+      - vault_store_secrets
       - auth_backend
       - users_db
       - frontend
@@ -61,6 +64,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.4
     depends_on:
+      - vault_store_secrets
       - game_chat_backend
     restart: always
     expose:
@@ -79,8 +83,8 @@ services:
         ipv4_address: 172.16.10.5
     restart: always
     depends_on:
-      users_db:
-        condition: service_healthy
+      - vault
+      - users_db
     expose:
       - 8000
   users_db:
@@ -103,6 +107,8 @@ services:
       - users_db:/var/lib/postgresql/data/
     expose:
       - 5432
+    depends_on:
+     - vault_store_secrets
 
 # MICROSERVICE GAME_CHAT
   game_chat_backend:
@@ -126,7 +132,7 @@ services:
     build:
       context: postgres
     user: postgres
-    env_file: .env
+    #env_file: .env
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
@@ -143,6 +149,43 @@ services:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
       - 5432
+    depends_on:
+     - vault_store_secrets
+    
+  #MICROSERVICE HASHI_VAULT
+  vault:
+    build: ./ms_hashi_vault/vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "root"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    # Add volumes or other configurations as needed
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.9
+    expose:
+      - 8200
+
+  vault_store_secrets:
+    build: ./ms_hashi_vault/vault_store_secrets
+    ports:
+      - 8100
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.10
+    expose:
+      - 8100
+    depends_on:
+      - vault
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://vault:8100/v1/sys/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+
 
 volumes:
   game_chat_db:
