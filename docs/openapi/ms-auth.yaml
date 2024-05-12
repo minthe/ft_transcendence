@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.11'
+  version: '1.9.12'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -284,22 +284,20 @@ paths:
     get:
       tags:
         - Avatar
-      summary: Get Avatar
+      summary: Get Avatar URL
       description: |
         - Returns the URL of the avatar image.
         - If user_id is not provided, it returns the avatar of the user who is logged in.
       security:
         - bearerAuth: []
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: integer
-                  example: 2
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          description: user_id of the requested user
+          required: false
+          example: 2
       responses:
         '200':
           description: Avatar URL
@@ -311,6 +309,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -344,6 +344,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '409':
           description: updating value failed
           content:
@@ -372,6 +374,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -407,6 +411,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '409':
           description: updating value failed
           content:
