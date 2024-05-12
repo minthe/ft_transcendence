@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: auth REST API
-  version: '1.9.10'
+  version: '1.9.12'
 
   description: |
     REST API Documentation for ft_transcendence.
@@ -284,12 +284,23 @@ paths:
     get:
       tags:
         - Avatar
-      summary: Get Avatar
+      summary: Get Avatar URL
+      description: |
+        - Returns the URL of the avatar image.
+        - If user_id is not provided, it returns the avatar of the user who is logged in.
       security:
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          description: user_id of the requested user
+          required: false
+          example: 2
       responses:
         '200':
-          description: OK
+          description: Avatar URL
           content:
             application/json:
               example: {"message": "https://example.com/static/avatar/97994ba2-9ef9-4b54-af1c-74e52f43ad24/username.jpg"}
@@ -298,6 +309,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -322,15 +335,17 @@ paths:
                   example: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBARXhpZgAATU0AKgAAAAgAA1IBAAAAAA... (base64 encoded data)"
       responses:
         '200':
-          description: Avatar updated successfully
+          description: new Avatar URL
           content:
             application/json:
-              example: {"message": "Avatar updated successfully"}
+              example: {"avatar": "https://example.com/static/avatar/97994ba2-9ef9-4b54-af1c-74e52f43ad24/username.jpg"}
         '401':
           description: Missing or invalid JWT token
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '409':
           description: updating value failed
           content:
@@ -359,6 +374,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '500':
           description: Internal server error
           content:
@@ -394,6 +411,8 @@ paths:
           content:
             application/json:
               example: {"message": "Missing or invalid JWT token"}
+        '404':
+          description: User not found
         '409':
           description: updating value failed
           content:

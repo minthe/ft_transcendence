@@ -41,7 +41,7 @@ def avatar(request):
 				user_views.updateValue(user_id, 'avatar', f"https://{settings.CURRENT_HOST}{save_folder}{filename}")
 
 				# Request an GAME_CHAT service
-				avatar = user_views.getValue(user_id, 'avatar') # TODO valentin update with new avatar
+				avatar = user_views.getValue(user_id, 'avatar')
 				jwt_token = jwt.createToken(user_id)
 				game_chat_headers = {
 					"Content-Type": 'application/json',
@@ -57,7 +57,7 @@ def avatar(request):
 				game_chat_response = urlopen(game_chat_request)
 				if game_chat_response.getcode() == 200:
 					user_views.updateValue(user_id, 'avatar', avatar)
-					return JsonResponse({'message': 'Avatar updated successfully'}, status=200)
+					return JsonResponse({'avatar': avatar}, status=200)
 				elif game_chat_response.getcode() == 409:
 					return JsonResponse({'message': 'updating value failed'}, status=409)
 				else:
@@ -65,7 +65,12 @@ def avatar(request):
 			else:
 				return JsonResponse({'message': 'avatar is required'}, status=400)
 
-		if request.method == 'GET': # TODO valentin change later to url that points to the avatar stored as file
+		if request.method == 'GET':
+			param_user_id = request.GET.get('user_id')
+			if param_user_id:
+				if not user_views.checkValueExists('user_id', param_user_id):
+					return JsonResponse({'message': 'User not found'}, status=404)
+				user_id = param_user_id
 			avatar = user_views.getValue(user_id, 'avatar')
 			if avatar:
 				return JsonResponse({'avatar': avatar}, status=200)
