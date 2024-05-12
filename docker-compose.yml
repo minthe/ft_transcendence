@@ -33,7 +33,7 @@ services:
       args:
         CURRENT_HOST: ${CURRENT_HOST}
     volumes:
-      - ./ms_api_gateway/root:/usr/share/nginx/html
+      - static_files:/usr/share/nginx/html/static
       - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
       - ./.cert/:/etc/nginx/ssl/
     ports:
@@ -76,6 +76,7 @@ services:
       context: ms_auth
     volumes:
       - ./ms_auth:/code
+      - static_files:/static
     networks:
       app_net:
         ipv4_address: 172.16.10.5
@@ -147,6 +148,7 @@ services:
 volumes:
   game_chat_db:
   users_db:
+  static_files:
 
 networks:
   app_net:

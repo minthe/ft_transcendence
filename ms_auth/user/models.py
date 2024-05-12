@@ -1,10 +1,10 @@
-from django.conf import settings
+import uuid
 from django.db import models
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password, check_password
 
 class User(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	user_id = models.SmallIntegerField(unique=True, null=True)
 	second_factor_enabled = models.BooleanField(default=False)
 	second_factor_dict = models.JSONField(db_column='second_factor_dict', default=dict)
@@ -12,7 +12,6 @@ class User(models.Model):
 	username = models.CharField(max_length=255, unique=True, null=True)
 	password = models.CharField(max_length=255, null=True)
 	avatar = models.CharField(max_length=2000, null=True)
-	avatar_binary = models.BinaryField(null=True, blank=True)
 	email = models.CharField(max_length=255, unique=True, null=True)
 	alias = models.CharField(max_length=255, unique=True, null=True)
 
@@ -27,9 +26,6 @@ class User(models.Model):
 
 	def generate_random_password(self, length=12):
 		return get_random_string(length)
-
-	def set_default_avatar(self):
-		self.avatar = f"https://{settings.CURRENT_HOST}{settings.LOC_AVATAR}{settings.AVATAR_DEFAULT}"
 
 	@classmethod
 	def get_highest_user_id(cls):
