@@ -57,7 +57,7 @@ def avatar(request):
 				game_chat_response = urlopen(game_chat_request)
 				if game_chat_response.getcode() == 200:
 					user_views.updateValue(user_id, 'avatar', avatar)
-					return JsonResponse({'message': 'Avatar updated successfully'}, status=200)
+					return JsonResponse({'avatar': avatar}, status=200)
 				elif game_chat_response.getcode() == 409:
 					return JsonResponse({'message': 'updating value failed'}, status=409)
 				else:
