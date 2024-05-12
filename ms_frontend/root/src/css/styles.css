@@ -1713,3 +1713,22 @@ margin-right: 10px; */
 @media (min-width: 1201px) {
   
 }
+
+
+
+
+.red-dot::after {
+  content: '';
+  position: absolute;
+  bottom: 35%;
+  right: 15px;
+  transform: translateY(35%);
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.hide-dot::after {
+  display: none;
+}
