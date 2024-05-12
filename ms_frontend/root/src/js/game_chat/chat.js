@@ -92,7 +92,6 @@ async function renderProfile() {
 async function handleClickedOnChatElement(chat_obj) {
   const chat_avatar = document.getElementById('chat_avatar');
 
-  console.log('which chat is it: ', chat_obj.chat_name);
   if (!userState.chatOpen || userState.chatObj.chat_name !== chat_obj.chat_name) {
     showDiv('messageSide')
     if (!chat_obj.isPrivate) { // avatar for group picture:
@@ -121,7 +120,6 @@ async function handleClickedOnChatElement(chat_obj) {
     userState.chatOpen = true;
   }
   else if (userState.chatOpen) {
-    console.log('goes back to default and closes');
     hideDiv('messageSide');
     document.getElementById('right-heading-name').textContent = "";
     chat_avatar.src = "../img/playPongLogoWhite.webp";
