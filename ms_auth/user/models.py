@@ -13,7 +13,7 @@ class User(models.Model):
 	password = models.CharField(max_length=255, null=True)
 	avatar = models.CharField(max_length=2000, null=True)
 	email = models.CharField(max_length=255, unique=True, null=True)
-	alias = models.CharField(max_length=255, unique=True, null=True)
+	alias = models.CharField(max_length=255, null=True)
 
 	def set_password(self, plain_password):
 		if plain_password:

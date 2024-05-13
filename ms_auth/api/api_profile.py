@@ -29,7 +29,7 @@ def profile(request):
 				return JsonResponse({'message': "Email already taken"}, status=409)
 			if user_views.getValue(user_id, 'alias') != alias and user_views.checkValueExists('alias', alias):
 				return JsonResponse({'message': "Alias already taken"}, status=409)
-			if user_views.getValue(user_id, 'alias') != alias and user_views.checkValueExists('username', alias):
+			if user_views.getValue(user_id, 'alias') != alias and user_views.getValue(user_id, 'username') != alias and user_views.checkValueExists('username', alias):
 				return JsonResponse({'message': "Alias cannot be set to a existing username"}, status=409)
 
 			# email validation

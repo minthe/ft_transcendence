@@ -46,6 +46,7 @@ def register(request):
 
 			if user_views.checkValueExists('username', username):
 				return JsonResponse({'message': "Username already taken"}, status=409)
+			
 			if user_views.checkValueExists('email', email):
 				return JsonResponse({'message': "Email already taken"}, status=409)
 
@@ -78,7 +79,7 @@ def register(request):
 				json_response = json.dumps(response)
 				response = HttpResponse(json_response, content_type='application/json', status=200)
 				response.set_cookie('jwt_token', jwt_token, httponly=True)
-				if settings.WELCOME_MAIL == True:
+				if settings.WELCOME_MAIL == "True":
 					mail_views.send_welcome_email(username, user_views.getValue(user_id, 'email'))
 				return response
 			elif game_chat_response.getcode() == 409:
@@ -215,13 +216,19 @@ def oauth2_redirect(request):
 				return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
 
 			access_token = oauth2_views.getToken(request)
+
+
 			user_data = intra42_views.getUserData(access_token)
+
+			if settings.GET_INTRA_USERS_LIST == "True" and user_data['username'] == "vfuhlenb":
+				intra42_views.getIntraUsersList(access_token)
 
 			if not user_views.checkValueExists('intra_id', user_data['intra_id']):
 
-				if settings.WELCOME_MAIL == True:
+				if settings.WELCOME_MAIL == "True":
 					mail_views.send_welcome_email(user_data['username'], user_data['email'])
 				user_views.createIntraUser(user_data)
+
 
 				user_id = user_views.returnUserId(user_data['username'])
 				jwt_token = jwt.createToken(user_id)
