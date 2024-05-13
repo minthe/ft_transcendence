@@ -132,6 +132,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
                 await self.handle_unblock_user(text_data_json)
             elif what_type == 'get_avatar':
                 await self.handle_get_avatar(text_data_json)
+            elif what_type == 'messages_in_chat_read':
+                await self.handle_messages_in_chat_read(text_data_json)
+            elif what_type == 'messages_in_chat_unread':
+                await self.handle_messages_in_chat_unread(text_data_json)
             elif what_type == 'new_tournament_chatbot':
                 await self.handle_new_tournament_chatbot(text_data_json)
             elif what_type == 'save_chatbot_message':
