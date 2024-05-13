@@ -238,6 +238,7 @@ async function renderChat() {
     avatarIcon.classList.add('avatar-icon');
     const avatarImg = document.createElement('img');
 
+    avatarImg.alt = "chat profile image";
     if (!chat.isPrivate) { // avatar for group picture:
       avatarImg.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
     } else if (chat.avatar) {

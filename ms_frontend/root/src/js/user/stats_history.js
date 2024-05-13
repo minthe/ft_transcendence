@@ -11,11 +11,9 @@ function statsBtnClicked() {
 	document.getElementById('userStats').classList.remove('hidden');
 }
 
-function statsSiteClicked() {
-	requestStats();
-	requestHistory();
-	displayStats();
-	displayHistory();
+async function statsSiteClicked() {
+	await requestStats();
+	await requestHistory();
 	document.getElementById('userStats').classList.remove('hidden');
 	document.getElementById('userHistory').classList.add('hidden');
 	showSiteHideOthers('statsSite', 'statsButton');
@@ -39,10 +37,9 @@ function displayStats() {
 	if (isNaN(winRate))
 		document.getElementById('winRate').textContent = "Win Rate: 0%";
 	else
-		"Win Rate: " + winRate + '%';
+		document.getElementById('winRate').textContent = "Win Rate: " + winRate.toFixed(2) + '%';
 }
 
-//display last 5 games if more than 5 games scrollmechanism
 function displayHistory() {
 	const userHistory = document.getElementById('userHistory');
 	let historyHTML = '<h2 class="stats-item">Your History</h2><div class="stats">';

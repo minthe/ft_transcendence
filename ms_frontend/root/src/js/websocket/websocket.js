@@ -291,12 +291,14 @@ async function establishWebsocketConnection() {
         console.log('recieve_stats')
         console.log(data)
         websocket_obj.game_stats = data.stats;
+        displayStats();
         // getUserStats(data.stats);
         break
       case 'recieve_history':
         console.log('recieve_history')
         console.log(data)
         websocket_obj.history = data.history;
+        displayHistory();
         break
       case 'inform_chatbot':
         if (websocket_obj.user_id === data.user_id) {

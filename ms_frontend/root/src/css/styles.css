@@ -6,23 +6,16 @@
 .color4 {color: #ecc85d;}
 .color5 {color: #f8efb5;}
 
-/* body, html {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background-image: url('../img/racketsWithSmokeGreenBackg.png');
 
-} */
-/* background-color: #124457; */
 body, html {
   height: 100%;
   margin: 0;
   overflow: hidden;
   background-image: url('../img/homeScreenRacketsLessColor.webp');
+
   /* background-repeat: no-repeat; */
   /* background-size: cover;  */
   background-position: center; /* This centers the background image in the element */
-  /* background-color: #124457; */ /* Optional: Use as a fallback */
 }
 
 
@@ -228,15 +221,14 @@ body, html {
 }
 
 .home {
-  background-size: cover; /* Cover the entire background */
-  background-position: center; /* Center the background */
-  padding: 20px; /* Add some padding for better readability */
-  text-align: center; /* Center the content horizontally */
-  color: rgb(255, 255, 255); /* Text color */
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  text-align: center;
+  color: rgb(255, 255, 255);
   height: 100vh;
   width:100vw;
   background-image: url('../img/homeScreenRacketsCrossing.webp');
-  /* background-color: #124457; */
 }
 
 .user-name-display {
@@ -252,27 +244,6 @@ body, html {
 .logout-btn:hover {
   box-shadow: 0 0 10px 2px rgba(239, 114, 103, 0.8), 0 0 20px 6px rgba(239, 114, 103, 0.6), 0 0 30px 10px rgba(239, 114, 103, 0.4);
 }
-
-.centered-image {
-  border-radius: 50%;
-  background-image: url('../img/tableTennisLogo.jpg');
-  background-size: cover;
-  background-position: center;
-  width: 33vw;
-  height: 33vw;
-  /* position: absolute; */
-  position: fixed;
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 20px 4px rgba(236, 200, 93, 0.8),
-  0 0 40px 8px rgba(236, 200, 93, 0.6),
-  0 0 60px 12px rgba(236, 200, 93, 0.4);
-  
-  max-width: 55vh;
-  max-height: 55vh;
-}
-
 
 /* chat page */
 
@@ -1034,7 +1005,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .reloader {
-  background-image: url('../img/tableTennisLogo.jpg');
+  background-image: url('../img/tableTennisLogo.webp');
   background-size: cover;
   background-position: center;
   height: 100%;
@@ -1048,7 +1019,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .loader {
-  background-image: url('../img/tableTennisLogo.jpg');
+  background-image: url('../img/tableTennisLogo.webp');
   background-size: cover;
   background-position: center;
   height: 100%;
