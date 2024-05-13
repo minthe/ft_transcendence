@@ -88,7 +88,7 @@ websocket_obj = {
 
   //causes problems
   user_id: null,
-  // game_alias: 
+  // game_alias: null, 
   // mail
 
   game_stats: null,
@@ -178,19 +178,12 @@ async function establishWebsocketConnection() {
       case 'init_game':
         console.log(data);
         document.getElementById("waitingScreen").style.display = "block";
+        document.getElementById('playerOne').textContent = data.host_id;
+        document.getElementById('playerTwo').textContent = data.guest_id;
         if (data.is_host === 'True')
-        {
-          document.getElementById('playerOne').textContent = websocket_obj.username;
-          document.getElementById('playerTwo').textContent = data.guest_id;
           websocket_obj.game.is_host = true
-          console.log("game.is_host = true");
-          console.log(websocket_obj.game.is_host);
-        }
-        else  {
-          document.getElementById('playerOne').textContent = data.host_id;
-          document.getElementById('playerTwo').textContent = websocket_obj.username;
+        else
           websocket_obj.game.is_host = false
-        }
         // websocket_obj.game.game_joined = true;
         break
       case 'game_start':
@@ -298,13 +291,13 @@ async function establishWebsocketConnection() {
       case 'recieve_history':
         console.log('recieve_history')
         console.log(data)
+        websocket_obj.history = data.history;
+        displayHistory();
         break
       case 'set_message_stat':
         if (websocket_obj.user_id !== data.user_id) {
           await sendDataToBackend('get_current_users_chats')
         }
-        websocket_obj.history = data.history;
-        displayHistory();
         break
       case 'inform_chatbot':
         if (websocket_obj.user_id === data.user_id) {
