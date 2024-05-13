@@ -67,7 +67,6 @@ class FT_JWT:
 			else:
 				print ("Expiration time not found in payload")
 				return False, "Expiration time not found in payload"
-			print ("Token is valid")
 			return True, "Token is valid"
 		except Exception as e:
 			error_message = str(e)
