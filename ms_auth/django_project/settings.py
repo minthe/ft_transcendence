@@ -33,6 +33,7 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 # Feature Flags
 WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
+GET_INTRA_USERS_LIST = os.environ.get('GET_INTRA_USERS_LIST')
 
 ALLOWED_HOSTS = ['*']
 

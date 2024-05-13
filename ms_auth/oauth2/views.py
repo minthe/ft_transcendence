@@ -23,8 +23,9 @@ def getToken(request):
 		response = urlopen(request)
 		response_data = response.read().decode("utf-8")
 		credentials = json.loads(response_data)
+		access_token = credentials.get("access_token")
 
-		return (credentials.get("access_token"))
+		return (access_token)
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
