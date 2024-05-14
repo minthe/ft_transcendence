@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbar */
+        }
+
+        .fullscreen-bg {
+            position: relative;
+            height: 100vh; /* Full height */
+            width: 100vw; /* Full width */
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        .fullscreen-bg__image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Cover the whole screen without stretching */
+        }
+
+    .error-text {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Center the text over the image */
+        color: white; /* Text color */
+        font-weight: bold; /* Bold text */
+        text-align: center;
+        z-index: 10;
+        text-shadow: 2px 2px 2px #000,
+                    -1px -1px 2px #000,
+                    1px -1px 2px #000,
+                    -1px 1px 2px #000;
+    }
+
+
+        .error-text h1 {
+            font-size: 6vh;
+        }
+
+        .error-text p {
+            font-size: 4vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-bg">
+        <img src="../../img/errPages/playPongError405.webp" alt="A pong game themed error image" class="fullscreen-bg__image">
+        <div class="error-text">
+            <h1>Method Not Allowed</h1>
+            <p>The request method is known by the server but has been disabled and cannot be used for the URL you requested.</p>
+        </div>
+    </div>
+</body>
+</html>

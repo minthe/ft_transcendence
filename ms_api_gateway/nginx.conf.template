@@ -19,6 +19,11 @@ http {
         # allow 62.176.248.0/24;
         # deny all;
 
+        root /usr/share/nginx/html;
+
+        error_page 403 404 405 408 /errPages/error40x.html;
+        error_page 502 /errPages/error50x.html;
+
         location / {
             proxy_pass http://frontend:4242;
             proxy_set_header Host $host;
@@ -26,7 +31,7 @@ http {
 
         location /static {
             root /usr/share/nginx/html;
-            try_files $uri $uri/ =404;
+            try_files $uri $uri/ /errPages/error40x.html;
         }
 
         location /swagger/ {
