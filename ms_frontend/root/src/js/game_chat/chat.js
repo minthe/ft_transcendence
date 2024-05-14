@@ -148,6 +148,10 @@ async function renderMessages() {
   let myArray = websocket_obj.messages.message_data;
   renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
+
+  if (!mainContainer)
+    return ;
+
   mainContainer.innerHTML = '';
   if (!myArray) { return }
   let tmpDiv = [];
@@ -202,6 +206,10 @@ async function renderMessages() {
 
 function renderUserInChatList() {
   let mainContainer = document.getElementById('userInChatList');
+  
+  if (!mainContainer)
+    return ;
+
   mainContainer.innerHTML = '';
   let myArray = websocket_obj.userInCurrentChat
   let title = document.createElement('h2');
