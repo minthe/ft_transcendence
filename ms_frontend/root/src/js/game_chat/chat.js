@@ -148,6 +148,10 @@ async function renderMessages() {
   let myArray = websocket_obj.messages.message_data;
   renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
+
+  if (!mainContainer)
+    return ;
+
   mainContainer.innerHTML = '';
   if (!myArray) { return }
   let tmpDiv = [];
@@ -202,6 +206,10 @@ async function renderMessages() {
 
 function renderUserInChatList() {
   let mainContainer = document.getElementById('userInChatList');
+  
+  if (!mainContainer)
+    return ;
+
   mainContainer.innerHTML = '';
   let myArray = websocket_obj.userInCurrentChat
   let title = document.createElement('h2');
@@ -250,6 +258,7 @@ async function renderChat() {
     avatarIcon.classList.add('avatar-icon');
     const avatarImg = document.createElement('img');
 
+    avatarImg.alt = "chat profile image";
     if (!chat.isPrivate) { // avatar for group picture:
       avatarImg.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
     } else if (chat.avatar) {

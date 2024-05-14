@@ -28,7 +28,7 @@ function generateHTMLContentTourns(matches) {
 	  htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
 	  matches.forEach(match => {
 		htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Host: ${match[0][0].tourn_host}, Tournament ID: ${match[0][0].tourn_host}</li>`;
-		htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-tourn-btn btn btn-secondary" data-tournid="${match[0][0].tourn_host}">Join Tournament</button>`;
+		htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-tourn-btn btn btn-secondary" data-tournid="${match[0][0].tourn_host}">Enter Tournament</button>`;
  
 	  });
 	  htmlContent += '</ul>';
