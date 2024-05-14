@@ -19,13 +19,15 @@ function initUserData(data, username) {
 
 }
 
-function authSucces() {
+async function authSucces() {
   showDiv('showUserProfile')
   document.getElementById('displayUserName').textContent = 'Hey '+ websocket_obj.username +' 🫠';
 
   establishWebsocketConnection()
   userState.userName = websocket_obj.username;
   userState.bodyText = document.body.innerHTML;
+
+
   // handleButtonClick("");
 
   // if (userState.currPage === 'loginPage' || userState.currPage === 'RegisterPage')
@@ -33,8 +35,6 @@ function authSucces() {
   window.history.go(-logedOutSpaCount);
   logedOutSpaCount = 0;
   userState.currPageNotLogedIn = null;
-
-
   window.history.replaceState(userState, null, "");
 }
 

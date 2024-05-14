@@ -8,36 +8,42 @@ function addEventListenersIsAuth() {
   loadCreators('html/creators.html', 'creatorsSite');
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
-    // verifyButtonClick(event);
   });
 
   
 
   document.addEventListener('keypress', async function(event) {
-      if (event.key === 'Enter' || event.keyCode === 13) {
+    if (event.key === 'Enter' || event.keyCode === 13) {
         event.preventDefault();
-        await enterKeyEvent();
+        if (await enterKeyEvent())
+          return ;
+        handleClickEvent(event);
       }
   });
 }
 
 async function enterKeyEvent() {
   if (!document.getElementById('loginPage').classList.contains('hidden')
-    && !document.getElementById('userIsNotAuth').classList.contains('hidden'))
-      loginUserButton();
+    && !document.getElementById('userIsNotAuth').classList.contains('hidden')) {
+    loginUserButton();
+    return true;
+  }
   else if (!document.getElementById('registerPage').classList.contains('hidden') 
     && !document.getElementById('userIsNotAuth').classList.contains('hidden')) {
-      // console.log('went in register user button enter key!!!!!!!!');
-      RegisterUserButton();
+    RegisterUserButton();
+    return true;
   }
   else if (!document.getElementById('chat').classList.contains('hidden')
     && userState.chatOpen && !document.getElementById('sendMessageButton').disabled) {
-      console.log('enter on message!!!!!!!!!!!!');
-      await sendMessage();
+    await sendMessage();
+    return true;
   }
   else if (!document.getElementById('profileSite').classList.contains('hidden')
-    && document.getElementById('saveButton').style.display !== 'none')
+    && document.getElementById('saveButton').style.display !== 'none') {
     saveChanges();
+    return true;
+  }
+  return false;
 }
 
 
