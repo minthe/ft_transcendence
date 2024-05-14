@@ -771,13 +771,20 @@ class _Game:
 
             unit = []
             tourn_entry = []
-            tourn_host = tourns.hostId
-            tourn_winner = tourns.winnerId
+            # tourn_host = tourns.hostId
+            tourn_host = MyUser.objects.get(user_id=int(tourns.hostId)).alias
+            # tourn_winner = MyUser.objects.get(user_id=int(tourns.winnerId)).alias
+            if tourns.winnerId is not None:
+                tourn_winner = MyUser.objects.get(user_id=int(tourns.winnerId)).alias
+            else:
+                tourn_winner = None
+            tourn_id = tourns.id
             # tourn_status = tourns.status
 
             tourn_entry.append({
                 'tourn_host': tourn_host,
-                'tourn_winner': tourn_winner
+                'tourn_winner': tourn_winner,
+                'tourn_id': tourn_id
                 # 'tourn_status': tourn_status
             })
             unit.append(tourn_entry)
