@@ -2,6 +2,7 @@ import json
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
+from django.core.exceptions import ValidationError
 from django.core.cache import cache
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_http_methods
@@ -13,6 +14,7 @@ from second_factor import views as second_factor_views
 from mail import views as mail_views
 from oauth2 import views as oauth2_views
 from intra42 import views as intra42_views
+from . import serializers as serializers_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
@@ -34,13 +36,14 @@ def register(request):
 			data =json.loads(request.body)
 			username = data.get('username')
 			email = data.get('email')
-			avatar = settings.AVATAR_DEFAULT
+			password = data.get('password')
 
-			''' TODO valentin
-			Input validation
-			- refactor later into deserialize function
-			- add password validation
-			'''
+			try:
+				serializers_views.validate_username(username)
+				serializers_views.validate_password(password)
+			except ValidationError as e:
+				return JsonResponse({'message': str(e)}, status=409)
+
 			if mail_views.validator(email) == False:
 				return JsonResponse({'message': 'Email invalid'}, status=400)
 
@@ -52,6 +55,8 @@ def register(request):
 
 			user = user_views.createUser(data)
 			user_id = user_views.returnUserId(username)
+			avatar = user_views.getValue(user_id, 'avatar')
+			username = user_views.getValue(user_id, 'username')
 			second_factor_status = user_views.getValue(user_id, 'second_factor_enabled')
 			jwt_token = jwt.createToken(user_id)
 
@@ -102,6 +107,13 @@ def login(request):
 			data =json.loads(request.body)
 			username = data.get('username')
 			password = data.get('password')
+
+			try:
+				serializers_views.validate_username(username)
+				serializers_views.validate_password(password)
+			except ValidationError as e:
+				return JsonResponse({'message': str(e)}, status=409)
+
 			if not user_views.checkValueExists('username', username):
 				return JsonResponse({'message': "User not found"}, status=404)
 			if not user_views.check_password(username, password):

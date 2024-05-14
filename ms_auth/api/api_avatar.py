@@ -1,8 +1,10 @@
 import json, base64, os
 from django.conf import settings
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
 from urllib.request import Request, urlopen
 from user import views as user_views
+from . import serializers as serializers_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
@@ -20,12 +22,16 @@ def avatar(request):
 
 		if request.method == 'PUT':
 			request_body = json.loads(request.body)
-			avatar_binary = request_body.get('avatar') # TODO valentin check if data is valid and if size over 5mb handle error
+			avatar_binary = request_body.get('avatar')
 
 			if avatar_binary:
 				missing_padding = len(avatar_binary) % 4
 				if missing_padding != 0:
 					avatar_binary += '=' * (4 - missing_padding)
+				try:
+					serializers_views.validate_avatar(avatar_binary)
+				except Exception as e:
+					return JsonResponse({'error': str(e)}, status=409)
 				format, imgstr = avatar_binary.split(';base64,')
 				ext = format.split('/')[-1]
 
@@ -68,6 +74,11 @@ def avatar(request):
 		if request.method == 'GET':
 			param_user_id = request.GET.get('user_id')
 			if param_user_id:
+				try:
+					serializers_views.validate_user_id(param_user_id)
+				except ValidationError as e:
+					return JsonResponse({'error': str(e)}, status=409)
+				serializers_views.validate_user_id(param_user_id)
 				if not user_views.checkValueExists('user_id', param_user_id):
 					return JsonResponse({'message': 'User not found'}, status=404)
 				user_id = param_user_id
