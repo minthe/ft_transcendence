@@ -183,9 +183,17 @@ class _Game:
         game_instance = await self.get_game_instance(self.game_id)
         await self.send(text_data=json.dumps({
             'type': 'init_game',
+            'alias_one': event['data']['alias_one'],
+            'alias_two': event['data']['alias_two'],
             'is_host': event['data']['is_host'],
             'guest_id': game_instance.guestId,
-            'host_id': game_instance.hostId#julien edited
+            'host_id': game_instance.hostId,
+            'num_id_one': event['data']['num_id_one'],
+            'num_id_two': event['data']['num_id_two'],
+            'str_id_one': event['data']['str_id_one'],
+            'str_id_two': event['data']['str_id_two'],
+            'is_tourn': event['data']['is_tourn'],
+
 
         }))
 
@@ -326,14 +334,24 @@ class _Game:
         # self.game_states.get(self.game_id, {}).get('joined_players')
         print("self.joined_players")
         print(self.game_states.get(self.game_id, {}).get('joined_players'))
-
+        
+        data = await self.get_players_id(self.game_id)
+        print("data")
+        print(data)
         await self.channel_layer.send(
             self.channel_name,
             {
                 'type': 'send.init.game',
                 'data': {
                     'is_host': return_val,
-                    'joined_players': self.game_states.get(self.game_id, {}).get('joined_players')
+                    'joined_players': self.game_states.get(self.game_id, {}).get('joined_players'),
+                    'num_id_one': data[0]['num_id_one'],
+                    'num_id_two': data[0]['num_id_two'],
+                    'str_id_one': data[0]['str_id_one'],
+                    'str_id_two': data[0]['str_id_two'],
+                    'is_tourn': data[0]['is_tourn'],
+                    'alias_one': data[0]['alias_one'],
+                    'alias_two': data[0]['alias_two']
                 },
             }
         )
@@ -438,6 +456,43 @@ class _Game:
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
     
     @database_sync_to_async
+    def get_players_id(self, game_id):
+        print("in get_players_id")
+        game_instance = Game.objects.get(id=game_id)
+        return_data = []
+        print("game_instance.hostId")
+        print(game_instance.hostId)
+        print(type(game_instance.hostId))
+        if game_instance.hostId.isdigit():
+            str_id_one = MyUser.objects.get(user_id=int(game_instance.hostId)).name
+            str_id_two = MyUser.objects.get(user_id=int(game_instance.guestId)).name
+            num_id_one = int(game_instance.hostId)
+            num_id_two = int(game_instance.guestId)
+            alias_one = MyUser.objects.get(user_id=int(game_instance.hostId)).alias
+            alias_two = MyUser.objects.get(user_id=int(game_instance.guestId)).alias
+            is_tourn = 'True'
+
+        else:
+            str_id_one = game_instance.hostId
+            str_id_two = game_instance.guestId
+            num_id_one = int(MyUser.objects.get(name=game_instance.hostId).user_id)
+            num_id_two = int(MyUser.objects.get(name=game_instance.guestId).user_id)
+            alias_one = None
+            alias_two = None
+            is_tourn = 'False'
+
+        return_data.append({
+            'num_id_one': num_id_one,
+            'num_id_two': num_id_two,
+            'str_id_one': str_id_one,
+            'str_id_two': str_id_two,
+            'is_tourn': is_tourn,
+            'alias_one': alias_one,
+            'alias_two': alias_two
+        })
+        return return_data
+
+    @database_sync_to_async
     def get_history(self, user_id):
         user_instance = MyUser.objects.get(user_id=user_id)
         before_reverse = user_instance.old_matches.all()
@@ -446,9 +501,15 @@ class _Game:
         for game_session in game_sessions:
             # print(game_session.id)
             game_entry = []
-            winner_id = game_session.winnerId
-            loser_id = game_session.loserId
+            # winner_id = game_session.winnerId
+            # loser_id = game_session.loserId
             game_id = game_session.id
+            if game_session.hostId.isdigit():
+                winner_id = MyUser.objects.get(user_id=int(game_session.hostId)).name
+                loser_id = MyUser.objects.get(user_id=int(game_session.guestId)).name
+            else:
+                winner_id = game_session.winnerId
+                loser_id = game_session.loserId
             # date = game_session.date.isoformat()
             date = game_session.date.strftime("%Y-%m-%d %H:%M:%S")
             game_entry.append({
@@ -463,11 +524,15 @@ class _Game:
     @database_sync_to_async
     def get_stats(self, user_id):
         user_instance = MyUser.objects.get(user_id=user_id)
-        won_games = user_instance.old_matches.filter(winnerId=user_id).count()
-        lost_games = user_instance.old_matches.filter(loserId=user_id).count()
-        total_games = won_games + lost_games
+        won_games = user_instance.old_matches.filter(winnerId=user_instance.name).count()
+        won_tourn_games = user_instance.old_matches.filter(winnerId=user_id).count()
 
-        return { 'won_games': won_games, 'lost_games': lost_games, 'total_games': total_games }
+        lost_games = user_instance.old_matches.filter(loserId=user_instance.name).count()
+        lost_tourn_games = user_instance.old_matches.filter(loserId=user_id).count()
+
+        total_games = won_games + lost_games + won_tourn_games + lost_tourn_games
+
+        return { 'won_games': won_games + won_tourn_games, 'lost_games': lost_games + lost_tourn_games, 'total_games': total_games }
 
     @database_sync_to_async
     def matchResults(self, game_struct):
@@ -669,9 +734,20 @@ class _Game:
 
     @database_sync_to_async
     def get_host(self, game_id, user_id):
+        print("in get_host")
         game_instance = Game.objects.get(id=game_id)
-        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        if user_instance.name == game_instance.hostId:
+        if game_instance.hostId.isdigit():
+            to_compare = MyUser.objects.get(user_id=int(game_instance.hostId)).name
+        else:
+            to_compare = game_instance.hostId
+        user_instance = MyUser.objects.get(user_id=user_id)
+        print("user_instance name")
+        print(user_instance.name)
+        print(type(user_instance.name))
+        print("to_compare")
+        print(to_compare)
+        print(type(to_compare))
+        if user_instance.name == to_compare:
             self.is_host = True
             check_host = 'True'
         else:
@@ -699,13 +775,20 @@ class _Game:
 
             unit = []
             tourn_entry = []
-            tourn_host = tourns.hostId
-            tourn_winner = tourns.winnerId
+            # tourn_host = tourns.hostId
+            tourn_host = MyUser.objects.get(user_id=int(tourns.hostId)).alias
+            # tourn_winner = MyUser.objects.get(user_id=int(tourns.winnerId)).alias
+            if tourns.winnerId is not None:
+                tourn_winner = MyUser.objects.get(user_id=int(tourns.winnerId)).alias
+            else:
+                tourn_winner = None
+            tourn_id = tourns.id
             # tourn_status = tourns.status
 
             tourn_entry.append({
                 'tourn_host': tourn_host,
-                'tourn_winner': tourn_winner
+                'tourn_winner': tourn_winner,
+                'tourn_id': tourn_id
                 # 'tourn_status': tourn_status
             })
             unit.append(tourn_entry)
@@ -718,6 +801,9 @@ class _Game:
                 winner_id = game_session.winnerId
                 loser_id = game_session.loserId
                 stage = game_session.stage
+                alias_one = MyUser.objects.get(user_id=player_one).alias
+                alias_two = MyUser.objects.get(user_id=player_two).alias
+
                 # i = i + 1
 
                 
@@ -728,7 +814,10 @@ class _Game:
                     'game_id': game_id,
                     'winner_id': winner_id,
                     'loser_id': loser_id,
-                    'stage': stage
+                    'stage': stage,
+                    'alias_one': alias_one,
+                    'alias_two': alias_two
+
 
                 })
                 unit.append(game_entry)
