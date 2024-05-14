@@ -332,7 +332,8 @@ class _Game:
         print(self.game_states.get(self.game_id, {}).get('joined_players'))
         
         data = await self.get_players_id(self.game_id)
-
+        print("data")
+        print(data)
         await self.channel_layer.send(
             self.channel_name,
             {
@@ -344,6 +345,9 @@ class _Game:
                     'num_id_two': data[0]['num_id_two'],
                     'str_id_one': data[0]['str_id_one'],
                     'str_id_two': data[0]['str_id_two'],
+                    'is_tourn': data[0]['is_tourn'],
+                    'alias_one': data[0]['alias_one'],
+                    'alias_two': data[0]['alias_two']
                 },
             }
         )
@@ -460,17 +464,27 @@ class _Game:
             str_id_two = MyUser.objects.get(user_id=int(game_instance.guestId)).name
             num_id_one = int(game_instance.hostId)
             num_id_two = int(game_instance.guestId)
+            alias_one = MyUser.objects.get(user_id=int(game_instance.hostId)).alias
+            alias_two = MyUser.objects.get(user_id=int(game_instance.guestId)).alias
+            is_tourn = 'True'
+
         else:
             str_id_one = game_instance.hostId
             str_id_two = game_instance.guestId
             num_id_one = int(MyUser.objects.get(name=game_instance.hostId).user_id)
             num_id_two = int(MyUser.objects.get(name=game_instance.guestId).user_id)
+            alias_one = None
+            alias_two = None
+            is_tourn = 'False'
 
         return_data.append({
             'num_id_one': num_id_one,
             'num_id_two': num_id_two,
             'str_id_one': str_id_one,
-            'str_id_two': str_id_two
+            'str_id_two': str_id_two,
+            'is_tourn': is_tourn,
+            'alias_one': alias_one,
+            'alias_two': alias_two
         })
         return return_data
 
@@ -776,6 +790,9 @@ class _Game:
                 winner_id = game_session.winnerId
                 loser_id = game_session.loserId
                 stage = game_session.stage
+                alias_one = MyUser.objects.get(user_id=player_one).alias
+                alias_two = MyUser.objects.get(user_id=player_two).alias
+
                 # i = i + 1
 
                 
@@ -786,7 +803,10 @@ class _Game:
                     'game_id': game_id,
                     'winner_id': winner_id,
                     'loser_id': loser_id,
-                    'stage': stage
+                    'stage': stage,
+                    'alias_one': alias_one,
+                    'alias_two': alias_two
+
 
                 })
                 unit.append(game_entry)
