@@ -183,6 +183,8 @@ class _Game:
         game_instance = await self.get_game_instance(self.game_id)
         await self.send(text_data=json.dumps({
             'type': 'init_game',
+            'alias_one': event['data']['alias_one'],
+            'alias_two': event['data']['alias_two'],
             'is_host': event['data']['is_host'],
             'guest_id': game_instance.guestId,
             'host_id': game_instance.hostId,
@@ -190,6 +192,8 @@ class _Game:
             'num_id_two': event['data']['num_id_two'],
             'str_id_one': event['data']['str_id_one'],
             'str_id_two': event['data']['str_id_two'],
+            'is_tourn': event['data']['is_tourn'],
+
 
         }))
 
