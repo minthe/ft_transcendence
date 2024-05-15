@@ -49,7 +49,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.is_host = 0
         self.game_id = 0
         self.game_group_id = None
-        self.stable_game_id
+        self.stable_game_id = 0
         self.invited_id = 0
         self.dis_user_id = 0
 
