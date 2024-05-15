@@ -150,7 +150,7 @@ class _Game:
                 print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
                 # await asyncio.sleep(0.01)
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(1)
 
                 # game_status = self.game_states.get(self.game_id, {}).get('game_active')
                 print("GAME ACTIVE")
@@ -172,7 +172,6 @@ class _Game:
                 # tourn_id = await self.matchResults(self.game_states[self.game_id])
                 tourn_id = await self.matchResults()
 
-                self.game_states.pop(self.game_id, None)
                 print("111111")
 
                 await self.channel_layer.group_send(
@@ -186,6 +185,7 @@ class _Game:
                         },
                     }
                 )
+                # self.game_states.pop(self.game_id, None)
                 try:
                     await self.remove_ended_match(self.user['user_id'], self.game_id)
                     # await self.reset_joined_players()
@@ -200,6 +200,8 @@ class _Game:
         print("-----GAME LOOP OVER-----")
         print(self.game_states.get(self.game_id, {}).get('game_loop_task'))
         self.game_states[self.game_id]['game_loop_task'] = None
+        # self.game_states.pop(self.game_id, None)
+
         # self.game_states.get(self.game_id, {}).get('game_loop_task').cancel()
 
 
