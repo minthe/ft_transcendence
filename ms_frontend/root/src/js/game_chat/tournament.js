@@ -66,11 +66,13 @@ function joinTourn(tournId, matches) {
 			
 			if (match[1][0].winner_id) {
 				if (match[1][0].player_one === match[1][0].winner_id) {
+					console.log("playerOne won: ", match[1][0].player_one, "winner id : ", match[1][0].winner_id)
 					playerOne.classList.add('winner-tourn-game');
 					playerTwo.classList.add('loser-tourn-game');
 					winnerGameOne.textContent = match[1][0].alias_one;
 				}
 				else {
+					console.log("playerTwo won: ", match[1][0].player_two, "winner id : ", match[1][0].winner_id)
 					playerOne.classList.add('loser-tourn-game');
 					playerTwo.classList.add('winner-tourn-game');
 					winnerGameOne.textContent = match[1][0].alias_two;
@@ -93,7 +95,7 @@ function joinTourn(tournId, matches) {
 				else {
 					playerThree.classList.add('loser-tourn-game');
 					playerFour.classList.add('winner-tourn-game');
-					winnerGameTwo.textContent = match[2][0].alias_one;
+					winnerGameTwo.textContent = match[2][0].alias_two;
 				}
 			}
 			else if (match[2][0].player_one === userId 
