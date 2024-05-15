@@ -3,8 +3,8 @@ function loginUserButton() {
 	const usernameElement = getUsername();
   const passwordElement = getPassword();
 
-  if (sqlCheckLogin(usernameElement, passwordElement))
-    return ;
+  // if (sqlCheckLogin(usernameElement, passwordElement))
+  //   return ;
 
   const url = `${window.location.origin}/user/login`
   fetch(url, {
