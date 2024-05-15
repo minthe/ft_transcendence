@@ -1,9 +1,11 @@
 import json
 from django.conf import settings
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
 from urllib.request import Request, urlopen
 from user import views as user_views
 from mail import views as mail_views
+from . import serializers as serializers_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
@@ -20,10 +22,14 @@ def profile(request):
 			return JsonResponse({'message': 'User not found'}, status=404)
 
 		if request.method == 'PUT':
-			# TODO valentin input validation
 			data = json.loads(request.body.decode('utf-8'))
 			email = data.get('email')
 			alias = data.get('alias')
+
+			try:
+				serializers_views.validate_alias(alias)
+			except ValidationError as e:
+				return JsonResponse({'message': str(e)}, status=409)
 
 			if user_views.getValue(user_id, 'email') != email and user_views.checkValueExists('email', email):
 				return JsonResponse({'message': "Email already taken"}, status=409)

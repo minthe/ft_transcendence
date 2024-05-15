@@ -33,7 +33,10 @@ def createIntraUser(user_data):
 	user = User()
 	user.intra_id = user_data['intra_id']
 	user.username = user_data['username']
-	user.alias = user_data['username']
+	if checkValueExists('alias', user_data['username']):
+		user.alias = f"{user_data['username']} the second"
+	else:
+		user.alias = user_data['username']
 	user.email = user_data['email']
 	user.avatar = user_data['image']
 	user.set_password('') # TODO valentin: change before production
@@ -51,7 +54,10 @@ def createUser(data):
 			raise Exception('Missing data')
 	user = User()
 	user.username = data['username']
-	user.alias = data['username']
+	if checkValueExists('alias', data['username']):
+		user.alias = f"{data['username']} the second"
+	else:
+		user.alias = data['username']
 	user.email = data['email']
 	user.set_password(data['password'])
 	user.second_factor_enabled = False

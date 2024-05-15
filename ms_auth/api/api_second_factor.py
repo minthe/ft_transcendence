@@ -2,18 +2,25 @@ import json
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError
 from user import views as user_views
 from second_factor import views as second_factor_views
+from . import serializers as serializers_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
 @require_http_methods(["POST"])
 def second_factor_verify(request):
-	# TODO valentin: Input Validation
 	data = json.loads(request.body.decode('utf-8'))
 	user_id = data.get('user_id')
 	code = data.get('code')
+
+	try:
+		serializers_views.validate_2fa_code(code)
+		serializers_views.validate_user_id(user_id)
+	except ValidationError as e:
+		return JsonResponse({'message': str(e)}, status=409)
 
 	if not user_views.checkValueExists('user_id', user_id):
 		return HttpResponse(status=404)
