@@ -150,8 +150,8 @@ class _Game:
                 )
                 print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
-                # await asyncio.sleep(0.01)
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.01)
+                # await asyncio.sleep(1)
 
                 # game_status = self.game_states.get(self.stable_game_id, {}).get('game_active')
                 print("GAME ACTIVE")
