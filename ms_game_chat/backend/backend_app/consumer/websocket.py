@@ -72,22 +72,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
         if self.game_group_id is not None and self.game_id is not None:
-<<<<<<< HEAD
             self.game_states[self.game_id]['game_active'] = False
-=======
-            # self.game_states[self.game_id]['game_active'] = False
-
->>>>>>> game4
             await self.channel_layer.group_send(
                 self.game_group_id,
                 {
                     'type': 'send.opponent.disconnected',
                     'data': {
-<<<<<<< HEAD
-=======
                         'user_id': self.user['user_id']
 
->>>>>>> game4
                     },
                 }
             )
@@ -105,7 +97,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         what_type = text_data_json["type"]
 
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score', '']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
