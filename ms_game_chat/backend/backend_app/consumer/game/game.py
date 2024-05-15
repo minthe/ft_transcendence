@@ -176,7 +176,7 @@ class _Game:
 
                 await self.channel_layer.group_send(
                     # self.game_group_id,
-                    self.game_states.get(self.game_id, {}).get('group_id'),
+                    self.game_states.get(self.stable_game_id, {}).get('group_id'),
                     {
                         'type': 'send.game.over',
                         'data': {
@@ -565,6 +565,7 @@ class _Game:
             # else:
             #     asyncio.create_task(self.game_loop())
             #     print("game loop already running")
+        self.stable_game_id = self.game_id
         print("END OF SEND INIT GAME")
         print("self.game_states.get(self.game_id, {}).get('player_one')")
         print(self.game_states.get(self.game_id, {}).get('player_one'))
