@@ -586,7 +586,8 @@ function gameOver() {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  activateFireworks();
+  if (websocket_obj.game.game_id === data.game_id)
+    activateFireworks();
   
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');
@@ -597,7 +598,7 @@ function gameOver() {
   console.log("GAME_OVER");
 
   websocket_obj.game.hostname
-
+  websocket_obj.game.active_state = false
   websocket_obj.game.host_score = 0
   websocket_obj.game.guest_score = 0
   websocket_obj.game.game_id = 0
