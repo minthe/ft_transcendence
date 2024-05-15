@@ -2,6 +2,8 @@ events {}
 
 http {
 
+    client_max_body_size 2M;
+
     server {
         listen 80;
         server_name ${CURRENT_HOST};
@@ -25,6 +27,13 @@ http {
 
         error_page 403 404 405 408 /errPages/error40x.html;
         error_page 502 /errPages/error50x.html;
+        error_page 413 /413.json;
+
+        location = /413.json {
+            internal;
+            default_type application/json;
+            return 413 '{"message": "Request entity too large"}';
+        }
 
         location / {
             proxy_pass http://frontend:4242;
@@ -68,12 +77,11 @@ http {
         }
 
         location ~ ^/user/ {
-        client_max_body_size 5m;
-        proxy_pass http://auth_backend:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://auth_backend:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
 }

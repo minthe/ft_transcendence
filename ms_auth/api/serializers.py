@@ -31,8 +31,8 @@ def validate_password(password):
 
 def validate_avatar(avatar):
 	decoded_data = base64.b64decode(avatar)
-	if len(decoded_data) > 5 * 1024 * 1024:
-		raise ValidationError('File size over 5 MB limit')
+	if len(decoded_data) > 2 * 1024 * 1024:
+		raise ValidationError('File size over 2 MB limit')
 	return None
 
 def validate_user_id(user_id):
