@@ -154,3 +154,25 @@ async function profileButtonClicked() {
   document.getElementById('profileName').textContent = websocket_obj.username;
   showSiteHideOthers('profileSite', 'profileButton');
 }
+
+async function getProfilePicture(id) {
+  let avatarUrl;
+  const url = `${window.location.origin}/user/avatar?user_id=${id}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headerProfilePictureChange(),
+    });
+    const data = await response.json();
+    console.log('data getting picture: ', data);
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+    avatarUrl = data.avatar;
+    console.log("in fetch avatarUrl: ", avatarUrl);
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+  }
+  console.log("avatarUrl: ", avatarUrl);
+  return avatarUrl;
+}

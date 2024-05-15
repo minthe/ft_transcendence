@@ -502,3 +502,26 @@ function gameOver() {
   websocket_obj.game.game_id = 0
   updateScore();
 }
+
+
+async function initGame(data) {
+  console.log(data);
+  document.getElementById("waitingScreen").style.display = "block";
+  // if (data.is_tourn) {
+  //   document.getElementById('playerOne').textContent = data.;
+  //   document.getElementById('playerTwo').textContent = data.guest_id;
+  // }
+  // else {
+    document.getElementById('playerOne').textContent = data.alias_one;
+    document.getElementById('playerTwo').textContent = data.alias_two;
+  // }
+
+  document.getElementById('imgHost').src = await getProfilePicture(data.num_id_one);
+  document.getElementById('imgGuest').src = await getProfilePicture(data.num_id_two); 
+
+  if (data.is_host === 'True')
+    websocket_obj.game.is_host = true
+  else
+    websocket_obj.game.is_host = false
+  // websocket_obj.game.game_joined = true;
+}

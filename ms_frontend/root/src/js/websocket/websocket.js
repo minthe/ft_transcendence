@@ -176,15 +176,7 @@ async function establishWebsocketConnection() {
         // await renderGame()
         break
       case 'init_game':
-        console.log(data);
-        document.getElementById("waitingScreen").style.display = "block";
-        document.getElementById('playerOne').textContent = data.host_id;
-        document.getElementById('playerTwo').textContent = data.guest_id;
-        if (data.is_host === 'True')
-          websocket_obj.game.is_host = true
-        else
-          websocket_obj.game.is_host = false
-        // websocket_obj.game.game_joined = true;
+        initGame(data);
         break
       case 'game_start':
          
