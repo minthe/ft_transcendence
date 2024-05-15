@@ -37,12 +37,14 @@ def register(request):
 			username = data.get('username')
 			email = data.get('email')
 			password = data.get('password')
-
 			try:
 				serializers_views.validate_username(username)
-				serializers_views.validate_password(password)
+				if settings.STRONG_PASSWORD == "True":
+					serializers_views.validate_password(password)
 			except ValidationError as e:
-				return JsonResponse({'message': str(e)}, status=409)
+				return JsonResponse({'message': str(e)}, status=400)
+			except Exception as e:
+				return JsonResponse({'message': str(e)}, status=400)
 
 			if mail_views.validator(email) == False:
 				return JsonResponse({'message': 'Email invalid'}, status=400)
