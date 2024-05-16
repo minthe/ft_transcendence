@@ -24,7 +24,7 @@ def profile(request):
 		if request.method == 'PUT':
 			data = json.loads(request.body.decode('utf-8'))
 			email = data.get('email')
-			alias = data.get('alias')
+			alias = serializers_views.sanitize_input(data.get('alias'))
 
 			try:
 				serializers_views.validate_alias(alias)
@@ -68,7 +68,7 @@ def profile(request):
 		elif request.method == 'GET':
 			avatar = user_views.getValue(user_id, 'avatar')
 			email = user_views.getValue(user_id, 'email')
-			alias = user_views.getValue(user_id, 'alias')
+			alias = serializers_views.desanitize_input(user_views.getValue(user_id, 'alias'))
 			return JsonResponse({
 				'avatar': avatar,
 				'email': email,

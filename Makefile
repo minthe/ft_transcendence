@@ -1,4 +1,4 @@
-.PHONY: re all build stop up down clean fclean
+.PHONY: re all build stop up down clean fclean env
 
 all: build up
 re: clean all
@@ -29,3 +29,6 @@ fclean: clean
 	else \
 		echo "fclean: no volumes to remove"; \
 	fi
+env:
+	chmod +x setup_env.sh
+	bash setup_env.sh
