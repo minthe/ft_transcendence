@@ -40,8 +40,6 @@ ALLOWED_HOSTS = ['*']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
-
 ASGI_APPLICATION = 'django_project.asgi.application'
 
 SECRET_KEY = DJANGO_SECRET
@@ -58,6 +56,7 @@ INSTALLED_APPS = [
     "second_factor",
     "mail",
 ]
+
 
 MIDDLEWARE = []
 
