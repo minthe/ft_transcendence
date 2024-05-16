@@ -1068,7 +1068,9 @@ class _Game:
             })
             unit.append(tourn_entry)
             # i = 1;
+            i = 0
             for game_session in game_sessions:
+                
                 game_entry = []
                 player_one = game_session.hostId
                 player_two = game_session.guestId
@@ -1078,7 +1080,8 @@ class _Game:
                 stage = game_session.stage
                 alias_one = MyUser.objects.get(user_id=player_one).alias
                 alias_two = MyUser.objects.get(user_id=player_two).alias
-
+                if stage == 'semi':
+                    i = i + 1
                 # i = i + 1
 
                 
@@ -1091,18 +1094,11 @@ class _Game:
                     'loser_id': loser_id,
                     'stage': stage,
                     'alias_one': alias_one,
-                    'alias_two': alias_two
-
+                    'alias_two': alias_two,
+                    'counter_semi': i
 
                 })
                 unit.append(game_entry)
-            # join_game = []
-            # if avail_game == True:
-            #     join_game.append({
-            #         'join_game': 'True',
-            #         'game_struct_id': avail_game
-            #     })
-
             match_data.append(unit)
 
         json_data = json.dumps(match_data)
