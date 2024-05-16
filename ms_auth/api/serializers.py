@@ -18,9 +18,12 @@ def validate_alias(alias):
 
 def validate_password(password):
 	try:
+		error_message = 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 of these special characters in []: [A-Za-z\d@$!%*?&,;:], and be at least 8 characters long'
 		print(password)
+		if password.isalnum():
+			raise ValidationError(error_message)
 		pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&,;:])[A-Za-z\d@$!%*?&,;:]{8,}$'
-		validator = RegexValidator(regex=pattern, message='Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 of these special characters in []: [A-Za-z\d@$!%*?&,;:], and be at least 8 characters long')
+		validator = RegexValidator(regex=pattern, message=error_message)
 		validator(password)
 	except ValidationError as e:
 		raise ValidationError('Invalid password format: ' + str(e))
