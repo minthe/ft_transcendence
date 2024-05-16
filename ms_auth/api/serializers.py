@@ -18,7 +18,7 @@ def validate_alias(alias):
 
 def validate_password(password):
 	try:
-		error_message = 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 of these special characters in []: [A-Za-z\d@$!%*?&,;:], and be at least 8 characters long'
+		error_message = 'Password too weak'
 		print(password)
 		if password.isalnum():
 			raise ValidationError(error_message)
