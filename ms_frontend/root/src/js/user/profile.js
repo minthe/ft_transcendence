@@ -7,7 +7,7 @@ function updateProfileMessage(success, message) {
 
 	setTimeout(function() {
 	twoFaStatus.classList.add('hidden');
-	}, 2500);
+	}, 3500);
 	twoFaStatus.classList.remove('hidden');
 	if (success)
 		twoFaStatus.style.color = 'green';
