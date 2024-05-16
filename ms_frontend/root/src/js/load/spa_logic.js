@@ -39,6 +39,21 @@ function handleButtonClick(url) {
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
 
+  console.log(websocket_obj.game.active_state)
+  console.log(websocket_obj.game)
+
+  if (websocket_obj.game.active_state === true)
+  {  console.log('You left the game!')
+    console.log(websocket_obj.game.active_state)
+    websocket_obj.game.active_state = false
+    sendDataToBackend('user_left_game')
+  }
+  else
+  {
+    console.log('onpop ignored')
+
+  }
+
   if (event.state)
     userState = event.state;
 
