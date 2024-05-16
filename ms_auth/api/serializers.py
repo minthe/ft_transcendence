@@ -1,4 +1,4 @@
-import base64
+import base64, re
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
@@ -14,10 +14,7 @@ def validate_alias(alias):
 	# TODO valentin add check if alias already exists from 42 Intra
 	if len(alias) < 1:
 		raise ValidationError("alias cannot be empty")
-	if not alias.isalnum():
-		raise ValidationError("alias must be alphanumeric")
 	return None
-
 
 def validate_password(password):
 	try:
@@ -46,3 +43,14 @@ def validate_2fa_code(code):
 	if not len(code) == 6:
 		raise ValidationError('code must be 6 digits long')
 	return None
+
+def sanitize_input(input):
+	substitute_char = '\u200B'
+	sanitized = input.replace('\0', substitute_char).replace('\x00', substitute_char).replace('\u0000', substitute_char)
+	sanitized = re.sub(r'\s+', substitute_char, sanitized)
+	return sanitized
+
+def desanitize_input(input):
+	substitute_char = '\u200B'
+	desanitized = input.replace(substitute_char, ' ')
+	return desanitized
