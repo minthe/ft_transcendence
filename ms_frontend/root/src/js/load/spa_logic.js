@@ -70,8 +70,6 @@ function showSiteHideOthersSpa(site_to_show) {
   userState.currPage = site_to_show;
 }
 
-
-//login and register spa
 async function handleClickEvent(event) {
   // console.log(event);
   const url = `${window.location.origin}/user/token/existence`
@@ -84,23 +82,19 @@ async function handleClickEvent(event) {
     changeToLoginPageButton();
   else if (event.target.closest('#changeToRegisterPage'))
     showRegisterPage();
-  else if (event.target.closest('#twoFAButtonE'))
-    updateTwoFactor('PUT');
-  else if (event.target.closest('#twoFAButtonD'))
-    updateTwoFactor('DELETE');
   else if (event.target.closest('#login42Button'))
     openAuthPopup();
-	
+  
   fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'Authorization':'Bearer {access-token}'
-	},
+    },
 	})
 	.then(async response => {
-		if (!response.ok) {
-			await logoutUser();
+    if (!response.ok) {
+      await logoutUser();
 			userState.bodyText = document.body.innerHTML;
 			// userState.currPage = "homeSite";
 			userState.chatObj = {};
@@ -109,8 +103,8 @@ async function handleClickEvent(event) {
 			console.log('reload not success');
 			throw new Error(response.message);
 		}
-  
-  
+    
+    
     if (event.target.closest('#homeButton'))
       showSiteHideOthers('homeSite', 'homeButton');
     else if (event.target.closest('#gameButton'))
@@ -126,25 +120,25 @@ async function handleClickEvent(event) {
     else if (event.target.closest('#logoutButton'))
       await logoutUser();
     else if (event.target.closest('#renderInv'))
-        invSiteClicked();
+      invSiteClicked();
     else if (event.target.closest('#goBackToStart'))
       gameSiteClicked();
     else if (event.target.closest('#sendMessageButton'))
       await sendMessage();
     else if (event.target.closest('#invite_user_button')) {
-        await inviteUserClicked();
+      await inviteUserClicked();
     }
     else if (event.target.closest('#create_public_chat_button'))
       await createPublicChat()
     else if (event.target.closest('#create_private_chat_button'))
       await createPrivateChat() 
     else if (event.target.closest('#close_button_clicked_user')) {
-        await closeButtonClicked();
+      await closeButtonClicked();
     }
     else if (event.target.closest('#goToChatButton'))
       await openChat();
     else if (event.target.closest('#blockUserButton')) {
-        await blockUserClicked();
+      await blockUserClicked();
     }
     else if (event.target.closest('#unblockUserButton')) {
         await unblockUserClicked();
@@ -158,35 +152,34 @@ async function handleClickEvent(event) {
     else if (event.target.closest('#challengeUserToGame')) {
       await challengeUserClicked();
     }
+    else if (event.target.closest('#editButton'))
+      editProfile();
+    else if (event.target.closest('#saveButton'))
+      saveChanges();
+    else if (event.target.closest('#changeProfileImage'))
+      changeProfileImage();
     
-  
-  
-     
-  
-      else if (event.target.closest('#editButton'))
-        editProfile();
-      else if (event.target.closest('#saveButton'))
-        saveChanges();
-      else if (event.target.closest('#changeProfileImage'))
-        changeProfileImage();
-     
-      else if (event.target.closest('#renderTourn')) {
-        tournInvSiteClicked();
-      }
-  
-      else if (event.target.closest('#userStatsBtn'))
-        statsBtnClicked();
-      else if (event.target.closest('#userHistoryBtn'))
-        historyBtnClicked();
-		
-	})
+    else if (event.target.closest('#renderTourn')) {
+      tournInvSiteClicked();
+    }
+    else if (event.target.closest('#twoFAButtonE'))
+      updateTwoFactor('PUT');
+    else if (event.target.closest('#twoFAButtonD'))
+      updateTwoFactor('DELETE');
+    
+    else if (event.target.closest('#userStatsBtn'))
+      statsBtnClicked();
+    else if (event.target.closest('#userHistoryBtn'))
+      historyBtnClicked();
+    
+  })
 	.catch(error => {
-		console.log('Error during login:', error);
+    console.log('Error during login:', error);
 	});
-
-
-
-
+  
+  
+  
+  
 }
 
 
@@ -196,7 +189,7 @@ function spaNotLogedIn(site_to_show) {
   logedOutSpaCount++;
   userState.currPageNotLogedIn = site_to_show;
   handleButtonClick("");
-
+  
   // if (site_to_show === 'registerPage')
   //   window.history.replaceState(userState, null, "");
   

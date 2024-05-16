@@ -611,7 +611,7 @@ body, html {
 .basic-tourn-element {
   /* margin-left: 3.5vw; */
   position: absolute;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -1183,7 +1183,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   /* height: 100%; */
   /* position: absolute; */
   
-  height: 70vh;
+  height: 74vh;
   background-color: #131615;
   
   width: 60vw;
