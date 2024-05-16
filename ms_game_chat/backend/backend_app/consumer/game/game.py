@@ -174,7 +174,7 @@ class _Game:
                 tourn_id = await self.matchResults()
 
                 print("111111")
-
+                print(self.stable_game_id)
                 await self.channel_layer.group_send(
                     # self.game_group_id,
                     self.game_states.get(self.stable_game_id, {}).get('group_id'),

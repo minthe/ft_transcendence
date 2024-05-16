@@ -529,7 +529,7 @@ function tournInvSiteClicked() {
 }
 
 
-function gameOver() {
+function gameOver(data) {
   document.getElementById('mainSidebar').classList.remove('hidden');
   document.getElementById('siteContent').classList.add('site-content');
   document.getElementById('siteContent').classList.remove('site-content-game');
@@ -539,6 +539,9 @@ function gameOver() {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
+  console.log("GAME_OVER");
+  console.log(websocket_obj.game.game_id);
+  console.log(data.game_id);
   if (websocket_obj.game.game_id === data.game_id)
     activateFireworks();
   
@@ -548,7 +551,6 @@ function gameOver() {
     document.getElementById('winnerName').textContent = document.getElementById('playerOne').textContent + ' Won';
   else
     document.getElementById('winnerName').textContent = document.getElementById('playerTwo').textContent + ' Won';
-  console.log("GAME_OVER");
 
   websocket_obj.game.hostname
   websocket_obj.game.active_state = false

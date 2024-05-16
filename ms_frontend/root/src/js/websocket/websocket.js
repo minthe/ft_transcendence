@@ -213,7 +213,7 @@ async function establishWebsocketConnection() {
         break
       case 'game_over':
         console.log("GAME OVER");
-        gameOver();
+        gameOver(data);
         break
       case 'opponent_disconnected':
         console.log("YOUR APPONENT LEFT THE GAME");
