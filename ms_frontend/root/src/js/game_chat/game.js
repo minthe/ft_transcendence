@@ -8,10 +8,8 @@ function gameDom() {
 
 }
 
-
-async function joinGame(gameId) {
-
-  console.log('In JoinGame');
+async function joinedGameSuccessfully(gameId) {
+  console.log('In joinedGameSuccessfully');
 
   const gameScreen = document.getElementById("game-screen");
 
@@ -32,13 +30,13 @@ async function joinGame(gameId) {
   // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
 
 
-  websocket_obj.game.game_id = gameId;
+//   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
   websocket_obj.game.is_host = false;
 
 
 
-  console.log("IN JOINGAME");
+  console.log("IN joinedGameSuccessfully");
 
   async function updateCanvasSize() {
     const canvas = document.getElementById("pongCanvas");
@@ -64,27 +62,121 @@ async function joinGame(gameId) {
   document.getElementById('siteContent').classList.remove('site-content');
   document.getElementById('siteContent').classList.add('site-content-game');
 
-  await sendDataToBackend('init_game');
+  // await sendDataToBackend('init_game');
+  if (websocket_obj.game.active_state)
+    window.addEventListener('popstate', function(event) {
+        // Your code to handle the back button press here
+        console.log('Back button pressed!');
+        
+    });
 
-  document.addEventListener("keydown", async function(event) {
-      // Log the key code to the console
-      console.log("Key pressed: " + event.keyCode);
-      if (event.keyCode == 40 || event.keyCode == 38)
-      {
-          websocket_obj.game.key_code = event.keyCode;
-          // websocket_obj.game.game_id = gameId;
-          console.log("in key event listener:");
 
-          console.log(websocket_obj.game.is_host);
+    document.addEventListener("keydown", async function(event) {
+        // Log the key code to the console
+        console.log("Key pressed: " + event.keyCode);
+        if (event.keyCode == 40 || event.keyCode == 38)
+        {
+            websocket_obj.game.key_code = event.keyCode;
+            // websocket_obj.game.game_id = gameId;
+            console.log("in key event listener:");
 
-          await sendDataToBackend('game_new_move');
-          websocket_obj.game.key_code = 0;
-      }
-  });
+            console.log(websocket_obj.game.is_host);
 
-  console.log('end of JoinGame');
+            await sendDataToBackend('game_new_move');
+            websocket_obj.game.key_code = 0;
+        }
+    });
 
+    console.log('end of JoinedGameSuccessfully');
+    // return true;
 }
+
+async function joinGame(gameId) {
+
+    console.log('In joinGame');
+    console.log('websocket_obj.game.active_state: ', websocket_obj.game.active_state);
+    // if (websocket_obj.game.active_state == false)
+    // {
+    console.log('In joinGame');
+    websocket_obj.game.game_id = gameId;
+    await sendDataToBackend('init_game');
+    websocket_obj.game.active_state = true;
+    // }
+}
+  
+
+
+  // const gameScreen = document.getElementById("game-screen");
+
+  // const canvas = document.getElementById("pongCanvas");
+  // const ctx = canvas.getContext("2d");
+
+  // // Draw paddles
+  // ctx.fillStyle = "black";
+
+  // websocket_obj.game.left_pedal = 0.75
+  // console.log("websocket_obj.game.left_pedal: ", websocket_obj.game.left_pedal);
+  // websocket_obj.game.right_pedal = 0.75
+
+
+  // ctx.fillRect(canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
+  // ctx.fillRect(canvas.width - canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
+
+  // // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
+
+
+  // websocket_obj.game.game_id = gameId;
+  // websocket_obj.game.key_code = 0;
+  // websocket_obj.game.is_host = false;
+
+
+
+  // console.log("IN JOINGAME");
+
+  // async function updateCanvasSize() {
+  //   const canvas = document.getElementById("pongCanvas");
+  //   canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
+  //   canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
+
+  // }
+
+  // window.addEventListener("resize", updateCanvasSize);
+
+  // // window.addEventListener("load", updateCanvasSize);
+
+  // document.getElementById("invites-screen").classList.add("hidden");
+
+  // document.getElementById("pongCanvas").classList.remove("hidden");
+  // gameScreen.classList.add('show');
+  // gameScreen.classList.remove('hidden');
+  // // await sendDataToBackend('init_game');
+
+  // window.addEventListener('popstate', function(event) {
+  //     // Your code to handle the back button press here
+  //     console.log('Back button pressed!');
+      
+  // });
+
+
+  // document.addEventListener("keydown", async function(event) {
+  //     // Log the key code to the console
+  //     console.log("Key pressed: " + event.keyCode);
+  //     if (event.keyCode == 40 || event.keyCode == 38)
+  //     {
+  //         websocket_obj.game.key_code = event.keyCode;
+  //         // websocket_obj.game.game_id = gameId;
+  //         console.log("in key event listener:");
+
+  //         console.log(websocket_obj.game.is_host);
+
+  //         await sendDataToBackend('game_new_move');
+  //         websocket_obj.game.key_code = 0;
+  //     }
+  // });
+
+  // console.log('end of JoinGame');
+
+  // }
 
 
 async function requestInvites() {
@@ -110,60 +202,22 @@ async function generateFrontendRepresentation(data) {
     console.log(typeof data);
     console.log(data);
 
-  // // Iterate through tournaments
-  //   data.forEach(tournament => {
-  //     console.log(JSON.stringify(tournament));
-  //     // tournament = JSON.stringify(tournament);
-  //     const tournamentDiv = document.createElement('div');
-  //     tournamentDiv.classList.add('tournament');
-
-  //     // Create tournament host and winner representation
-  //     console.log(tournament.tourn_host);
-  //     const tournamentHost = document.createElement('p');
-  //     tournamentHost.textContent = `Tournament Host: ${tournament[0].tourn_host}`;
-  //     tournamentDiv.appendChild(tournamentHost);
-
-  //     const tournamentWinner = document.createElement('p');
-  //     tournamentWinner.textContent = `Tournament Winner: ${tournament[0].tourn_winner ? tournament[0].tourn_winner : 'Not determined yet'}`;
-  //     tournamentDiv.appendChild(tournamentWinner);
-      
-
-  //     // Iterate through games inside the tournament
-  //     const gamesContainer = document.createElement('div');
-  //     gamesContainer.classList.add('games-container');
-  //     tournament.slice(1).forEach(game => {
-  //         const gameDiv = document.createElement('div');
-  //         gameDiv.classList.add('game');
-
-  //         // Create game representation
-  //         const gameDetails = document.createElement('p');
-  //         gameDetails.textContent = `Game ID: ${game.game_id}, Stage: ${game.stage}`;
-  //         gameDiv.appendChild(gameDetails);
-
-  //         const playersDetails = document.createElement('p');
-  //         playersDetails.textContent = `Player One: ${game.player_one}, Player Two: ${game.player_two}`;
-  //         gameDiv.appendChild(playersDetails);
-
-  //         // Append game representation to games container
-  //         gamesContainer.appendChild(gameDiv);
-  //     });
-
-  //     // Append games container to tournament container
-  //     tournamentDiv.appendChild(gamesContainer);
-
-  //     // Append tournament container to main container
-  //     if (tournamentsContainer) {
-  //       tournamentsContainer.appendChild(tournamentDiv);
-  //   } else {
-  //       console.error('Tournaments container not found or is null.');
-  //   }
-  //     tournamentsContainer.appendChild(tournamentDiv);
-  // });
+ 
 }
 
 
 
 async function renderInvites() {
+  // console.log(websocket_obj.game);
+
+  if (websocket_obj.game.invites != 0)
+  {
+    // const htmlContent = await response.text();
+
+    // const container = document.getElementById('game-session-container');
+    // container.innerHTML = htmlContent;
+    // websocket_obj.game.active_game = false;
+    const username = websocket_obj.username;
     const matches = websocket_obj.game.invites;
     console.log(matches);
     const container = document.getElementById('game-session-container');
@@ -179,7 +233,7 @@ async function renderInvites() {
           joinGame(gameId); // Call your function with gameId
       });
     });
-  // }
+  }
 }
 
 function generateHTMLContentInv(matches) {
@@ -485,7 +539,8 @@ function gameOver() {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  activateFireworks();
+  if (websocket_obj.game.game_id === data.game_id)
+    activateFireworks();
   
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');
@@ -496,7 +551,7 @@ function gameOver() {
   console.log("GAME_OVER");
 
   websocket_obj.game.hostname
-
+  websocket_obj.game.active_state = false
   websocket_obj.game.host_score = 0
   websocket_obj.game.guest_score = 0
   websocket_obj.game.game_id = 0

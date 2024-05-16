@@ -57,12 +57,13 @@ websocket_obj = {
 
   game: [
     {
-      game_id: null,
+      game_id: 0,
       invites: 0,
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
       is_host: false,
+      active_state: false,
       ball_x: 0,
       ball_y: 0,
       host_score: 0,
@@ -176,14 +177,17 @@ async function establishWebsocketConnection() {
         // await renderGame()
         break
       case 'init_game':
+        console.log(data);
+        websocket_obj.game.active_state = true
+        joinedGameSuccessfully(websocket_obj.game.game_id)
         initGame(data);
         break
       case 'game_start':
-         
-        console.log("GAME START");
         
+        console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
+        sendDataToBackend('request_score')
         startCountdownAnimation();
         break
       case 'ball_update':
@@ -208,6 +212,7 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'game_over':
+        console.log("GAME OVER");
         gameOver();
         break
       case 'opponent_disconnected':
@@ -299,6 +304,10 @@ async function establishWebsocketConnection() {
           websocket_obj.chat_id = found
           await sendDataToBackend('save_chatbot_message')
         }
+        break
+      case 'already_in_game':
+        console.log('already_in_game')
+        requestInvites()
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -561,6 +570,25 @@ async function sendDataToBackend(request_type) {
             'chat_id': websocket_obj.chat_id,
             'other_user_name': websocket_obj.other_user_name,
             'current_user_name': websocket_obj.username,
+          }
+          break
+        case 'user_left_game':
+          type = 'user_left_game'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': websocket_obj.game.game_id,
+          }
+          websocket_obj.game.active_state = false
+
+          websocket_obj.game.host_score = 0
+          websocket_obj.game.guest_score = 0
+          websocket_obj.game.game_id = 0
+          break
+        case 'request_score':
+          type = 'request_score'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': websocket_obj.game.game_id,
           }
           break
         default:
