@@ -188,7 +188,7 @@ async function establishWebsocketConnection() {
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
         sendDataToBackend('request_score')
-        startCountdownAnimation();
+        // startCountdownAnimation();
         break
       case 'ball_update':
         // console.log("BALL_UPDATE");
@@ -586,6 +586,8 @@ async function sendDataToBackend(request_type) {
           break
         case 'request_score':
           type = 'request_score'
+          console.log('request_score')
+          console.log(websocket_obj.game.active_state)
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': websocket_obj.game.game_id,

@@ -54,10 +54,10 @@ async function createPublicChat() {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
-  if (containsSQLInjection(chat_name)) {
-    setErrorWithTimout('info_create_chat', 'Invalid Characters for Chat name!',  5000)
-    return;
-  }
+  // if (containsSQLInjection(chat_name)) {
+  //   setErrorWithTimout('info_create_chat', 'Invalid Characters for Chat name!',  5000)
+  //   return;
+  // }
   
   await sendDataToBackend('set_new_chat')
   let chatNameLabel = document.getElementById('new_chat_name');
@@ -72,10 +72,10 @@ async function createPrivateChat() {
     setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;
   }
-  if (containsSQLInjection(chat_name)) {
-    setErrorWithTimout('info_create_private_chat', 'Invalid Characters for Chat name!',  5000)
-    return;
-  }
+  // if (containsSQLInjection(chat_name)) {
+  //   setErrorWithTimout('info_create_private_chat', 'Invalid Characters for Chat name!',  5000)
+  //   return;
+  // }
 
   websocket_obj.new_private_chat_name = chat_name
   await sendDataToBackend('set_new_private_chat')

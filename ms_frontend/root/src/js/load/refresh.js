@@ -36,12 +36,12 @@ async function updatePage() {
 			await requestInvites();
 		if (userState.currPage === 'invitesTourn')
 			await requestTourns();
-		if (userState.currPage === 'tournPage') {
-			await requestTourns();
+		// if (userState.currPage === 'tournPage') {
+		// 	await requestTourns();
 													// websocket_obj.game.invites
 			// console.log('waht is in web invites: ', websocket_obj.game.invites);
 			// joinTourn(userState.tournId, websocket_obj.game.invites);
-		}
+		// }
 
 		render(userState);
 		if (userState.currPage === 'chat') {

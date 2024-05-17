@@ -1,5 +1,3 @@
-//add page refreash and spa logic
-
 
 function historyBtnClicked() {
 	document.getElementById('userStats').classList.add('hidden');

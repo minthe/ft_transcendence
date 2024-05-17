@@ -403,16 +403,21 @@ class _Game:
             }
         )
     async def handle_request_score(self):
-        await self.channel_layer.send(
-            self.channel_name,
-            {
-                'type': 'send.score.update',
-                'data': {
-                    'host_score': self.game_states[self.stable_game_id]['host_score'],
-                    'guest_score': self.game_states[self.stable_game_id]['guest_score'],
-                },
-            }
-        )
+        print("in handle_request_score")
+        # print(self.stable_game_id)
+        if self.stable_game_id != 0 and self.stable_game_id in self.game_states:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    'type': 'send.score.update',
+                    'data': {
+                        'host_score': self.game_states[self.stable_game_id]['host_score'],
+                        'guest_score': self.game_states[self.stable_game_id]['guest_score'],
+                    },
+                }
+            )
+        else:
+            print("no game to send score")
 
     async def clear_game_struct(self):
         print("in clear_game_struct")
@@ -564,7 +569,7 @@ class _Game:
             # await self.game_loop()
             # if self.game_states[self.stable_game_id]['game_loop_task'] is None or self.game_states[self.stable_game_id]['game_loop_task'].done():
             if self.game_states.get(self.stable_game_id, {}).get('game_loop_task') is None:
-                await asyncio.sleep(3)
+                # await asyncio.sleep(3)
                 print("START GAME LOOP THREAD=====================")
                 self.game_states[self.stable_game_id]['game_loop_task'] = asyncio.create_task(self.game_loop())
 
