@@ -21,7 +21,7 @@ function initUserData(data, username, password) {
 	websocket_obj.password = password
 	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
-    websocket_obj.game.active_state = false
+  websocket_obj.game.active_state = false
 
 
 
