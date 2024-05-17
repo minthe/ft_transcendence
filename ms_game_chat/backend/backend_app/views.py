@@ -128,7 +128,7 @@ def updateAlias(request):
         data = json.loads(request.body.decode('utf-8'))
         alias = data.get('alias')
         user_instance = MyUser.objects.get(user_id=jwt_user_id)
-        setattr(user_instance, 'gameAlias', alias)
+        setattr(user_instance, 'alias', alias)
         user_instance.save()
         return JsonResponse({}, status=200)
     except Exception as e:
