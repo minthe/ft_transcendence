@@ -20,7 +20,8 @@ async function logoutUser() {
 	  localStorage.clear();
 	  showDiv('userIsNotAuth')
 	  hideDiv('userIsAuth')
-	  document.cookie = 'test' + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+	  
 	  // state.logedOut = true;
 	  // userLogedIn = false;
 	  // websocket_obj.websocket.close();

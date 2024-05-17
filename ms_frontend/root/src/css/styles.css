@@ -21,6 +21,33 @@ body, html {
 
 /* login page */
 
+.info-button {
+  display: inline-block;
+  margin-left: 5px;
+  cursor: pointer;
+  background-color: #32CD32;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 14px;
+  font-weight: bold;  
+}
+
+.info-message {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+
 .local-game-btn {
   position: fixed;
   right: 4vw;

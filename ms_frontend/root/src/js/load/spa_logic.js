@@ -100,6 +100,16 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#login42Button'))
     openAuthPopup();
   
+  else if (event.target.closest('#infoButton')) {
+    document.getElementById('infoButton').classList.add('hidden');
+    document.getElementById('passwordInfo').classList.remove('hidden');
+
+      setTimeout(() => {
+        document.getElementById('infoButton').classList.remove('hidden');
+        document.getElementById('passwordInfo').classList.add('hidden');
+      }, 5000); // Hide the message after 5 seconds
+  }
+  
   fetch(url, {
     method: 'GET',
     headers: {
