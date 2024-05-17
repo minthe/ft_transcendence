@@ -48,8 +48,9 @@ def profile(request):
 				"Content-Type": 'application/json',
 				"Cookie": f"jwt_token={jwt_token}; HttpOnly"
 			}
+			alias_desanitized = serializers_views.desanitize_input(alias)
 			game_chat_data = {
-				'alias': alias,
+				'alias': alias_desanitized,
 			}
 			game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user/alias"
 			encoded_data = json.dumps(game_chat_data).encode("utf-8")
