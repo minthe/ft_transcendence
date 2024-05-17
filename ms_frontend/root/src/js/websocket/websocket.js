@@ -188,7 +188,7 @@ async function establishWebsocketConnection() {
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
         sendDataToBackend('request_score')
-        startCountdownAnimation();
+        // startCountdownAnimation();
         break
       case 'ball_update':
         // console.log("BALL_UPDATE");

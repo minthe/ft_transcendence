@@ -3,9 +3,6 @@ function RegisterUserButton() {
 	const usernameElement = getUsernameRegister();
 	const passwordElement = getPasswordRegister();
 	const mail = getMail();
-  
-	// if (sqlCheckRegister(usernameElement, passwordElement, mail))
-	//   return ;
 	
 	const url = `${window.location.origin}/user/register`;
 	fetch(url,

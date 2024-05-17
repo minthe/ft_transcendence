@@ -7,7 +7,7 @@ function updateProfileMessage(success, message) {
 
 	setTimeout(function() {
 	twoFaStatus.classList.add('hidden');
-	}, 2500);
+	}, 3500);
 	twoFaStatus.classList.remove('hidden');
 	if (success)
 		twoFaStatus.style.color = 'green';
@@ -30,20 +30,20 @@ function editProfile() {
 function saveChanges() {
   const mail = document.getElementById("email");
   const gameAlias = document.getElementById("gameAlias");
-  if (containsSQLInjection(mail.value) || containsSQLInjection(gameAlias.value)) {
-    console.log('are malicious for user profile')
-    setTimeout(function () {
-      document.getElementById('wrongSavedInput').classList.add('hidden');
-    }, 3000);
-    document.getElementById('wrongSavedInput').classList.remove('hidden');
-    mail.value = emailBeforeEdit;
-    gameAlias.value = gameAliasBeforeEdit;
-    mail.setAttribute('readonly', true);
-    gameAlias.setAttribute('readonly', true);
-    editButton.style.display = 'block';
-    saveButton.style.display = 'none';
-    return ;
-  }
+  // if (containsSQLInjection(mail.value) || containsSQLInjection(gameAlias.value)) {
+  //   console.log('are malicious for user profile')
+  //   setTimeout(function () {
+  //     document.getElementById('wrongSavedInput').classList.add('hidden');
+  //   }, 3000);
+  //   document.getElementById('wrongSavedInput').classList.remove('hidden');
+  //   mail.value = emailBeforeEdit;
+  //   gameAlias.value = gameAliasBeforeEdit;
+  //   mail.setAttribute('readonly', true);
+  //   gameAlias.setAttribute('readonly', true);
+  //   editButton.style.display = 'block';
+  //   saveButton.style.display = 'none';
+  //   return ;
+  // }
 
   const url = `${window.location.origin}/user/profile`
   fetch (url, {

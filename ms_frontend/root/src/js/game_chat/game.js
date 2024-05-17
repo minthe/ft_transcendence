@@ -560,18 +560,31 @@ function gameOver(data) {
   updateScore();
 }
 
+// guest_id
+// : 
+// "jkroger"
+// host_id
+// : 
+// "julien"
+// is_host
+// : 
+// "False"
+// is_tourn
+// : 
+// "False"
+
 
 async function initGame(data) {
   console.log(data);
   document.getElementById("waitingScreen").style.display = "block";
-  // if (data.is_tourn) {
-  //   document.getElementById('playerOne').textContent = data.;
-  //   document.getElementById('playerTwo').textContent = data.guest_id;
-  // }
-  // else {
+  if (data.is_tourn === "True") {
     document.getElementById('playerOne').textContent = data.alias_one;
     document.getElementById('playerTwo').textContent = data.alias_two;
-  // }
+  }
+  else {
+    document.getElementById('playerOne').textContent = data.host_id;
+    document.getElementById('playerTwo').textContent = data.guest_id;
+  }
 
   document.getElementById('imgHost').src = await getProfilePicture(data.num_id_one);
   document.getElementById('imgGuest').src = await getProfilePicture(data.num_id_two); 

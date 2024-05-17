@@ -6,23 +6,24 @@ function addEventListenersIsAuth() {
   loadContentProfile('html/profile.html', 'profileSite');
   loadStats('html/stats.html', 'statsSite');
   loadCreators('html/creators.html', 'creatorsSite');
+
   document.addEventListener('click', async function(event) {   
     handleClickEvent(event);
   });
-
-  
-
   document.addEventListener('keypress', async function(event) {
-    if (event.key === 'Enter' || event.keyCode === 13) {
+    if (event.key === 'Enter') {//|| event.keyCode === 13
         event.preventDefault();
-        if (await enterKeyEvent())
+        if (await enterKeyEvent(event))
           return ;
         handleClickEvent(event);
       }
   });
 }
 
-async function enterKeyEvent() {
+async function enterKeyEvent(event) {
+  if (event.target.closest('#changeToLoginPageButton') || event.target.closest('#changeToRegisterPage')
+    || event.target.closest('#login42Button'))
+    return false;
   if (!document.getElementById('loginPage').classList.contains('hidden')
     && !document.getElementById('userIsNotAuth').classList.contains('hidden')) {
     loginUserButton();
