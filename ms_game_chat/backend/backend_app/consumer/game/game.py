@@ -564,7 +564,7 @@ class _Game:
             # await self.game_loop()
             # if self.game_states[self.stable_game_id]['game_loop_task'] is None or self.game_states[self.stable_game_id]['game_loop_task'].done():
             if self.game_states.get(self.stable_game_id, {}).get('game_loop_task') is None:
-                await asyncio.sleep(3)
+                # await asyncio.sleep(3)
                 print("START GAME LOOP THREAD=====================")
                 self.game_states[self.stable_game_id]['game_loop_task'] = asyncio.create_task(self.game_loop())
 

@@ -5,7 +5,7 @@ let userState = {
   chatOpen: false,
   userName: null,
   
-  tournId: null,
+  // tournId: null,
   currPageNotLogedIn: null
 }
 // groupChatName: "",

@@ -9,11 +9,10 @@ async function renderTourns() {
 	  container.querySelectorAll('.join-tourn-btn').forEach(button => {
 		button.addEventListener('click', async function() {
 		  const tournId = this.getAttribute('data-tournid');
-		  userState.currPage = 'tournPage';
-		  userState.tournId = tournId;
+		//   userState.currPage = 'tournPage';
+		//   userState.tournId = tournId;
 		  joinTourn(tournId, matches);
-		  handleButtonClick("");
-		  // joinGame(gameId);
+		//   handleButtonClick("");
 		});
 	  });
   }
@@ -48,10 +47,9 @@ function joinTourn(tournId, matches) {
 			joinButtons.forEach(joinButton => {
 				joinButton.remove();
 			});
-			//check i value maybe also 0
 			for (let i = 1; match[i]; i++) {
 				if (match[i][0].stage === "semi")
-					stageSemi(match[i][0], userId, i);
+					stageSemi(match[i][0], userId);
 				else if (match[i][0].stage === "final")
 					stageFinal(match[i][0], userId);			
 			}	
@@ -83,10 +81,12 @@ function joinTourn(tournId, matches) {
 // player_two:"2"
 // stage:"semi"
 // winner_id:null
+// counter_semi
+// : 
+// 2
 
-
-function stageSemi(semi, userId, test) {
-	if (test === 1)
+function stageSemi(semi, userId) {
+	if (semi.counter_semi === 1)
 		firstSemi(semi, userId);
 	else
 		secondSemi(semi, userId);

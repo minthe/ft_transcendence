@@ -163,36 +163,36 @@ function getCurrentTime() {
 
 
 
-  // Variables for countdown
-  let countdown;
-  let countdownInterval;
+//   // Variables for countdown
+//   let countdown;
+//   let countdownInterval;
 
-  // Function to draw countdown
-function drawCountdown() {
-	const canvas = document.getElementById('pongCanvas');
-    const ctx = canvas.getContext('2d');
+//   // Function to draw countdown
+// function drawCountdown() {
+// 	const canvas = document.getElementById('pongCanvas');
+//     const ctx = canvas.getContext('2d');
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '48px Arial';
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
-    ctx.fillText(countdown, canvas.width / 2, canvas.height / 2);
-  }
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.font = '48px Arial';
+//     ctx.fillStyle = 'black';
+//     ctx.textAlign = 'center';
+//     ctx.fillText(countdown, canvas.width / 2, canvas.height / 2);
+//   }
 
-  // Function to start countdown animation
-function startCountdownAnimation() {
-	countdown = 3;
-    countdownInterval = setInterval(() => {
-      countdown--;
-      if (countdown <= 0) {
-        clearInterval(countdownInterval);
-        // Start your game here after countdown
-        console.log('Game started!');
-        return;
-      }
-      drawCountdown();
-    }, 1000);
-  }
+//   // Function to start countdown animation
+// function startCountdownAnimation() {
+// 	countdown = 3;
+//     countdownInterval = setInterval(() => {
+//       countdown--;
+//       if (countdown <= 0) {
+//         clearInterval(countdownInterval);
+//         // Start your game here after countdown
+//         console.log('Game started!');
+//         return;
+//       }
+//       drawCountdown();
+//     }, 1000);
+//   }
 
 
 
