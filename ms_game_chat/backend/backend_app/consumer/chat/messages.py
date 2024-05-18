@@ -56,6 +56,7 @@ class _Message:
                 'type': 'send.message.save.success',
                 'data': {
                     'message': response_message,
+                    'chat_id': chat_id
                 },
             }
         )
@@ -81,7 +82,7 @@ class _Message:
         await self.channel_layer.group_send(
             'channel_zer0',
             {
-                'type': 'send.message.in.chat.read',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+                'type': 'send.message.in.chat.read',
                 'data': {
                     'message': response,
                     'user_id': user_id
@@ -96,7 +97,7 @@ class _Message:
         await self.channel_layer.group_send(
             'channel_zer0',
             {
-                'type': 'send.message.in.chat.read',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+                'type': 'send.message.in.chat.read',
                 'data': {
                     'message': response,
                     'user_id': user_id
@@ -169,6 +170,7 @@ class _Message:
             new_message = Message.objects.create(senderId=chat_instance.id, sender=chat_name, text=text,
                                                  timestamp=specific_timestamp)
             chat_instance.messages.add(new_message.id)
+            chat_instance.is_read = False
             new_message.save()
             chat_instance.save()
             return 'ok'
