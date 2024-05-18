@@ -160,21 +160,15 @@ async function establishWebsocketConnection() {
         }
         break
       case 'render_left':
-        // var canvas = document.getElementById("pongCanvas");
-        // websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+
         websocket_obj.game.left_pedal = data.new_pedal_pos
         console.log("new left_pedal: ", websocket_obj.game.left_pedal);
         await update();
-        // await renderGame()
         break
       case 'render_right':
-        console.log("RENDER_RIGHT");
-        // var canvas = document.getElementById("pongCanvas");
+        // console.log("RENDER_RIGHT");
         websocket_obj.game.right_pedal = data.new_pedal_pos
-        // websocket_obj.game.right_pedal = data.new_pedal_pos
-        console.log("new right_pedal: ", websocket_obj.game.right_pedal);
         await update();
-        // await renderGame()
         break
       case 'init_game':
         console.log(data);
@@ -195,10 +189,6 @@ async function establishWebsocketConnection() {
         // websocket_obj.game.ball_x = data.ball_x
         const canvas = document.getElementById("pongCanvas");
         websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
-        // console.log("ball_x: ", websocket_obj.game.ball_x)
-        // console.log("data.ball_x: ", data.ball_x)
-        // console.log("data.ball_y: ", data.ball_y)
-        // // websocket_obj.game.ball_y = data.ball_y
         websocket_obj.game.ball_y = data.ball_y * canvas.height / 2;
         // console.log("ball_y: ", websocket_obj.game.ball_y);
         await update();
@@ -214,6 +204,10 @@ async function establishWebsocketConnection() {
       case 'game_over':
         console.log("GAME OVER");
         gameOver(data);
+        break
+      case 'reset_stable_id':
+        console.log("RESET STABLE ID");
+        sendDataToBackend('reset_stable_id')
         break
       case 'opponent_disconnected':
         console.log("YOUR APPONENT LEFT THE GAME");
@@ -591,6 +585,13 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': websocket_obj.game.game_id,
+          }
+          break
+        case 'reset_stable_id':
+          type = 'reset_stable_id'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 0,
           }
           break
         default:
