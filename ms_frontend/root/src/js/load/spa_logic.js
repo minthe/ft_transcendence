@@ -61,19 +61,19 @@ window.onpopstate = async function (event) {
   fetch(url)
     .then(async response => {
       if (!response.ok) {
+        const data = await response.json()
+       
         location.reload();
-        throw new Error('Token could not be deleted!');
+        throw new Error(data.message);
       }
       updatePage();
     })
     .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
+      console.error('There was a problem showing the page:', error);
     });
 };
 
 function showSiteHideOthersSpa(site_to_show) {
-  console.log(site_to_show);
-
   if (userState.currPage === site_to_show)
     return ;
 
@@ -86,7 +86,6 @@ function showSiteHideOthersSpa(site_to_show) {
 }
 
 async function handleClickEvent(event) {
-  // console.log(event);
   const url = `${window.location.origin}/user/token/existence`
 
   if (event.target.closest('#loginUserButton'))
@@ -104,10 +103,10 @@ async function handleClickEvent(event) {
     document.getElementById('infoButton').classList.add('hidden');
     document.getElementById('passwordInfo').classList.remove('hidden');
 
-      setTimeout(() => {
-        document.getElementById('infoButton').classList.remove('hidden');
-        document.getElementById('passwordInfo').classList.add('hidden');
-      }, 5000); // Hide the message after 5 seconds
+    setTimeout(() => {
+      document.getElementById('infoButton').classList.remove('hidden');
+      document.getElementById('passwordInfo').classList.add('hidden');
+    }, 5000);
   }
   
   fetch(url, {
@@ -120,13 +119,13 @@ async function handleClickEvent(event) {
 	.then(async response => {
     if (!response.ok) {
       await logoutUser();
+      const data = await response.json();
 			userState.bodyText = document.body.innerHTML;
 			// userState.currPage = "homeSite";
 			userState.chatObj = {};
 			userState.chatOpen = false;
 			userState.userName = null;
-			console.log('reload not success');
-			throw new Error(response.message);
+			throw new Error(data.message);
 		}
     
     
@@ -199,7 +198,7 @@ async function handleClickEvent(event) {
     
   })
 	.catch(error => {
-    console.log('Error during login:', error);
+    console.error('Error during login:', error);
 	});
   
   

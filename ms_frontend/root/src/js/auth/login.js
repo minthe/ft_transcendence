@@ -31,7 +31,6 @@ function loginUserButton() {
         .then(async response => {
           if (!response.ok) {
               return response.json().then(data => {
-                  console.log('that would be the error: ', data.message);
                   loginErrors(data);
               });
           }
@@ -39,7 +38,7 @@ function loginUserButton() {
               await afterAuthLogin(data, usernameElement, passwordElement);
               setDownTwoFaPage();
           }
-      });
+        });
       }
       data.message = 'Not enough digits or non numeric characters';
       loginErrors(data);
@@ -50,7 +49,6 @@ function loginUserButton() {
   .catch(error => {
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
-    console.log('Error during login:', error);
   });
 }
 
@@ -60,7 +58,6 @@ function loginUserButton() {
 
 function showRegisterPage() {
   hideDiv('loginPage')
-  console.log("in the show function");
   showDiv('registerPage')
   document.getElementById("wrong-password").classList.add("hidden");
   document.getElementById('loginUsername').value = null;

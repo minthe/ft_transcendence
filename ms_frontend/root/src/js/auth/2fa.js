@@ -6,7 +6,7 @@ function updateTwoFaStatus(success, message) {
 
 	setTimeout(function() {
 	twoFaStatus.classList.add('hidden');
-	}, 2500);
+	}, 3500);
 	twoFaStatus.classList.remove('hidden');
 	if (success)
 		twoFaStatus.style.color = 'green';
@@ -119,7 +119,6 @@ async function getTwoFaStatus() {
 function updateTwoFactor(correctMethod) {
 	const url = `${window.location.origin}/user/2fa`;
   
-	// changeToTwoFa();
 	fetch(url, {
 	  method: 'POST',
 	//   headers: headerEnableTwoFa()
@@ -157,7 +156,6 @@ function updateTwoFactor(correctMethod) {
 	.catch(error => {
 		changeToProfile();
 		updateTwoFaStatus(false, error);
-		// console.error('There was a problem with the fetch operation:', error);
 	});
 	changeToProfile();
 }

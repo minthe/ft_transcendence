@@ -28,8 +28,6 @@ function RegisterUserButton() {
 	})
 	.catch(error => {
 	  clearRegisterInput(usernameElement, passwordElement, mail);
-	  // setErrorWithTimout('info_register', error, 9999999)
-	  console.log('Error during login:', error);
 	});
 }
 
