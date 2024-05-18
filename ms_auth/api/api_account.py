@@ -112,7 +112,8 @@ def login(request):
 
 			try:
 				serializers_views.validate_username(username)
-				serializers_views.validate_password(password)
+				if settings.STRONG_PASSWORD == "True":
+					serializers_views.validate_password(password)
 			except ValidationError as e:
 				return JsonResponse({'message': str(e)}, status=409)
 
