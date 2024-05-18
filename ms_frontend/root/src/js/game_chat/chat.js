@@ -116,7 +116,7 @@ async function handleClickedOnChatElement(chat_obj) {
     // console.log('chat obj### : ', chat_obj.chat_id);
     // console.log('chat name### : ', chat_obj.chat_name);
 
-    await sendDataToBackend('messages_in_chat_read') // NEW SINCE 12.05.2024
+    await sendDataToBackend('messages_in_chat_read')
     await sendDataToBackend('get_online_stats')
     await sendDataToBackend('get_user_in_current_chat')
     await sendDataToBackend('get_chat_messages')
@@ -136,13 +136,6 @@ async function handleClickedOnChatElement(chat_obj) {
     handleButtonClick("");
   }
 }
-
-
-
-
-
-
-
 
 async function renderMessages() {
   let myArray = websocket_obj.messages.message_data;
@@ -181,8 +174,7 @@ async function renderMessages() {
       }
       if (myArray[i].sender === 'CHAT_BOT') {
         titleElement.textContent = myArray[i].sender + ' 👾';
-      }
-      else if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
+      } else if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
         titleElement.textContent = myArray[i].sender + ' 🟢';
       } else {
         titleElement.textContent = myArray[i].sender + ' 🔴';
@@ -275,29 +267,20 @@ async function renderChat() {
     const nameCol = document.createElement('div');
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
     let chatName = document.createElement('div');
-
     let read_stat  = document.createElement('div');
     read_stat.classList.add('col-sm-8', 'col-xs-8', 'red-dot');
 
-    if (chat.id === websocket_obj.chat_id) {
+    if (chat.chat_id === websocket_obj.chat_id || chat.is_read) {
       read_stat.classList.add('hide-dot');
     } else {
-      if (chat.is_read) {
-          read_stat.classList.add('hide-dot');
-      } else {
-        read_stat.classList.remove('hide-dot');
-      }
+      read_stat.classList.remove('hide-dot');
     }
-
     chatName.textContent = chat.chat_name;
-
     chat_element.addEventListener('click', async function () {
       await handleClickedOnChatElement(chat);
       read_stat.classList.add('hide-dot');
     });
     rowDiv.appendChild(read_stat)
-
-
     nameCol.appendChild(chatName);
     const timeCol = document.createElement('div');
     timeCol.classList.add('col-sm-4', 'col-xs-4', 'pull-right', 'sideBar-time');
@@ -378,7 +361,7 @@ function findOtherUserName(users, username) {
 			return users[i].user_name;
 		}
 	}
-	return null; // Return null if the username is not found
+	return null;
 }
 
 async function chatSiteClicked() {
@@ -442,7 +425,7 @@ async function openChat() {
 }
 
 async function challengeTournClicked() {
-  console.log('In inviting through chat')
+  console.log('In inviting through chat 1')
   sendDataToBackend('get_user_in_current_chat')
   console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
   console.log('websocket_obj.userInCurrentChat ', websocket_obj.userInCurrentChat)
@@ -454,25 +437,13 @@ async function challengeTournClicked() {
   websocket_obj.invited_id = invited_username 
 //   websocket_obj.invited_id = websocket_obj.chat_name
 
-    console.log("INFOM CHATBOT")
-    console.log("INVITED USER: ", websocket_obj.invited_id)
-    console.log("CURRENT USER: ", websocket_obj.username)
-    // 'user_id': websocket_obj.user_id,
-    //         'chat_id': websocket_obj.chat_id,
-    //         'sender': websocket_obj.sender,
-    //         'message': websocket_obj.message,
-
-
-
-
-
   await sendDataToBackend('inform_chatbot')
   await sendDataToBackend('join_tournament');
 
 }
 
 async function challengeUserClicked() {
-  console.log('In inviting through chat')
+  console.log('In inviting through chat 2')
   // const username = websocket_obj.username;
   sendDataToBackend('get_user_in_current_chat')
   console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)

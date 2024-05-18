@@ -104,7 +104,6 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
-            # user_id = text_data_json["data"]["user_id"]
             self.my_group_id = 'group_%s' % chat_id
             #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
             await self.channel_layer.group_add(self.my_group_id, self.channel_name)
