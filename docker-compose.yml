@@ -6,15 +6,15 @@ services:
     container_name: game_chat_db
     build:
       context: postgres
-    user: postgres
+    # user: postgres
     #env_file: .env
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
-      interval: 3s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+    #   interval: 3s
+    #   timeout: 5s
+    #   retries: 10
+    #   start_period: 30s
     networks:
       app_net:
         ipv4_address: 172.16.10.8
