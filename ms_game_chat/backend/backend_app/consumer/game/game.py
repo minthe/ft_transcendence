@@ -134,18 +134,18 @@ class _Game:
                 # print(self.user)
                 # print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
 
-
-                await self.channel_layer.group_send(
-                    # self.game_group_id,
-                    self.game_states.get(self.stable_game_id, {}).get('group_id'),
-                    {
-                        'type': 'send.ball.update',
-                        'data': {
-                            'ball_x': self.game_states[self.stable_game_id]['ball_x'],
-                            'ball_y': self.game_states[self.stable_game_id]['ball_y'],
-                        },
-                    }
-                )
+                if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
+                    await self.channel_layer.group_send(
+                        # self.game_group_id,
+                        self.game_states.get(self.stable_game_id, {}).get('group_id'),
+                        {
+                            'type': 'send.ball.update',
+                            'data': {
+                                'ball_x': self.game_states[self.stable_game_id]['ball_x'],
+                                'ball_y': self.game_states[self.stable_game_id]['ball_y'],
+                            },
+                        }
+                    )
                 # print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
                 await asyncio.sleep(0.01)
