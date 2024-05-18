@@ -169,7 +169,7 @@ class _Game:
                             'type': 'reset.stable.id'
                         }
                     )
-                    break
+                    return None
                 print("in game_active = false")
                 print("self.game_states[self.stable_game_id]")
                 print(self.game_states[self.stable_game_id])
@@ -209,6 +209,8 @@ class _Game:
         tmp_group_id = 'group_%s' % self.stable_game_id
         # await self.update_stable_game_id_for_group(self.game_group_id, 0)
         tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+        print("tmp_id")
+        print(tmp_id)
         self.game_states.pop(self.stable_game_id, None)
 
         await self.channel_layer.group_send(
