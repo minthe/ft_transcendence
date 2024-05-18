@@ -161,7 +161,14 @@ class _Game:
                 print(self.game_states[self.stable_game_id]['canceled'])
                 if self.game_states[self.stable_game_id]['canceled'] == True:
                     print("game canceled")
+                    tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
                     await self.clear_game_struct()
+                    await self.channel_layer.group_send(
+                        tmp_id,
+                        {
+                            'type': 'reset.stable.id'
+                        }
+                    )
                     break
                 print("in game_active = false")
                 print("self.game_states[self.stable_game_id]")
@@ -368,14 +375,23 @@ class _Game:
         elif self.game_states.get(self.stable_game_id, {})['player_two'] == self.user['user_id']:
             self.game_states[self.stable_game_id]['player_two'] = None
         # await self.decrement_joined_players()
-        await self.channel_layer.group_discard(self.game_group_id, self.channel_name)
         if (self.game_states.get(self.stable_game_id, {})['player_one'] == None and self.game_states.get(self.stable_game_id, {})['player_two'] == None):
             print("no players left")
             self.game_states[self.stable_game_id]['canceled'] = True
             # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
+            tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+
+            if self.game_states.get(self.stable_game_id, {}).get('game_loop_task') is None:
+                await self.channel_layer.group_send(
+                    tmp_id,
+                    {
+                        'type': 'reset.stable.id'
+                    }
+                )
         
+        await self.channel_layer.group_discard(self.game_group_id, self.channel_name)
 
     async def update_stable_game_id_for_group(self, group_id, new_value):
         print("in update_stable_game_id_for_group")
