@@ -1,0 +1,200 @@
+version: '3.8'
+
+services:
+# REST API DOCUMENTATION
+  swagger:
+    container_name: swagger
+    build:
+      context: swagger
+    environment:
+      URLS_PRIMARY_NAME: "API Gateway"
+      URLS: "[{ url: './doc/ms-api-gateway.yaml', name: 'API Gateway'},
+              { url: './doc/ms-auth.yaml', name: 'Auth' },
+              { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
+              { url: './doc/ms-vault.yaml', name: 'Vault' },
+            ]"
+    restart: always
+    volumes:
+      - ./docs/openapi:/usr/share/nginx/html/doc
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.2
+    expose:
+      - 8080
+    depends_on:
+     - vault_store_secrets
+
+# MICROSERVICE API-GATEWAY
+  api_gateway:
+    env_file: .env
+    container_name: api_gateway
+    build:
+      context: ms_api_gateway
+      args:
+        CURRENT_HOST: ${CURRENT_HOST}
+    volumes:
+      - ./ms_api_gateway/root:/usr/share/nginx/html
+      - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
+      - ./.cert/:/etc/nginx/ssl/
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.3
+    depends_on:
+      - vault_store_secrets
+      - auth_backend
+      - users_db
+      - frontend
+      - game_chat_backend
+      - game_chat_db
+
+# MICROSERVICE FRONTEND
+  frontend:
+    env_file: .env
+    container_name: frontend
+    build: 
+      context: ms_frontend
+    volumes:
+      - ./ms_frontend/root://usr/share/nginx/html
+      - ./ms_frontend/nginx.conf.template:/nginx.conf.template
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.4
+    depends_on:
+      - vault_store_secrets
+      - game_chat_backend
+    restart: always
+    expose:
+      - 4242
+
+# MICROSERVICE AUTH
+  auth_backend:
+    env_file: .env
+    container_name: auth_backend
+    build: 
+      context: ms_auth
+    volumes:
+      - ./ms_auth:/code
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.5
+    restart: always
+    depends_on:
+      - vault
+      - users_db
+    expose:
+      - 8000
+  users_db:
+    container_name: users_db
+    build:
+      context: postgres
+    user: postgres
+    env_file: .env
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.6
+    volumes:
+      - users_db:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    depends_on:
+     - vault_store_secrets
+
+# MICROSERVICE GAME_CHAT
+  game_chat_backend:
+    env_file: .env
+    container_name: game_chat_backend
+    build: 
+      context: ms_game_chat/backend
+    volumes:
+      - ./ms_game_chat/backend:/code
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.7
+    restart: always
+    depends_on:
+      game_chat_db:
+        condition: service_healthy
+    expose:
+      - 6969
+  game_chat_db:
+    container_name: game_chat_db
+    build:
+      context: postgres
+    user: postgres
+    #env_file: .env
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.8
+    ports:
+      - 6969:6969 # for admin page, delete later
+    volumes:
+      - game_chat_db:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    depends_on:
+     - vault_store_secrets
+    
+  #MICROSERVICE HASHI_VAULT
+  vault:
+    build: ./ms_hashi_vault/vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "root"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    # Add volumes or other configurations as needed
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.9
+    expose:
+      - 8200
+
+  vault_store_secrets:
+    build: ./ms_hashi_vault/vault_store_secrets
+    ports:
+      - 8100
+    networks:
+      app_net:
+        ipv4_address: 172.16.10.10
+    expose:
+      - 8100
+    depends_on:
+      - vault
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://vault:8100/v1/sys/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+
+
+volumes:
+  game_chat_db:
+  users_db:
+
+networks:
+  app_net:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.10.0/24
+            gateway: 172.16.10.1

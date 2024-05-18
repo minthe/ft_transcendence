@@ -5,7 +5,7 @@ re: fclean all
 build:
 	chmod +x setup.sh
 	bash setup.sh
-	docker compose build 
+	docker compose build --no-cache
 stop:
 	docker compose stop
 up:
@@ -36,3 +36,5 @@ perge:
 	docker rmi -f $(docker images -aq) 2>/dev/null || true
 	docker volume rm $(docker volume ls -q) 2>/dev/null || true
 	docker network rm $(docker network ls -q) 2>/dev/null || true
+	docker network prune -f
+

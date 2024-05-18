@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Executing set_env.sh script..."
+
+export VAULT_TOKEN="root"
+export VAULT_ADDR="http://vault:8200"
 
 postgres_user=$(vault read -format=json secret/data/POSTGRES_USER | jq -r '.data.data.POSTGRES_USER')
 

@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Install necessary packages
-apk add --no-cache curl jq
+apk add --no-cache curl jq unzip
 
 # Set Vault version
 VAULT_ADDR="http://vault:8200"
@@ -17,3 +17,5 @@ rm vault.zip && \
 # Print success message and check installed Vault version
 echo "Vault installed successfully" && \
 vault --version
+
+echo "hello test"

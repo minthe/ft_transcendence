@@ -69,15 +69,41 @@
 
 FROM alpine:3.19
 
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=143-f12-Aber
-ENV POSTGRES_DB=postgres
-ENV POSTGRES_PORT=5432
+# Install necessary packages for running the script
+RUN apk add --no-cache curl jq unzip
+
+# Copy the shell scripts into the image
+COPY create_vault_cli.sh /usr/local/bin/
+COPY set_env.sh /usr/local/bin/
+
+# Ensure the scripts are executable
+RUN chmod +x /usr/local/bin/create_vault_cli.sh /usr/local/bin/set_env.sh
+
+# Run the script to set up Vault
+RUN /usr/local/bin/create_vault_cli.sh
+RUN /usr/local/bin/set_env.sh
+
+# ENV POSTGRES_USER="$POSTGRES_USER" \
+#     POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+#     POSTGRES_PORT="$POSTGRES_PORT" \
+#     POSTGRES_DB="$POSTGRES_DB"
+
+
+
+
+
+
+# ENV POSTGRES_USER=postgres
+# ENV POSTGRES_PASSWORD=143-f12-Aber
+# ENV POSTGRES_DB=postgres
+# ENV POSTGRES_PORT=5432
 
 
 
 # 70 is the standard uid/gid for "postgres" in Alpine
 # https://git.alpinelinux.org/aports/tree/main/postgresql/postgresql.pre-install?h=3.12-stable
+
+# ---- ab hier
 RUN set -eux; \
 	addgroup -g 70 -S postgres; \
 	adduser -u 70 -S -D -G postgres -H -h /var/lib/postgresql -s /bin/sh postgres; \
