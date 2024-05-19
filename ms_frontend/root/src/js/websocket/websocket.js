@@ -1,20 +1,11 @@
-
 websocket_obj = {
-  // profile_picture: null,
-  // file_data: null,
-
   active_game: null,
-
   other_user_name: null,
-
   username: null,
-  // password: null,
   avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
-  // avatar: null,
   blocked_by: [],
   blocked_user: [],
   new_private_chat_name: null,
-
   chat_name: null,
   chat_id: null,
   chat_is_private: null,
@@ -26,14 +17,12 @@ websocket_obj = {
       stat: null,
     }
   ],
-
   all_user: [
     {
       id: null,
       name: null,
     }
   ],
-
   chat_data: [
     {
       chat_id: null,
@@ -54,7 +43,6 @@ websocket_obj = {
       timestamp: 0,
     }
   ],
-
   game: [
     {
       game_id: 0,
@@ -85,22 +73,14 @@ websocket_obj = {
   message: null,
   sender: null,
   websocket: null,
-
-
-  //causes problems
   user_id: null,
-  // game_alias: null, 
-  // mail
-
   game_stats: null,
   history: null,
-
   tourns: []
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
   websocket_obj.websocket.onopen = function () {
-    // renderProfile()
     sendDataToBackend('get_all_user')
     sendDataToBackend('get_avatar')
   };
@@ -230,7 +210,11 @@ async function establishWebsocketConnection() {
         await sendDataToBackend('get_blocked_user')
         break
       case 'message_save_success':
-        await renderMessages()
+        await sendDataToBackend('get_current_users_chats')
+        break
+      case 'message_save_success_bot':
+        await sendDataToBackend('get_current_users_chats')
+        await sendDataToBackend('get_chat_messages')
         break
       case 'blocked_by_user':
         websocket_obj.blocked_by = data.blocked_by
@@ -244,13 +228,10 @@ async function establishWebsocketConnection() {
       case 'get_avatar':
         if (data.avatar) {
           websocket_obj.avatar = data.avatar
-        } else {
-          // default avatar
+        } else { // default avatar
           websocket_obj.avatar = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
         }
         break
-
-
       case 'recieve_invites':
       // websocket_obj.game.invites = data.matches
         websocket_obj.game.invites = JSON.parse(data.matches);
@@ -290,16 +271,11 @@ async function establishWebsocketConnection() {
         displayHistory();
         break
       case 'set_message_stat':
-        if (websocket_obj.user_id !== data.user_id) {
-          await sendDataToBackend('get_current_users_chats')
-        }
         break
       case 'inform_chatbot':
         if (websocket_obj.user_id === data.user_id) {
+          // console.log("I ["+websocket_obj.username+"] got INFORM_CHATBOT through ws")
           websocket_obj.other_user_name = data.other_user_name
-          const chat = websocket_obj.chat_data.find(chat => chat.chat_name === 'CHAT_BOT');
-          const found = chat ? chat.chat_id : null;
-          websocket_obj.chat_id = found
           await sendDataToBackend('save_chatbot_message')
         }
         break
@@ -600,11 +576,8 @@ async function sendDataToBackend(request_type) {
         'type': type,
         'data': data
       }));
-
-      // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
       resolve() // WITHOUT this we don't return to prev functions!!
-
     } else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));

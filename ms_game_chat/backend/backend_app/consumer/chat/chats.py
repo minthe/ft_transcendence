@@ -104,7 +104,6 @@ class _Chat:
             {
                 'type': 'send.blocked.user.info',
                 'data': {
-                    'message': 'delerte me later',
                     'status': response["status"],
                     'user_id': user_id,
                     'other_user_name': user_to_block
@@ -158,7 +157,6 @@ class _Chat:
                 'data': {
                     'message': 'ok',
                     'user_id': invited_user_id,
-                    'other_user_id': text_data_json["data"]["user_id"],
                     'other_user_name': text_data_json["data"]["current_user_name"]
                 },
             }
@@ -169,7 +167,7 @@ class _Chat:
         current_user_name = text_data_json["data"]["current_user_name"]
         response_message = await self.create_message_chatbot(other_user_name, current_user_name)
         await self.send(text_data=json.dumps({
-            'type': 'message_save_success',
+            'type': 'message_save_success_bot',
             'message': response_message
         }))
 
@@ -185,7 +183,6 @@ class _Chat:
         await self.send(text_data=json.dumps({
             'type': 'inform_chatbot',
             'user_id': event['data']['user_id'],
-            'other_user_id': event['data']['other_user_id'],
             'other_user_name': event['data']['other_user_name']
         }))
 
@@ -216,17 +213,12 @@ class _Chat:
     async def send_blocked_user_info(self, event):
         await self.send(text_data=json.dumps({
             'type': 'blocked_user_info',
-            'message': event['data']['message'],
-            'status': event['data']['status'],
-            'user_id': event['data']['user_id'],
         }))
 
     async def send_blocked_user(self, event):
         await self.send(text_data=json.dumps({
             'type': 'blocked_user',
             'blocked_by': event['data']['blocked_by'],
-            'status': event['data']['status'],
-            'user_id': event['data']['user_id'],
         }))
 
     async def send_unblocked_user_info(self, event):
