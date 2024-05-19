@@ -195,7 +195,12 @@ async function establishWebsocketConnection() {
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
         await updateScore();
-        break  
+        break
+      case 'chatbot_trigger':
+        console.log('chatbot_trigger')
+        console.log(data)
+        console.log(data.data[0])
+        break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
         await sendDataToBackend('get_blocked_user')
