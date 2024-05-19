@@ -50,7 +50,6 @@ class _User:
     async def handle_get_avatar(self, text_data_json):
         user_id = text_data_json["data"]["user_id"]
         response = await self.get_avatar(user_id)
-
         await self.send(text_data=json.dumps({
             'type': 'get_avatar',
             'avatar': response,
@@ -94,11 +93,9 @@ class _User:
     @database_sync_to_async
     def leaveChat(self, user_id, chat_id):
         try:
-            user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
-            if not user_exists:
+            if not MyUser.objects.filter(user_id=user_id).exists():
                 return 'User in leaveChat not found'
-            chat_exists = Chat.objects.filter(id=chat_id).exists()
-            if not chat_exists:
+            if not Chat.objects.filter(id=chat_id).exists():
                 return 'Chat in leaveChat not found'
             chat_instance = Chat.objects.get(id=chat_id)
             user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
@@ -116,12 +113,11 @@ class _User:
 
     @database_sync_to_async
     def get_avatar(self, user_id):
-        user_exists = MyUser.objects.filter(user_id=user_id).exists()  # changed id to user_id
-        if not user_exists:
+        if not MyUser.objects.filter(user_id=user_id).exists():
             return None
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        avatar_url = user_instance.avatar.url if user_instance.avatar else None
-        result = '../../backend' + str(avatar_url) if avatar_url else None
+        avatar_url = user_instance.avatar if user_instance.avatar else None
+        result = str(avatar_url) if avatar_url else None
         return result
 
 # ---------- UTILS FUNCTIONS ----------------------------------------

@@ -15,25 +15,69 @@
 
 
 <div id="start-screen" class="start-screen">
-  <!-- <div class="container-endScreen">
-    <div class="circle"></div>
-    <div class="name">Julien Won</div>
-  </div> -->
+
   <div class="centered-container">
-    <button id="renderInv" class="btn start-screen-btn btn-info btn-outline-info" onclick="requestInvites()">See my invites</button>
+    
+  <!-- </div> -->
+  <div class="centered-container">
+    <button id="renderInv" class="btn start-screen-btn btn-dark" onclick="requestInvites()">See my invites</button>
+    <button id="renderTourn" class="btn start-screen-btn btn-dark" onclick="requestTourns()">See my tournaments</button>
+    
+
+    <div id="tournamentsContainer"></div>
+
+  </div>
+
   </div>
 </div>
 
 <div id="invites-screen" class="invites-screen hidden">
   <div id="game-session-container" style="margin-left: 5vw;"></div>
   <div class="centered-container">
-    <button id="renderNewInv" class="btn start-screen-btn btn-info btn-outline-info logout-btn" onclick="requestInvites()">Check for new invites</button>
-    <!-- <h2>Invites</h2>
-    <ul id="invitesList" class="invites-list">
-      <li class="invite">Invite from John</li>
-    </ul> -->
+    <button id="renderNewInv" class="btn logout-btn start-screen-btn btn-dark" onclick="requestInvites()">Check for new invites</button>
   </div>
 </div>
+
+
+<div id="tournInvitesScreen" class="invites-screen hidden">
+  <div id="tournGameSessionContainer" style="margin-left: 5vw;"></div>
+  <div class="centered-container">
+    <button id="renderNewTournInv" class="btn logout-btn start-screen-btn btn-dark" onclick="requestTourns()">Check for new tournaments</button>
+  </div>
+</div>
+
+
+<div id="displayTourn" class="display-tourn hidden">
+  <div id="playerTopLeft" class="corner-div top-left basic-tourn-element">Player 1</div>
+
+  <div id="playerTopRight" class="corner-div top-right basic-tourn-element">Player 3</div>
+
+  <!-- <div id="leftJoin" style="left: 15.5vw; top: 44vh;" class="join-game-div basic-tourn-element hidden">
+    <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary join-game-btn" data-gameid="${match.game_id}">Join Game</button>
+  </div>
+  <div id="middleJoin" style="left: 47vw; top: 35vh;" class="join-game-div basic-tourn-element hidden">
+    <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary join-game-btn" data-gameid="${match.game_id}">Join Game</button>
+  </div>
+  <div id="rightJoin" style="right: 8.5vw; top: 44vh;" class="join-game-div basic-tourn-element hidden">
+    <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary join-game-btn" data-gameid="${match.game_id}">Join Game</button>
+  </div> -->
+
+  <div id="playerBottomLeft" class="corner-div bottom-left basic-tourn-element">Player 2</div>
+  <div id="playerBottomRight" class="corner-div bottom-right basic-tourn-element">Player 4</div>
+  <div id="playerLeftCenter" class="corner-div left-center basic-tourn-element">Win Game 1</div>
+  <div id="playerRightCenter" class="corner-div right-center basic-tourn-element">Win Game 2</div>
+  <div id="tournamentWinner" class="winner-div winner-center basic-tourn-element">Winner</div>
+  
+  
+  <i class="bi bi-arrow-right bi-arrow-right-rotate"></i>
+  <i class="bi bi-arrow-right bi-arrow-right-rotate-two"></i>
+  <i class="bi bi-arrow-right bi-arrow-left-rotate"></i>
+  <i class="bi bi-arrow-right bi-arrow-left-rotate-two"></i>
+  <i class="bi bi-arrow-right bi-arrow-left-center-rotate"></i>
+  <i class="bi bi-arrow-right bi-arrow-right-center-rotate"></i>
+
+</div>
+
 
 
 
@@ -45,30 +89,54 @@
 
 <div id="game-screen" class="game-screen">
   <div id="leftPlayer" class="playerInfo">
-    <img src="https://www.course-api.com/images/people/person-3.jpeg" class="img-fluid circular-image"  alt="Player 1">
-    <p id="playerOne">Player 1: John </p>
+    <img id="imgHost" src="" class="img-fluid circular-image"  alt="Player 1">
+    <p id="playerOne" class="player-name">Player 1: John </p>
   </div>
   <div id="score" class="playerInfo">
-    <p>Score</p>
-    <p><span id="score1">0</span> - <span id="score2">0</span></p>
+    <p class="score-board">Score</p>
+    <p class="score-board"><span id="score1">0</span> - <span id="score2">0</span></p>
   </div>
 
   <div id="rightPlayer" class="playerInfo">
-    <img src="https://www.course-api.com/images/people/person-1.jpeg" class="img-fluid circular-image"  alt="Player 2">
-    <p id="playerTwo">Player 2: Jane</p>
+    <img id="imgGuest" src="" class="img-fluid circular-image"  alt="Player 2">
+    <p id="playerTwo" class="player-name">Player 2: Jane</p>
   </div>
 </div>
 <!-- make canvas hidden until game starts -->
 <canvas id="pongCanvas" width="800" height="400" class="hidden"></canvas>
 
+<!-- <div id="game-screen" class="game-screen">
+
+  <div class="display-players">
+    <div id="leftPlayer" class="playerInfo">
+      <img src="https://www.course-api.com/images/people/person-3.jpeg" class="img-fluid circular-image"  alt="Player 1">
+      <p id="playerOne">Player 1: John </p>
+    </div>
+    <div id="score" class="playerInfo">
+      <p>Score</p>
+      <p><span id="score1">0</span> - <span id="score2">0</span></p>
+    </div>
+    
+    <div id="rightPlayer" class="playerInfo">
+      <img src="https://www.course-api.com/images/people/person-1.jpeg" class="img-fluid circular-image"  alt="Player 2">
+      <p id="playerTwo">Player 2: Jane</p>
+    </div>
+    
+  </div>
+
+  
+</div>
+<canvas id="pongCanvas" width="800" height="400" class="hidden"></canvas> -->
+<!-- make canvas hidden until game starts -->
+
 <div id="winningScreen" class="hidden">
   <div class="container-endScreen">
-    <div id="winnerName" class="name">Julien Won</div>
+    <div id="winnerName" class="name">Won</div>
   </div>
   <canvas id="fireworkCanvas" class="firework-canvas"></canvas>
 </div>
 
 <div id="endScreen" class="end-screen hidden">
-  <button id="goBackToStart" class="btn start-screen-btn btn-info btn-outline-info logout-btn">Go back to start</button>
+  <button id="goBackToStart" class="btn logout-btn start-screen-btn btn-dark">Go back to start</button>
   <!-- user who won -->
 </div>

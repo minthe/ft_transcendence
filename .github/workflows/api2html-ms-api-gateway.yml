@@ -2,6 +2,8 @@ name: ms-api-gateway2html
 
 on:
   push:
+    branches:
+      - docs
     paths:
       - 'docs/openapi/ms-api-gateway.yaml'
 

@@ -1,63 +1,103 @@
 import json
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError
 from user import views as user_views
 from second_factor import views as second_factor_views
+from . import serializers as serializers_views
 from ft_jwt.ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-@jwt.token_required
-@require_http_methods(["PUT"])
-def second_factor_update(request):
-	'''
-	This function is used to enable or disable 2fa
-	API Endpoint: /user/2fa/update
-	'''
+@require_http_methods(["POST"])
+def second_factor_verify(request):
+	data = json.loads(request.body.decode('utf-8'))
+	user_id = data.get('user_id')
+	code = data.get('code')
+
 	try:
-		# TODO valentin: Input Validation
-		data = json.loads(request.body.decode('utf-8'))
-		user_id = request.user_id
-		second_factor = data.get('second_factor')
+		serializers_views.validate_2fa_code(code)
+		serializers_views.validate_user_id(user_id)
+	except ValidationError as e:
+		return JsonResponse({'message': str(e)}, status=409)
 
-		if user_views.getValue(user_id, 'second_factor_enabled') and not second_factor:
-			return JsonResponse({'message': '2fa verification necessary'}, status=401)
+	if not user_views.checkValueExists('user_id', user_id):
+		return HttpResponse(status=404)
 
-		user_views.updateValue(user_id, 'second_factor_enabled', second_factor)
-		updated_value = user_views.getValue(user_id, 'second_factor_enabled')
+	if not user_views.getValue(user_id, 'second_factor_enabled'):
+		return JsonResponse({'message': '2FA not enabled'}, status=409)
 
-		if updated_value != second_factor:
-			return JsonResponse({'message': 'updating value failed'}, status=409)
+	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
+	if is_verified:
+		response = HttpResponse(status=200)
+		response.set_cookie('jwt_token', jwt.createToken(user_id), httponly=True)
+		return response
+	else:
+		return JsonResponse({'message': error_message}, status=401)
 
-		return JsonResponse({'message': '2fa updated successfully'}, status=200)
-
+def second_factor(request):
+	try:
+		if request.method == 'POST':
+			return second_factor_generate(request)
+		elif request.method == 'GET':
+			return second_factor_status(request)
+		elif request.method == 'PUT':
+			return second_factor_activate(request)
+		elif request.method == 'DELETE':
+			return second_factor_deactivate(request)
+		else:
+			return HttpResponse(status=405)
 	except Exception as e:
 		error_message = str(e)
 		print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST"])
-def second_factor_verify(request):
-	'''
-	This function is used to verify the 2fa code
-	API Endpoint: /user/2fa/verify
-	'''
-	try:
-		if not user_views.checkUserExists('user_id', user_id):
-			return JsonResponse({'message': 'User not found'}, status=404)
+@jwt.token_required
+def second_factor_generate(request):
+	user_id = request.user_id
+	if not user_views.checkValueExists('user_id', user_id):
+		return HttpResponse(status=404)
+	second_factor_views.create_2fa(request.user_id)
+	return HttpResponse(status=200)
 
-		# TODO valentin: Input Validation
-		data = json.loads(request.body.decode('utf-8'))
-		user_id = data.get('user_id')
-		code = data.get('code')
+@require_http_methods(["GET"])
+@jwt.token_required
+def second_factor_status(request):
+	if not user_views.checkValueExists('user_id', request.user_id):
+		return HttpResponse(status=404)
+	second_factor_status = user_views.getValue(request.user_id, 'second_factor_enabled')
+	return JsonResponse({'second_factor': second_factor_status}, status=200)
 
-		is_verified, error_message = second_factor_views.verify_verification_code(user_id, code)
-		if is_verified:
-			return JsonResponse({'message': "Successfully verified"}, status=200)
-		else:
-			return JsonResponse({'message': error_message}, status=401)
+@require_http_methods(["PUT"])
+@jwt.token_required
+def second_factor_activate(request):
+	# TODO valentin: Input Validation
+	data = json.loads(request.body.decode('utf-8'))
+	code = data.get('code')
+	user_id = request.user_id
+	if not user_views.checkValueExists('user_id', user_id):
+		return HttpResponse(status=404)
+	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
+	if is_verified:
+		user_views.updateValue(user_id, 'second_factor_enabled', True)
+		return HttpResponse(status=200)
+	else:
+		return JsonResponse({'message': error_message}, status=401)
 
-	except Exception as e:
-		print("in verify second_factor_code: ", e)
-		return JsonResponse({'message': 'Verification failed'}, status=500)
+@require_http_methods(["DELETE"])
+@jwt.token_required
+def second_factor_deactivate(request):
+	# TODO valentin: Input Validation
+	data = json.loads(request.body.decode('utf-8'))
+	code = data.get('code')
+	user_id = request.user_id
+	if not user_views.checkValueExists('user_id', user_id):
+		return HttpResponse(status=404)
+	is_verified, error_message = second_factor_views.verify_2fa(user_id, code)
+	if is_verified:
+		user_views.updateValue(user_id, 'second_factor_enabled', False)
+		return HttpResponse(status=200)
+	else:
+		return JsonResponse({'message': error_message}, status=401)

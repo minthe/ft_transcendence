@@ -12,6 +12,10 @@ http {
         listen 4242 default_server;
         server_name _;
 
+        root /usr/share/nginx/html/src;
+
+        error_page 404 /html/errPages/error40x.html;
+
         return 404;
     }
 
@@ -19,9 +23,14 @@ http {
         listen 4242;
         server_name ${CURRENT_HOST};
 
+        root /usr/share/nginx/html/src;
+
+        error_page 403 404 405 408 /html/errPages/error40x.html;
+        error_page 502 /html/errPages/error50x.html;
+
         location / {
             root /usr/share/nginx/html/src;
-            try_files $uri $uri/ =404;
+            try_files $uri $uri/ /html/errPages/error404.html;
         }
     }
 }

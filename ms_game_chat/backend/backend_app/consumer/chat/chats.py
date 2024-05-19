@@ -1,8 +1,9 @@
 import json
-
 from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 class _Chat:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
@@ -103,7 +104,6 @@ class _Chat:
             {
                 'type': 'send.blocked.user.info',
                 'data': {
-                    'message': 'delerte me later',
                     'status': response["status"],
                     'user_id': user_id,
                     'other_user_name': user_to_block
@@ -148,6 +148,28 @@ class _Chat:
             'user_id': user_id,
         }))
 
+    async def handle_new_tournament_chatbot(self, text_data_json):
+        invited_user_id = await self.get_id_with_name(text_data_json["data"]["invited_user_name"])
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.inform.chatbot',
+                'data': {
+                    'message': 'ok',
+                    'user_id': invited_user_id,
+                    'other_user_name': text_data_json["data"]["current_user_name"]
+                },
+            }
+        )
+
+    async def handle_save_chatbot_message(self, text_data_json):
+        other_user_name = text_data_json["data"]["other_user_name"]
+        current_user_name = text_data_json["data"]["current_user_name"]
+        response_message = await self.create_message_chatbot(other_user_name, current_user_name)
+        await self.send(text_data=json.dumps({
+            'type': 'message_save_success_bot',
+            'message': response_message
+        }))
 
 # ---------- SEND FUNCTIONS ---------------------------------------
     async def send_current_users_chats(self, event):
@@ -155,6 +177,13 @@ class _Chat:
             'type': 'current_users_chats',
             'user_id': event['data']['user_id'],
             'users_chats': event['data']['users_chats']
+        }))
+
+    async def send_inform_chatbot(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'inform_chatbot',
+            'user_id': event['data']['user_id'],
+            'other_user_name': event['data']['other_user_name']
         }))
 
     async def send_user_left_chat(self, event):
@@ -184,17 +213,12 @@ class _Chat:
     async def send_blocked_user_info(self, event):
         await self.send(text_data=json.dumps({
             'type': 'blocked_user_info',
-            'message': event['data']['message'],
-            'status': event['data']['status'],
-            'user_id': event['data']['user_id'],
         }))
 
     async def send_blocked_user(self, event):
         await self.send(text_data=json.dumps({
             'type': 'blocked_user',
             'blocked_by': event['data']['blocked_by'],
-            'status': event['data']['status'],
-            'user_id': event['data']['user_id'],
         }))
 
     async def send_unblocked_user_info(self, event):
@@ -207,7 +231,7 @@ class _Chat:
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
-        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        user_instance = MyUser.objects.get(user_id=user_id)
         all_chats = user_instance.chats.all()
         user_chats = []
         for chat in all_chats:
@@ -218,22 +242,21 @@ class _Chat:
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
                 'last_message': self.get_last_message_in_chat(chat.id),
                 'isPrivate': chat.isPrivate,
-                'avatar': self.getAvatar(chat_name)
+                'avatar': self.getAvatar(chat_name),
+                'is_read': self.get_is_read_stat(chat.id, user_id)
             })
         return user_chats
 
     @database_sync_to_async
     def createChat(self, user_id, chat_name, is_private):
         try:
-            chat_exists = Chat.objects.filter(chatName=chat_name).exists()
-            if chat_exists:
+            if Chat.objects.filter(chatName=chat_name).exists():
                 return {'chat_id': -1, 'message': 'Chat already exists'}
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=is_private)
-            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+            user_instance = MyUser.objects.get(user_id=user_id)
             user_instance.chats.add(new_chat.id)
             new_chat.save()
             user_instance.save()
-
             chat_instance = Chat.objects.get(chatName=chat_name)
             return {'chat_id': chat_instance.id, 'message': 'ok'}
         except ValueError:
@@ -245,19 +268,17 @@ class _Chat:
     def createPrivateChat(self, user_id, chat_name):
         try:
             # chat_name should be the user we create a chat with
-            user_exists = MyUser.objects.filter(name=chat_name).exists()
-            if not user_exists:
+            if not MyUser.objects.filter(name=chat_name).exists():
                 return 'User does not exist'
-            user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+            user_instance = MyUser.objects.get(user_id=user_id)
             if chat_name == user_instance.name:
                 return 'Sorry, you can not be in a chat with yourself :('
             # Filter all private chats that the user is part of
-            private_chats = Chat.objects.filter(isPrivate=True, myuser__user_id=user_id)  # changed id to user_id
-            chat_already_exists = private_chats.filter(myuser__name=chat_name)
-            if chat_already_exists:
+            private_chats = Chat.objects.filter(isPrivate=True, myuser__user_id=user_id)
+            if private_chats.filter(myuser__name=chat_name):
                 return "You are already in a private chat with this user"
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
-            current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+            current_user_instance = MyUser.objects.get(user_id=user_id)
             other_user_instance = MyUser.objects.get(name=chat_name)
             current_user_instance.chats.add(new_chat.id)
             current_user_instance.save()
@@ -274,18 +295,27 @@ class _Chat:
     def get_id_with_name(self, user_name):
         try:
             user_instance = MyUser.objects.get(name=user_name)
-            user_id = user_instance.user_id  # changed id to user_id
+            user_id = user_instance.user_id
             return user_id
         except Exception as e:
             return -1
 
     @database_sync_to_async
+    def get_chat_id_with_name(self, chat_name):
+        try:
+            chat_instance = Chat.objects.get(name=chat_name)
+            chat_id = chat_instance.chat_id
+            return chat_id
+        except Exception as e:
+            print(f"something wrong in get_chat_id_with_name: {e}")
+            return -1
+
+    @database_sync_to_async
     def inviteUserToChat(self, user_id, chat_id, invited_user):
         try:
-            invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
-            if not invited_user_exists:
+            if not MyUser.objects.filter(name=invited_user).exists():
                 return 'User you want to invite doesnt exists'
-            inviting_user = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+            inviting_user = MyUser.objects.get(user_id=user_id)
             invited_user = MyUser.objects.get(name=invited_user)
             chat = inviting_user.chats.get(id=chat_id)
             invited_user.chats.add(chat)
@@ -297,17 +327,17 @@ class _Chat:
 
     @database_sync_to_async
     def block_user(self, user_id, user_to_block):
-        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
-        other_user_exists = MyUser.objects.filter(name=user_to_block)
+        current_user_exists = MyUser.objects.filter(user_id=user_id).exists()
+        other_user_exists = MyUser.objects.filter(name=user_to_block).exists()
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'blocked_by': None}
-        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        current_user_instance = MyUser.objects.get(user_id=user_id)
         other_user_instance = MyUser.objects.get(name=user_to_block)
         # create blocked_by field in instance of user_to_block and add there the name of instance user_id
         # Check if the other user is already blocked
         if current_user_instance in other_user_instance.blockedBy.all():
             # User is already blocked, return a response or handle accordingly
-            return {'status': 409, 'blocked_by': None} #'User already blocked'
+            return {'status': 409, 'blocked_by': None}
         # Block the other user
         other_user_instance.blockedBy.add(current_user_instance)
         other_user_instance.save()
@@ -315,30 +345,29 @@ class _Chat:
 
     @database_sync_to_async
     def unblock_user(self, user_id, user_to_unblock):
-        current_user_exists = MyUser.objects.filter(user_id=user_id)  # changed id to user_id
-        other_user_exists = MyUser.objects.filter(name=user_to_unblock)
+        current_user_exists = MyUser.objects.filter(user_id=user_id).exists()
+        other_user_exists = MyUser.objects.filter(name=user_to_unblock).exists()
         if not current_user_exists or not other_user_exists:
             return {'status': 404, 'unblocked_by': None}
-        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        current_user_instance = MyUser.objects.get(user_id=user_id)
         other_user_instance = MyUser.objects.get(name=user_to_unblock)
 
         if current_user_instance in other_user_instance.blockedBy.all():
             other_user_instance.blockedBy.remove(current_user_instance)
             other_user_instance.save()
             return {'status': 200}
-        # User is already blocked, return a response or handle accordingly
         return {'status': 409, 'unblocked_by': None}  # 'User already blocked'
 
     @database_sync_to_async
     def get_blocked_by_user(self, user_id):
-        user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        user_instance = MyUser.objects.get(user_id=user_id)
         blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_names)
         return {'status': 200, 'blocked_by': blocked_by_names_list}
 
     @database_sync_to_async
     def get_blocked_user(self, user_id):
-        current_user = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        current_user = MyUser.objects.get(user_id=user_id)
         users_blocking_current_user = MyUser.objects.filter(blockedBy=current_user)
         blocked_by_current_user_names = users_blocking_current_user.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_current_user_names)
@@ -352,13 +381,13 @@ class _Chat:
         # if chat is private, need to figure out name of chat user that is not current user
         chat_id = chat_instance.id
         users_in_chat = MyUser.objects.filter(chats__id=chat_id)
-        current_user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
+        current_user_instance = MyUser.objects.get(user_id=user_id)
         current_user = current_user_instance.name
         # get other users name
         for user in users_in_chat:
             if not current_user == user.name:
                 return user.name
-        return 'lol private shit backend CONSUMERS.py'
+        return 'Unexpected Error in getChatName()'
 
     def getPrivateChatNames(self, chat_instance, user_id):
         if not chat_instance.isPrivate:
@@ -386,12 +415,29 @@ class _Chat:
         return None
 
     def getAvatar(self, chat_name):
-        user_exist = MyUser.objects.filter(name=chat_name).exists()
-        if not user_exist:
+        if not MyUser.objects.filter(name=chat_name).exists():
             return None
         user_instance = MyUser.objects.get(name=chat_name)
-        avatar_url = user_instance.avatar.url if user_instance.avatar else None
-        result = '../../backend' + str(avatar_url) if avatar_url else None
+        avatar_url = user_instance.avatar if user_instance.avatar else None
+
+        if self.is_valid_url(avatar_url):
+            print("Valid URL")
+            result = str(avatar_url) if avatar_url else None
+        else:
+            print("Invalid URL")
+            result = str(avatar_url) if avatar_url else None # doesnt work if avatar is url
         return result
 
+    def is_valid_url(self, url):
+        validator = URLValidator()
+        try:
+            validator(url)
+            return True
+        except ValidationError:
+            return False
 
+    def get_is_read_stat(self, chat_id, user_id):
+        user_instance = MyUser.objects.get(user_id=user_id)
+        chat_instance = user_instance.chats.get(id=chat_id)
+        is_read = chat_instance.is_read
+        return is_read

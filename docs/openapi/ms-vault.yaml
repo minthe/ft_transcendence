@@ -21,10 +21,19 @@ paths:
       responses:
         '200':
           description: Service is up and running
+          content:
+            application/json:
+              example: {"message": "Service is up and running"}
         '401':
-          description: Missing or invalid JWT token'
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              example: {"message": "Missing or invalid JWT token"}
         '503':
           description: Service is down or unhealthy
+          content:
+            application/json:
+              example: {"message": "Service is down or unhealthy"}
 
 components:
   securitySchemes:
