@@ -39,7 +39,7 @@ def createIntraUser(user_data):
 		user.alias = user_data['username']
 	user.email = user_data['email']
 	user.avatar = user_data['image']
-	user.set_password('') # TODO valentin: change before production
+	user.set_password('')
 	user.second_factor_enabled = False
 	max_id = User.get_highest_user_id()
 	if max_id and max_id >= 2:
