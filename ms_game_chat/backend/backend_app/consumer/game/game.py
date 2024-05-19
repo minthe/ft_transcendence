@@ -179,7 +179,16 @@ class _Game:
                 print(self.game_states[self.stable_game_id])
                 await self.setWinner(self.game_states[self.stable_game_id])
                 # tourn_id = await self.matchResults(self.game_states[self.stable_game_id])
-                tourn_id = await self.matchResults()
+                return_data = await self.matchResults()
+                if return_data:
+                    print("return_data")
+                    print(return_data)
+                    await self.channel_layer.send(
+                        self.channel_name,
+                        {
+                            'type': 'send.chatbot.trigger',
+                            'data': return_data,
+                        })
 
                 print("111111")
                 print(self.stable_game_id)
@@ -355,6 +364,14 @@ class _Game:
         print("in send_already_in_game")
         await self.send(text_data=json.dumps({
             'type': 'already_in_game',
+
+        }))
+
+    async def send_chatbot_trigger(self, event):
+        print("in send_chatbot_trigger")
+        await self.send(text_data=json.dumps({
+            'type': 'chatbot_trigger',
+            'data': event['data'],
 
         }))
 
@@ -694,7 +711,16 @@ class _Game:
         print("in handle_send_join_tournament")
         tourn_id = await self.add_to_tourn(self.user['user_id'], self.invited_id)
         if tourn_id:
-            await self.semiFull(tourn_id)
+            return_data = await self.semiFull(tourn_id)
+            if return_data:
+                print("return_data")
+                print(return_data)
+                await self.channel_layer.send(
+                    self.channel_name,
+                    {
+                        'type': 'send.chatbot.trigger',
+                        'data': return_data,
+                    })
 
     async def handle_send_stats(self):
         return_data = await self.get_stats(self.user['user_id'])
@@ -892,19 +918,8 @@ class _Game:
         user_two.save()
 
 
-        # if game_struct['host_score'] == game_struct['score_limit']:
-        #     print("game_struct['host_score']")
-        #     game_instance.winnerId = game_instance.hostId
-        #     game_instance.loserId = game_instance.guestId
-        # elif game_struct['guest_score'] == game_struct['score_limit']:
-        #     print("game_struct['guest_score']")
-        #     game_instance.winnerId = game_instance.guestId
-        #     game_instance.loserId = game_instance.hostId
-        # # game_instance.date = timezone.now()
-        # game_instance.date = timezone.localtime(timezone.now())
-        # game_instance.save()
-
         if game_instance.tournId is not None:
+            return_data = []
             print("matchResults tourn")
             tourn_instance = Tournament.objects.get(id=game_instance.tournId)
             tourn_instance.active_matches.remove(game_instance)
@@ -933,8 +948,19 @@ class _Game:
                     user_two.new_matches.add(new_game)
                     user_one.save()
                     user_two.save()
-
+                    game_entry = {
+                        'user_one_str': user_one.name,
+                        'user_two_str': user_two.name,
+                        'user_one_num': user_one.user_id,
+                        'user_two_num': user_two.user_id,
+                        'user_one_alias': user_one.alias,
+                        'user_two_alias': user_two.alias,
+                        'game_id': new_game.id,
+                        'tourn_instance_id': tourn_instance.id
+                    }
                     tourn_instance.save()
+                    return_data.append(game_entry)
+                    return return_data
                 else:
                     tourn_instance.winnerId = game_instance.winnerId
                     tourn_instance.status = "finished"
@@ -943,7 +969,7 @@ class _Game:
     @database_sync_to_async
     def semiFull(self, invited_id):
         print("in semiFull")
-
+        return_data = []
         tourn_instance = Tournament.objects.get(id=invited_id)
         if len(tourn_instance.semiMatch) == 4:
             # print("semiMatch is full")
@@ -977,12 +1003,25 @@ class _Game:
                 user_two.new_matches.add(game_instance)
                 user_one.save()
                 user_two.save()
+                game_entry = {
+                    'user_one_str': user_one.name,
+                    'user_two_str': user_two.name,
+                    'user_one_num': user_one.user_id,
+                    'user_two_num': user_two.user_id,
+                    'user_one_alias': user_one.alias,
+                    'user_two_alias': user_two.alias,
+                    'game_id': game_instance.id,
+                    'tourn_instance_id': tourn_instance.id
+                }
+                return_data.append(game_entry)
 
             tourn_instance.save()
+            return return_data
             print("tourn_instance.active_matches")
             print(tourn_instance.active_matches)
             print("tourn_instance.active_matches")
             print(tourn_instance.active_matches.all())
+
         else:
             print("semiMatch is not full")
 

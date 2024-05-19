@@ -69,9 +69,7 @@ function newPass(shell) {
 
 
 
-function Run() {
-	console.log("run the fireworks");
-	
+function Run() {	
 	const currentTime = getCurrentTime();
 	const elapsedTime = currentTime - startTime;
 	
@@ -153,49 +151,6 @@ function stopFirework() {
 function getCurrentTime() {
     return performance.now(); // Returns the current time in milliseconds since the page started to load
 }
-
-
-
-
-
-
-
-
-
-
-//   // Variables for countdown
-//   let countdown;
-//   let countdownInterval;
-
-//   // Function to draw countdown
-// function drawCountdown() {
-// 	const canvas = document.getElementById('pongCanvas');
-//     const ctx = canvas.getContext('2d');
-
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     ctx.font = '48px Arial';
-//     ctx.fillStyle = 'black';
-//     ctx.textAlign = 'center';
-//     ctx.fillText(countdown, canvas.width / 2, canvas.height / 2);
-//   }
-
-//   // Function to start countdown animation
-// function startCountdownAnimation() {
-// 	countdown = 3;
-//     countdownInterval = setInterval(() => {
-//       countdown--;
-//       if (countdown <= 0) {
-//         clearInterval(countdownInterval);
-//         // Start your game here after countdown
-//         console.log('Game started!');
-//         return;
-//       }
-//       drawCountdown();
-//     }, 1000);
-//   }
-
-
-
 
 
 

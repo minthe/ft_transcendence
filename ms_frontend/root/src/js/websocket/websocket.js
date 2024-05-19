@@ -80,7 +80,6 @@ websocket_obj = {
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
-  console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
     sendDataToBackend('get_all_user')
     sendDataToBackend('get_avatar')
@@ -196,7 +195,12 @@ async function establishWebsocketConnection() {
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
         await updateScore();
-        break  
+        break
+      case 'chatbot_trigger':
+        console.log('chatbot_trigger')
+        console.log(data)
+        console.log(data.data[0])
+        break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
         await sendDataToBackend('get_blocked_user')
@@ -263,7 +267,6 @@ async function establishWebsocketConnection() {
         break
       case 'recieve_history':
         console.log('recieve_history')
-        console.log(data)
         websocket_obj.history = data.history;
         displayHistory();
         break
