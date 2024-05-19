@@ -185,7 +185,7 @@ async function establishWebsocketConnection() {
         // startCountdownAnimation();
         break
       case 'ball_update':
-        // console.log("BALL_UPDATE");
+        console.log("BALL_UPDATE");
         // websocket_obj.game.ball_x = data.ball_x
         const canvas = document.getElementById("pongCanvas");
         websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
@@ -207,6 +207,7 @@ async function establishWebsocketConnection() {
         break
       case 'reset_stable_id':
         console.log("RESET STABLE ID");
+        websocket_obj.game.active_state = false
         sendDataToBackend('reset_stable_id')
         break
       case 'opponent_disconnected':

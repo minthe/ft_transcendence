@@ -132,7 +132,7 @@ class _Game:
                 # print("SENDING BALL UPDATE")
                 # print(self.game_group_id)
                 # print(self.user)
-                # print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
+                print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
 
                 if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
                     await self.channel_layer.group_send(
@@ -161,15 +161,19 @@ class _Game:
                 print(self.game_states[self.stable_game_id]['canceled'])
                 if self.game_states[self.stable_game_id]['canceled'] == True:
                     print("game canceled")
-                    tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
-                    await self.clear_game_struct()
-                    await self.channel_layer.group_send(
-                        tmp_id,
-                        {
-                            'type': 'reset.stable.id'
-                        }
-                    )
-                    return None
+                    # tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+                    # prefixed_value = f"b_{tmp_id}"
+                    # self.game_states.pop(self.stable_game_id, None)
+                    # print("tmp_id")
+                    # print(prefixed_value)
+                    # await self.channel_layer.group_send(
+                    #     prefixed_value,
+                    #     {
+                    #         'type': 'reset.stable.id'
+                    #     }
+                    # )
+                    # await self.clear_game_struct()
+                    break
                 print("in game_active = false")
                 print("self.game_states[self.stable_game_id]")
                 print(self.game_states[self.stable_game_id])
@@ -179,17 +183,18 @@ class _Game:
 
                 print("111111")
                 print(self.stable_game_id)
-                await self.channel_layer.group_send(
-                    # self.game_group_id,
-                    self.game_states.get(self.stable_game_id, {}).get('group_id'),
-                    {
-                        'type': 'send.game.over',
-                        'data': {
-                            'game_id': self.stable_game_id,
+                if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
+                    await self.channel_layer.group_send(
+                        # self.game_group_id,
+                        self.game_states.get(self.stable_game_id, {}).get('group_id'),
+                        {
+                            'type': 'send.game.over',
+                            'data': {
+                                'game_id': self.stable_game_id,
 
-                        },
-                    }
-                )
+                            },
+                        }
+                    )
                 # self.game_states.pop(self.stable_game_id, None)
                 try:
                     await self.remove_ended_match(self.user['user_id'], self.stable_game_id)
@@ -210,11 +215,11 @@ class _Game:
         # await self.update_stable_game_id_for_group(self.game_group_id, 0)
         tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
         print("tmp_id")
-        print(tmp_id)
+        prefixed_value = f"b_{tmp_id}"
+        print(prefixed_value)
         self.game_states.pop(self.stable_game_id, None)
-
         await self.channel_layer.group_send(
-                tmp_id,
+                prefixed_value,
                 {
                     'type': 'reset.stable.id'
                 }
@@ -299,6 +304,8 @@ class _Game:
         # await self.decrement_joined_players()
         # print("after decrement")
         # print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        if self.stable_game_id not in self.game_states:
+            return None
         if self.game_states.get(self.stable_game_id, {})['player_one'] == event['data']['user_id']:
             self.game_states[self.stable_game_id]['player_one'] = None
         elif self.game_states.get(self.stable_game_id, {})['player_two'] == event['data']['user_id']:
@@ -311,17 +318,7 @@ class _Game:
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
 
-        # await self.set_technical_winner(self.game_id, self.user['user_id'])
 
-        # self.game_states[self.game_id]['canceled'] = True
-        # await self.reset_joined_players()
-        # # await self.init_game_struct()
-        # self.game_states[self.game_id]['game_active'] = False
-
-        # await self.send(text_data=json.dumps({
-        #     'type': 'opponent_disconnected',
-
-        # }))
 
     async def send_request_invites(self, event):
         print("in send_request_invites")
@@ -384,10 +381,11 @@ class _Game:
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
             tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+            prefixed_value = f"b_{tmp_id}"
 
             if self.game_states.get(self.stable_game_id, {}).get('game_loop_task') is None:
                 await self.channel_layer.group_send(
-                    tmp_id,
+                    prefixed_value,
                     {
                         'type': 'reset.stable.id'
                     }
@@ -492,7 +490,7 @@ class _Game:
             'previous_join': 0,
             'canceled': False,
             'game_loop_task': None,
-            'group_id': None,
+            # 'group_id': None,
         }
         print("self.game_states[self.stable_game_id]")
         print(self.game_states[self.stable_game_id])
@@ -520,7 +518,6 @@ class _Game:
                 'canceled': False,
                 'game_loop_task': None,
                 'group_id': self.game_group_id,
-
             }
 
 
@@ -631,25 +628,12 @@ class _Game:
                 print("START GAME LOOP THREAD=====================")
                 self.game_states[self.stable_game_id]['game_loop_task'] = asyncio.create_task(self.game_loop())
 
-            # if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
-            #     await asyncio.sleep(3)
-            #     asyncio.create_task(self.game_loop())
-            #     print("START GAME LOOP THREAD=====================")
-            #     print("self.game_states.get(self.game_id, {}).get('previous_join')")
-            #     print(self.game_states.get(self.game_id, {}).get('previous_join'))
-            #     self.game_states.get(self.game_id, {})['previous_join'] += 1
-            # else:
-            #     asyncio.create_task(self.game_loop())
-            #     print("game loop already running")
-        # if self.stable_game_id == 0:
-        #     self.stable_game_id = self.game_id
-        # else:
-        #     print("FINISH GAME FIRST")
         print("END OF SEND INIT GAME")
         print("self.game_states.get(self.stable_game_id, {}).get('player_one')")
         print(self.game_states.get(self.stable_game_id, {}).get('player_one'))
         print("self.game_states.get(self.stable_game_id, {}).get('player_two')")
         print(self.game_states.get(self.stable_game_id, {}).get('player_two'))
+        print(self.game_states.get(self.stable_game_id, {}))
 
 
     async def handle_send_ball_update(self):
@@ -755,7 +739,10 @@ class _Game:
                 if self.game_states.get(str(game.id), {}).get('player_one') == self.user['user_id'] or self.game_states.get(str(game.id), {}).get('player_two') == self.user['user_id']:
                     print("user already in game")
                 elif self.game_states.get(str(game.id), {}).get('game_active') == True and str(game.id) != str(self.stable_game_id):
+                    print(self.game_states.get(str(game.id), {}).get('game_active'))
                     print("finish current game first!")
+                    print(str(game.id))
+                    print(str(self.stable_game_id))
                     return True
         return False
 

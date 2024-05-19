@@ -156,11 +156,15 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         game_id = text_data_json["data"]["game_id"]
         print(type(game_id))
         print(game_id)
-        if int(game_id) != 0:
-            print('creating group')
-            self.game_group_id = 'group_%s' % game_id
-        else:
-            self.game_group_id = None
+        # if int(game_id) != 0:
+        #     print('creating group')
+        #     self.game_group_id = 'group_%s' % game_id
+        # else:
+        #     self.game_group_id = None
+
+        self.game_group_id = 'group_%s' % game_id
+        self.b_game_group_id = 'b_group_%s' % game_id
+
 
         if self.game_group_id:
             print(self.game_group_id)
@@ -168,8 +172,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             self.game_group_id,
             self.channel_name
             )
+            await self.channel_layer.group_add(
+            self.b_game_group_id,
+            self.channel_name
+            )
         else:
             print('NO GAME GROUP ID')
+
+            
         print(self.user)
         print('______________\n')
 
