@@ -1,25 +1,25 @@
 
 async function renderTourns() {
-	console.log('In renderTourns');
 	const matches = websocket_obj.game.invites;
+	const container = document.getElementById('tournGameSessionContainer');
   
-	  const container = document.getElementById('tournGameSessionContainer');
-	  container.innerHTML = generateHTMLContentTourns(matches);
-  
-	  container.querySelectorAll('.join-tourn-btn').forEach(button => {
-		button.addEventListener('click', async function() {
-		  const tournId = this.getAttribute('data-tournid');
-		//   userState.currPage = 'tournPage';
-		//   userState.tournId = tournId;
-		  joinTourn(tournId, matches);
-		//   handleButtonClick("");
-		});
-	  });
+	container.innerHTML = generateHTMLContentTourns(matches);
+
+	container.querySelectorAll('.join-tourn-btn').forEach(button => {
+	button.addEventListener('click', async function() {
+		const tournId = this.getAttribute('data-tournid');
+	//   userState.currPage = 'tournPage';
+	//   userState.tournId = tournId;
+		joinTourn(tournId, matches);
+	//   handleButtonClick("");
+	});
+	});
   }
 
 
 function generateHTMLContentTourns(matches) {
 	let htmlContent = '';
+
 	if (matches.length > 0) {
 	  htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
 	  matches.forEach(match => {
@@ -29,16 +29,12 @@ function generateHTMLContentTourns(matches) {
 	  });
 	  htmlContent += '</ul>';
 	}
-	// else {
-	//   htmlContent = '<p>No matches found.</p>';
-	// }
 	return htmlContent;
 }
 
 
 function joinTourn(tournId, matches) {
 	let userId = `${websocket_obj.user_id}`;
-	console.log('userId : ', userId);
 	
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
@@ -56,34 +52,18 @@ function joinTourn(tournId, matches) {
 			return ;
 		}
 	});
-
-
-	document.getElementById('tournInvitesScreen').classList.add('hidden');
-	document.getElementById('displayTourn').classList.remove('hidden');
-
 	let container = document.getElementById('displayTourn');
+	
+	document.getElementById('tournInvitesScreen').classList.add('hidden');
+	container.classList.remove('hidden');
 	container.querySelectorAll('.join-game-btn').forEach(button => {
 		button.addEventListener('click', async function() {
-		  	const gameId = this.getAttribute('data-gameid');
-			// console.log(gameId);
+			const gameId = this.getAttribute('data-gameid');
+
 			joinGame(gameId);
 		});
-	  });
+	});
 }
-
-
-
-// alias_one: "jkroger"
-// alias_two:"julien"
-// game_id:1
-// loser_id:null
-// player_one:"5"
-// player_two:"2"
-// stage:"semi"
-// winner_id:null
-// counter_semi
-// : 
-// 2
 
 function stageSemi(semi, userId) {
 	if (semi.counter_semi === 1)
