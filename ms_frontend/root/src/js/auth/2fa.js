@@ -125,7 +125,6 @@ function updateTwoFactor(correctMethod) {
 	})
 	.then(async function(response) {
 		changeToTwoFa();
-		// const dataRes = await response.json();
 		if (response.ok) {
 			await verifyButtonProfileClick();
 			if (checkTwoFaCode()) {
@@ -144,18 +143,19 @@ function updateTwoFactor(correctMethod) {
 			}
 			return { twoFaUpdated: false, message: 'Not enough digits or non numeric characters'};
 		}
-		return { twoFaUpdated: false, message: response.status}; //maybe needs to be checked again
+		const dataFailed = await response.json();
+		return { twoFaUpdated: false, message: dataFailed.message};
 	})
 	.then(async ({twoFaUpdated, message}) => {
 		if (!twoFaUpdated)
 			throw Error(message);
 		updateTwoFaStatus(true, message);
 		await getTwoFaStatus();
-		changeToProfile();
 	})
 	.catch(error => {
-		changeToProfile();
 		updateTwoFaStatus(false, error);
+	})
+	.finally(() => {
+		changeToProfile();
 	});
-	changeToProfile();
 }

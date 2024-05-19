@@ -1,3 +1,6 @@
+
+let logedOutSpaCount = 0;
+
 let userState = { 
   bodyText: "<div id=userIsNotAuth></div>",
   currPage: null,
@@ -35,7 +38,6 @@ function handleButtonClick(url) {
 
 
 
-// Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
 
@@ -77,7 +79,7 @@ function showSiteHideOthersSpa(site_to_show) {
   if (userState.currPage === site_to_show)
     return ;
 
-  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];//gameSiteStart, gameSiteInvite, gameSitePlay, gameSiteEnd
+  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];
   sites.forEach(site => {
     if (site === site_to_show) showDiv(site)
     else hideDiv(site)
@@ -207,7 +209,6 @@ async function handleClickEvent(event) {
 }
 
 
-let logedOutSpaCount = 0;
 
 function spaNotLogedIn(site_to_show) {
   logedOutSpaCount++;
