@@ -34,8 +34,9 @@ class _User:
         )
 
     async def handle_current_user_left_chat(self, text_data_json):
-        chat_id = text_data_json["data"]["chat_id"]
-        user_id = text_data_json["data"]["user_id"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if chat_id == -1 or user_id == -1: return
         info = await self.leaveChat(user_id, chat_id)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -48,7 +49,8 @@ class _User:
         )
 
     async def handle_get_avatar(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         response = await self.get_avatar(user_id)
         await self.send(text_data=json.dumps({
             'type': 'get_avatar',

@@ -96,9 +96,9 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             print('IS SOMETHING ELSE')
 
     async def controlChatRequests(self, text_data_json):
-        what_type = text_data_json["type"]
         chat_id = text_data_json["data"]["chat_id"]
         self.my_group_id = 'group_%s' % chat_id
+        what_type = text_data_json["type"]
         #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
         await self.channel_layer.group_add(self.my_group_id, self.channel_name)
         if what_type == 'save_message_in_db':
@@ -215,3 +215,19 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
     def group_exists(self, group_name):
         channel_layer = get_channel_layer()
         return channel_layer.group_exists(group_name)
+
+    def get_and_check_id(self, id):
+        if id is None:
+            return -1
+        if not isinstance(id, int):
+            return -1
+        return 0
+
+    def get_and_check_name(self, name):
+        if name is None:
+            return -1
+        if name == 'CHAT_BOT':
+            return 0
+        if not name.isalnum():
+            return -1
+        return 0
