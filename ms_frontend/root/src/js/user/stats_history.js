@@ -18,12 +18,10 @@ async function statsSiteClicked() {
 }
 
 async function requestHistory() {
-	console.log('In requestHistory');
 	await sendDataToBackend('request_history');
 }
 
 async function requestStats() {
-	console.log('In requestStats');
 	await sendDataToBackend('request_stats');
 }
 
@@ -55,7 +53,6 @@ function displayHistory() {
 }
 
 function getUserStats(stats) {
-	console.log(stats);
 	websocket_obj.game_stats.lost_games = stats.lost_games;
 	websocket_obj.game_stats.total_games = stats.total_games;
 	websocket_obj.game_stats.won_games = stats.won_games;
