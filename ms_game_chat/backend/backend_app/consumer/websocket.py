@@ -2,7 +2,6 @@ import asyncio
 import json
 from django.http import JsonResponse
 from backend_app.models import MyUser, Chat, Message, Game
-from backend_app import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.utils import timezone
