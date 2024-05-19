@@ -28,6 +28,7 @@ def send_verification_email(username, code, email_to):
         [email_to],
         fail_silently=False,
     )
+    print(f'2FA code sent to {email_to}')
 
 def validator(email):
 	email_validator = EmailValidator(message='Email invalid')

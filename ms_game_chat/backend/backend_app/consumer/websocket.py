@@ -75,7 +75,6 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.handle_send_online_stats_on_disconnect()
         if self.game_group_id is not None and self.game_id is not None:
             # self.game_states[self.game_id]['game_active'] = False
-
             await self.channel_layer.group_send(
                 self.game_group_id,
                 {
@@ -95,12 +94,13 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         #     await self.close()
         #     return
         # print("TOKEN IS VALID")
-
+        print('RECEIVED: ', text_data)
         text_data_json = json.loads(text_data)
         what_type = text_data_json["type"]
-
+        print('RECEIVED: ', what_type)
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', \
+            'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score', 'reset_stable_id']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
@@ -155,11 +155,15 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         game_id = text_data_json["data"]["game_id"]
         print(type(game_id))
         print(game_id)
-        if int(game_id) != 0:
-            print('creating group')
-            self.game_group_id = 'group_%s' % game_id
-        else:
-            self.game_group_id = None
+        # if int(game_id) != 0:
+        #     print('creating group')
+        #     self.game_group_id = 'group_%s' % game_id
+        # else:
+        #     self.game_group_id = None
+
+        self.game_group_id = 'group_%s' % game_id
+        self.b_game_group_id = 'b_group_%s' % game_id
+
 
         if self.game_group_id:
             print(self.game_group_id)
@@ -167,8 +171,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             self.game_group_id,
             self.channel_name
             )
+            await self.channel_layer.group_add(
+            self.b_game_group_id,
+            self.channel_name
+            )
         else:
             print('NO GAME GROUP ID')
+
+            
         print(self.user)
         print('______________\n')
 
@@ -201,7 +211,9 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         elif what_type == 'request_score':
             self.game_id = game_id
             await self.handle_request_score()
-            # await self.send_opponent_disconnected()
+        elif what_type == 'reset_stable_id':
+            self.stable_game_id = 0
+            # await self.handle_reset_stable_id()
         else:
             print('IS SOMETHING ELSE')
 

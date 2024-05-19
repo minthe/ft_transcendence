@@ -95,7 +95,8 @@ def register(request):
 				return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_register: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST", "GET"])
@@ -175,7 +176,8 @@ def login(request):
 				return JsonResponse({'message': 'Unauthorized'}, status=401)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_login: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST"])
@@ -199,7 +201,8 @@ def logout(request):
 		return response
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_logout: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 # ----------- OAUTH2 -----------
@@ -221,7 +224,8 @@ def oauth2_login(request):
 		return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_oauth2_login: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 def oauth2_redirect(request):
@@ -294,5 +298,6 @@ def oauth2_redirect(request):
 			return response
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_oauth2_redirect: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
