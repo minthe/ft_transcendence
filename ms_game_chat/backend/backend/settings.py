@@ -25,8 +25,6 @@ AVATAR_STYLE_BOT = os.environ.get('AVATAR_STYLE_BOT')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-# == /Users/mmensing/Desktop/CODE/TRANSCENDENCE/TEST_ENVIRONMENT/backend
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -37,7 +35,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 JWT_SECRET = os.environ.get('JWT_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 # -> prints (sensitive) data to the console, should not be readable by others
 
 APPEND_SLASH = False
@@ -47,18 +45,14 @@ ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost', '172.16
 # Application definition
 INSTALLED_APPS = [
     'daphne',  # HAS to be on top
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'channels',
     'backend_app',
-
-    # 'channels_redis'
     ]
 
 
@@ -66,7 +60,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
 
     'backend_app.middleware.cors.CorsMiddleware',  # custom middleware to enable cors policy
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,19 +76,9 @@ ROOT_URLCONF = 'backend.urls'
 # before this:
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use 'channels.layers.RedisChannelLayer' for production
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
-
 
 TEMPLATES = [
     {
@@ -135,18 +118,6 @@ DATABASES = {
     }
 }
 
-# DEFAULT:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
-#         'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
-#     }
-# }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
 # comes from 'django.contrib.auth' Application:
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -163,12 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-# multiple languages define here!!
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -177,18 +142,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-# for frontend later:
 STATIC_URL = 'game/static/'
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

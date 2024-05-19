@@ -54,4 +54,3 @@ class Tournament(models.Model):
     passed_matches = models.ManyToManyField('Game', related_name='passed_matches', blank=True)
     winnerId = models.CharField("winnerId", max_length=100, default=None, blank=True, null=True)
     status = models.CharField("status", max_length=100, default="active")
-
