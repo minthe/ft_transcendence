@@ -26,9 +26,9 @@ class _Chat:
         )
 
     async def handle_create_new_public_chat(self, text_data_json):
-        chat_name = text_data_json["data"]["chat_name"]
         user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
         if user_id == -1: return
+        chat_name = text_data_json["data"]["chat_name"]
         is_private = text_data_json["data"]["isPrivate"]
         info = await self.createChat(user_id, chat_name, is_private)
         await self.send(text_data=json.dumps({
@@ -71,8 +71,8 @@ class _Chat:
     async def handle_invite_user_to_chat(self, text_data_json):
         chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
         user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
-        if chat_id == -1 or user_id == -1: return
-        invited_user_name = text_data_json["data"]["invited_user_name"]
+        invited_user_name = self.get_and_check_name(text_data_json["data"]["invited_user_name"])
+        if chat_id == -1 or user_id == -1 or invited_user_name == -1: return
         info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
         others_user_id = await self.get_id_with_name(invited_user_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
@@ -101,8 +101,8 @@ class _Chat:
 
     async def handle_block_user(self, text_data_json):
         user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
-        if user_id == -1: return
-        user_to_block = text_data_json["data"]["user_to_block"]
+        user_to_block = self.get_and_check_name(text_data_json["data"]["user_to_block"])
+        if user_id == -1 or user_to_block == -1: return
         response = await self.block_user(user_id, user_to_block)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -130,8 +130,8 @@ class _Chat:
 
     async def handle_unblock_user(self, text_data_json):
         user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
-        if user_id == -1: return
-        user_to_unblock = text_data_json["data"]["user_to_unblock"]
+        user_to_unblock = self.get_and_check_name(text_data_json["data"]["user_to_unblock"])
+        if user_id == -1 or user_to_unblock == -1: return
         response = await self.unblock_user(user_id, user_to_unblock)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -157,7 +157,10 @@ class _Chat:
         }))
 
     async def handle_new_tournament_chatbot(self, text_data_json):
-        invited_user_id = await self.get_id_with_name(text_data_json["data"]["invited_user_name"])
+        invited_user_name = self.get_and_check_name(text_data_json["data"]["invited_user_name"])
+        current_user_name = self.get_and_check_name(text_data_json["data"]["current_user_name"])
+        if invited_user_name == -1 or current_user_name == -1: return
+        invited_user_id = await self.get_id_with_name(invited_user_name)
         await self.channel_layer.group_send(
             'channel_zer0',
             {
@@ -165,14 +168,15 @@ class _Chat:
                 'data': {
                     'message': 'ok',
                     'user_id': invited_user_id,
-                    'other_user_name': text_data_json["data"]["current_user_name"]
+                    'other_user_name': current_user_name
                 },
             }
         )
 
     async def handle_save_chatbot_message(self, text_data_json):
-        other_user_name = text_data_json["data"]["other_user_name"]
-        current_user_name = text_data_json["data"]["current_user_name"]
+        other_user_name = self.get_and_check_name(text_data_json["data"]["other_user_name"])
+        current_user_name = self.get_and_check_name(text_data_json["data"]["current_user_name"])
+        if other_user_name == -1 or current_user_name == -1: return
         response_message = await self.create_message_chatbot(other_user_name, current_user_name)
         await self.send(text_data=json.dumps({
             'type': 'message_save_success_bot',
