@@ -21,7 +21,8 @@ def token_existence(request):
 			return JsonResponse({'message': "Token does not exist"}, status=404)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_token_existence: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 	
 @jwt.token_required
@@ -38,5 +39,6 @@ def token(request):
 			return JsonResponse({'message': "Token does not exist"}, status=404)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_token: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)

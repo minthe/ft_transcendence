@@ -54,7 +54,8 @@ def profile(request):
 			}
 			game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user/alias"
 			encoded_data = json.dumps(game_chat_data).encode("utf-8")
-			print(f"request_to_game_chat url: {game_chat_request_url}")
+			if settings.DEBUG == "True":
+				print(f"request_to_game_chat url: {game_chat_request_url}")
 			game_chat_request = Request(game_chat_request_url, method='PUT', data=encoded_data, headers=game_chat_headers)
 			game_chat_response = urlopen(game_chat_request)
 			if game_chat_response.getcode() == 200:
@@ -80,5 +81,6 @@ def profile(request):
 
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_profile: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)

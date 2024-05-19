@@ -16,5 +16,6 @@ def heartbeat(request):
 		return JsonResponse({'message': "Service is up and running"}, status=200)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_status: {error_message}")
 		return JsonResponse({'message': error_message}, status=503)
