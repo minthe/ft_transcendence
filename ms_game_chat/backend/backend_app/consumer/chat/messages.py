@@ -44,8 +44,9 @@ class _Message:
         )
 
     async def handle_save_message_in_db(self, text_data_json):
-        chat_id = text_data_json["data"]["chat_id"]
-        user_id = text_data_json["data"]["user_id"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if chat_id == -1 or user_id == -1: return
         message = text_data_json["data"]["message"]
 
         # Use await to call the async method in the synchronous context
@@ -62,7 +63,8 @@ class _Message:
         )
 
     async def handle_send_chat_messages(self, text_data_json):
-        chat_id = text_data_json["data"]["chat_id"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        if chat_id == -1: return
         message_data = await self.get_chat_messages(chat_id)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -76,8 +78,9 @@ class _Message:
         )
 
     async def handle_messages_in_chat_read(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
-        chat_id = text_data_json["data"]["chat_id"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if chat_id == -1 or user_id == -1: return
         response = await self.set_messages_in_chat_read(user_id, chat_id)
         await self.channel_layer.group_send(
             'channel_zer0',
@@ -91,8 +94,9 @@ class _Message:
         )
 
     async def handle_messages_in_chat_unread(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
-        chat_id = text_data_json["data"]["chat_id"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if chat_id == -1 or user_id == -1: return
         response = await self.set_messages_in_chat_unread(user_id, chat_id)
         await self.channel_layer.group_send(
             'channel_zer0',
