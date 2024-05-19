@@ -55,12 +55,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
 
     async def connect(self):
-        # token = self.scope['cookies'].get('jwt_token')
-        # if not jwt.validateToken(token):
-        #     # print("TOKEN IS NOT VALID")
-        #     return
-        # # print("TOKEN IS VALID")
-
+        token = self.scope['cookies'].get('jwt_token')
+        if not jwt.validateToken(token):
+            # print("TOKEN IS NOT VALID")
+            return
+        # print("TOKEN IS VALID")
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
@@ -87,69 +86,62 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             )
 
     async def receive(self, text_data):
-        token = self.scope['cookies'].get('jwt_token')
-        # print("TOKEN: ", token)
-        # if not jwt.validateToken():
-        #     # print("TOKEN IS NOT VALID")
-        #     await self.close()
-        #     return
-        # print("TOKEN IS VALID")
-        print('RECEIVED: ', text_data)
         text_data_json = json.loads(text_data)
-        what_type = text_data_json["type"]
-        print('RECEIVED: ', what_type)
-        # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', \
-            'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score', 'reset_stable_id']:
-            await self.controlGameRequests(text_data_json, what_type)
+        logicType = text_data_json["logicType"]
+        if logicType == 'game':
+            await self.controlGameRequests(text_data_json)
+        elif logicType == 'chat':
+            await self.controlChatRequests(text_data_json)
         else:
-            chat_id = text_data_json["data"]["chat_id"]
-            self.my_group_id = 'group_%s' % chat_id
-            #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
-            await self.channel_layer.group_add(self.my_group_id, self.channel_name)
-            if what_type == 'save_message_in_db':
-                await self.handle_save_message_in_db(text_data_json)
-            elif what_type == 'send_chat_messages':
-                await self.handle_send_chat_messages(text_data_json)
-            elif what_type == 'send_online_stats':
-                await self.handle_send_online_stats()
-            elif what_type == 'send_user_in_current_chat':
-                await self.handle_send_user_in_current_chat(chat_id)
-            elif what_type == 'send_current_users_chats':
-                await self.handle_send_current_users_chats(text_data_json)
-            elif what_type == 'get_all_user':
-                await self.handle_send_all_user()
-            elif what_type == 'send_user_left_chat':
-                await self.handle_current_user_left_chat(text_data_json)
-            elif what_type == 'send_created_new_chat':
-                await self.handle_create_new_public_chat(text_data_json)
-            elif what_type == 'send_created_new_private_chat':
-                await self.handle_create_new_private_chat(text_data_json)
-            elif what_type == 'set_invited_user_to_chat':
-                await self.handle_invite_user_to_chat(text_data_json)
-            elif what_type == 'block_user':
-                await self.handle_block_user(text_data_json)
-            elif what_type == 'get_blocked_by_user':
-                await self.handle_get_blocked_by_user(text_data_json)
-            elif what_type == 'get_blocked_user':
-                await self.handle_get_blocked_user(text_data_json)
-            elif what_type == 'unblock_user':
-                await self.handle_unblock_user(text_data_json)
-            elif what_type == 'get_avatar':
-                await self.handle_get_avatar(text_data_json)
-            elif what_type == 'messages_in_chat_read':
-                await self.handle_messages_in_chat_read(text_data_json)
-            elif what_type == 'messages_in_chat_unread':
-                await self.handle_messages_in_chat_unread(text_data_json)
-            elif what_type == 'new_tournament_chatbot':
-                await self.handle_new_tournament_chatbot(text_data_json)
-            elif what_type == 'save_chatbot_message':
-                await self.handle_save_chatbot_message(text_data_json)
-            else:
-                print('IS SOMETHING ELSE')
+            print('IS SOMETHING ELSE')
 
+    async def controlChatRequests(self, text_data_json):
+        what_type = text_data_json["type"]
+        chat_id = text_data_json["data"]["chat_id"]
+        self.my_group_id = 'group_%s' % chat_id
+        #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
+        await self.channel_layer.group_add(self.my_group_id, self.channel_name)
+        if what_type == 'save_message_in_db':
+            await self.handle_save_message_in_db(text_data_json)
+        elif what_type == 'send_chat_messages':
+            await self.handle_send_chat_messages(text_data_json)
+        elif what_type == 'send_online_stats':
+            await self.handle_send_online_stats()
+        elif what_type == 'send_user_in_current_chat':
+            await self.handle_send_user_in_current_chat(chat_id)
+        elif what_type == 'send_current_users_chats':
+            await self.handle_send_current_users_chats(text_data_json)
+        elif what_type == 'get_all_user':
+            await self.handle_send_all_user()
+        elif what_type == 'send_user_left_chat':
+            await self.handle_current_user_left_chat(text_data_json)
+        elif what_type == 'send_created_new_chat':
+            await self.handle_create_new_public_chat(text_data_json)
+        elif what_type == 'send_created_new_private_chat':
+            await self.handle_create_new_private_chat(text_data_json)
+        elif what_type == 'set_invited_user_to_chat':
+            await self.handle_invite_user_to_chat(text_data_json)
+        elif what_type == 'block_user':
+            await self.handle_block_user(text_data_json)
+        elif what_type == 'get_blocked_by_user':
+            await self.handle_get_blocked_by_user(text_data_json)
+        elif what_type == 'get_blocked_user':
+            await self.handle_get_blocked_user(text_data_json)
+        elif what_type == 'unblock_user':
+            await self.handle_unblock_user(text_data_json)
+        elif what_type == 'get_avatar':
+            await self.handle_get_avatar(text_data_json)
+        elif what_type == 'messages_in_chat_read':
+            await self.handle_messages_in_chat_read(text_data_json)
+        elif what_type == 'messages_in_chat_unread':
+            await self.handle_messages_in_chat_unread(text_data_json)
+        elif what_type == 'new_tournament_chatbot':
+            await self.handle_new_tournament_chatbot(text_data_json)
+        elif what_type == 'save_chatbot_message':
+            await self.handle_save_chatbot_message(text_data_json)
 
-    async def controlGameRequests(self, text_data_json, what_type):
+    async def controlGameRequests(self, text_data_json):
+        what_type = text_data_json["type"]
         print("IN GAME REQUESTS+")
         print(what_type)
         game_id = text_data_json["data"]["game_id"]

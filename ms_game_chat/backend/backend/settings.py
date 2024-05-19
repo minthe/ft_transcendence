@@ -35,7 +35,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 JWT_SECRET = os.environ.get('JWT_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG')
 # -> prints (sensitive) data to the console, should not be readable by others
 
 APPEND_SLASH = False
