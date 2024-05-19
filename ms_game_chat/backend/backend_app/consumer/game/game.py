@@ -132,7 +132,7 @@ class _Game:
                 # print("SENDING BALL UPDATE")
                 # print(self.game_group_id)
                 # print(self.user)
-                print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
+                # print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
 
                 if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
                     await self.channel_layer.group_send(
@@ -1161,8 +1161,8 @@ class _Game:
     def get_matches(self, user_id):
         print("in GET MATCHES")
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        game_sessions = user_instance.new_matches.all()
-
+        # game_sessions = user_instance.new_matches.all()
+        game_sessions = user_instance.new_matches.exclude(tournId__isnull=False)
         match_data = []
 
         # Iterate through game_sessions
