@@ -22,6 +22,7 @@
   <div class="centered-container">
     <button id="renderInv" class="btn start-screen-btn btn-dark" onclick="requestInvites()">See my invites</button>
     <button id="renderTourn" class="btn start-screen-btn btn-dark" onclick="requestTourns()">See my tournaments</button>
+
     <button id="renderTourn" class="btn start-screen-btn btn-dark" onclick="requestTournHis()">See tournament history</button>
 
     
@@ -45,7 +46,7 @@
   <div id="tournGameSessionContainer" style="margin-left: 5vw;"></div>
   <div class="centered-container">
     <button id="renderNewTournInv" class="btn logout-btn start-screen-btn btn-dark" onclick="requestTourns()">Check for new tournaments</button>
-    <!-- <div id="updateTwoFa" class="hidden" ></div> -->
+    <div id="tournNotFull" class="tourn-not-full hidden">Tournament needs more player to be full!</div>
   </div>
 </div>
 

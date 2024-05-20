@@ -35,11 +35,20 @@ function generateHTMLContentTourns(matches) {
 
 function joinTourn(tournId, matches) {
 	let userId = `${websocket_obj.user_id}`;
-	
+	let emptyTourn = false;
+
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
-			if (match.length < 3)
-				return ;
+			if (match.length < 3){
+				document.getElementById('tournNotFull').classList.remove('hidden');
+				document.getElementById('tournGameSessionContainer').classList.add('hidden');
+				setTimeout(function() {
+					document.getElementById('tournNotFull').classList.add('hidden');
+					document.getElementById('tournGameSessionContainer').classList.remove('hidden');
+				}, 3000);
+				emptyTourn = true;
+				return;
+			}
 			
 			const joinButtons = document.querySelectorAll('#displayTourn .join-game-div');
 
@@ -52,9 +61,12 @@ function joinTourn(tournId, matches) {
 				else if (match[i][0].stage === "final")
 					stageFinal(match[i][0], userId);			
 			}	
-			return ;
+			return;
 		}
 	});
+	if (emptyTourn)
+		return;
+
 	let container = document.getElementById('displayTourn');
 	
 	document.getElementById('tournInvitesScreen').classList.add('hidden');
