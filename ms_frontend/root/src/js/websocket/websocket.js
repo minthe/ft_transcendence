@@ -438,7 +438,7 @@ async function sendDataToBackend(request_type) {
           // console.log(prev_pos);
 
           // pedal_pos = pedal_pos * 2 / canvas.height;
-          console.log("pedal_pos: ", pedal_pos);
+          // console.log("pedal_pos: ", pedal_pos);
           type = 'send_game_scene'
           logicType = 'game'
           data = {

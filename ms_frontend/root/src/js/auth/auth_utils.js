@@ -7,6 +7,8 @@ function initUserData(data, username) {
   document.getElementById('profileName').textContent = websocket_obj.username;
 }
 
+//test
+
 async function authSucces() {
   showDiv('showUserProfile')
   document.getElementById('displayUserName').textContent = 'Hey '+ websocket_obj.username +' 🫠';
