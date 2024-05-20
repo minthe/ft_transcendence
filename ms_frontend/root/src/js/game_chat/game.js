@@ -215,11 +215,11 @@ async function generateFrontendRepresentation(data) {
 
 
 async function renderInvites() {
-  if (websocket_obj.game.invites != 0) {
-    const matches = websocket_obj.game.invites;
-    const container = document.getElementById('game-session-container');
+  const matches = websocket_obj.game.invites;
+  const container = document.getElementById('game-session-container');
 
-    container.innerHTML = generateHTMLContentInv(matches);
+  container.innerHTML = generateHTMLContentInv(matches);
+  if (websocket_obj.game.invites != 0) {
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
     button.addEventListener('click', async function() {
