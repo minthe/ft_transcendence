@@ -279,12 +279,16 @@ async function establishWebsocketConnection() {
       case 'recieve_tourns':
         console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
-        // websocket_obj.game.invites = data.matches
         console.log('DATA: ', websocket_obj.game.invites)
-        // console.log('DATA: ', websocket_obj.game.invites[0])
-        // console.log('DATA: ', websocket_obj.game.invites[0][1])
-        // console.log('DATA: ', websocket_obj.game.invites[0][0])
-        // generateFrontendRepresentation(websocket_obj.game.invites)
+        if (userState.currPage !== 'tournPage')
+          renderTourns();
+        else
+          joinTourn(userState.tournId, websocket_obj.game.invites);
+        // console.log('DATA: ', websocket_obj.game.invites[1][1])
+        break
+      case 'recieve_tourn_history':
+        websocket_obj.game.invites = JSON.parse(data.matches)
+        console.log('DATA: ', websocket_obj.game.invites)
         if (userState.currPage !== 'tournPage')
           renderTourns();
         else
@@ -544,8 +548,17 @@ async function sendDataToBackend(request_type) {
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-          //   'invited_id': websocket_obj.invited_id,
             'game_id': 0,
+          }
+          break
+        case 'request_tourn_history':
+          console.log('request_tourn_his')
+          console.log(websocket_obj.user_id)
+          type = 'request_tourn_his'
+          logicType = 'game'
+          data = {
+              'user_id': websocket_obj.user_id,
+              'game_id': 0,
           }
           break
         // case 'new_profile_picture':

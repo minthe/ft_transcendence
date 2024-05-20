@@ -70,20 +70,33 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.accept()
 
     async def disconnect(self, close_code):
+        print('DISCONNECTED')
+        print(self.user)
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
-        if self.game_group_id is not None and self.game_id is not None:
-            # self.game_states[self.game_id]['game_active'] = False
-            await self.channel_layer.group_send(
-                self.game_group_id,
-                {
-                    'type': 'send.opponent.disconnected',
-                    'data': {
-                        'user_id': self.user['user_id']
+        if self.game_group_id is not None and self.stable_game_id is not None:
+            if self.stable_game_id not in self.game_states:
+                print("no game")
+                return None
+            if self.game_states.get(self.stable_game_id, {}).get('player_one') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_one'] = None
+            elif self.game_states.get(self.stable_game_id, {}).get('player_two') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_two'] = None
 
-                    },
-                }
-            )
+            if (self.game_states.get(self.stable_game_id, {}).get('player_one') == None and self.game_states.get(self.stable_game_id, {}).get('player_two') == None):
+                print("no players left")
+                self.game_states[self.stable_game_id]['canceled'] = True
+                self.game_states[self.stable_game_id]['game_active'] = False
+            # await self.channel_layer.group_send(
+            #     self.game_group_id,
+            #     {
+            #         'type': 'send.opponent.disconnected',
+            #         'data': {
+            #             'user_id': self.user['user_id']
+
+            #         },
+            #     }
+            # )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -147,11 +160,6 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         game_id = text_data_json["data"]["game_id"]
         print(type(game_id))
         print(game_id)
-        # if int(game_id) != 0:
-        #     print('creating group')
-        #     self.game_group_id = 'group_%s' % game_id
-        # else:
-        #     self.game_group_id = None
 
         self.game_group_id = 'group_%s' % game_id
         self.b_game_group_id = 'b_group_%s' % game_id
@@ -188,8 +196,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             # self.game_id = game_id
             await self.handle_send_invites()
         elif what_type == 'send_request_tourns':
-            self.game_id = game_id
-            await self.handle_send_tourns()
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         elif what_type == 'send_join_tournament':
             self.invited_id = text_data_json["data"]["invited_id"]
             await self.handle_send_join_tournament()
@@ -198,14 +206,16 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         elif what_type == 'send_history':
             await self.handle_send_history()
         elif what_type == 'user_left_game':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_user_left_game()
         elif what_type == 'request_score':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_request_score()
         elif what_type == 'reset_stable_id':
             self.stable_game_id = 0
-            # await self.handle_reset_stable_id()
+        elif what_type == 'request_tourn_his':
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         else:
             print('IS SOMETHING ELSE')
 
