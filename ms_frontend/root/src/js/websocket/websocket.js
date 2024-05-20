@@ -76,6 +76,7 @@ websocket_obj = {
   user_id: null,
   game_stats: null,
   history: null,
+  tourn_history: null,
   tourns: [],
   chatbot: [
     {
@@ -278,12 +279,13 @@ async function establishWebsocketConnection() {
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_tourn_history':
-        websocket_obj.game.invites = JSON.parse(data.matches)
+        websocket_obj.tourn_history = JSON.parse(data.matches)
         console.log('DATA: ', websocket_obj.game.invites)
-        if (userState.currPage !== 'tournPage')
-          renderTourns();
-        else
-          joinTourn(userState.tournId, websocket_obj.game.invites);
+        displayTournHistory();
+        // if (userState.currPage !== 'tournPage')
+        //   renderTourns();
+        // else
+        //   joinTourn(userState.tournId, websocket_obj.game.invites);
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_stats':
