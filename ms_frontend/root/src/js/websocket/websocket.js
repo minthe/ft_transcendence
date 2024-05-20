@@ -76,7 +76,19 @@ websocket_obj = {
   user_id: null,
   game_stats: null,
   history: null,
-  tourns: []
+  tourns: [],
+  chatbot:
+  {
+    game_type: null,
+    user_one_name: null,
+    user_one_id: null,
+    user_two_name: null,
+    user_two_id: null,
+    user_three_name: null,
+    user_three_id: null,
+    user_four_name: null,
+    user_four_id: null,
+  }
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
@@ -109,7 +121,9 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
+        console.log("BEFORE")
         if (data.user_id === websocket_obj.user_id) {
+          console.log("USERS CHATS: ", data.users_chats)
           websocket_obj.chat_data = data.users_chats
           await renderChat()
         }
@@ -200,6 +214,25 @@ async function establishWebsocketConnection() {
         console.log('chatbot_trigger')
         console.log(data)
         console.log(data.data[0])
+        console.log(data.data[0].user_one_str)
+
+
+        websocket_obj.chatbot.user_one_name = data.data[0].user_one_str
+        websocket_obj.chatbot.user_one_id = data.data[0].user_one_num
+        websocket_obj.chatbot.user_two_name = data.data[0].user_two_str
+        websocket_obj.chatbot.user_two_id = data.data[0].user_two_num
+        if (data.data.length == 1) {
+          console.log("FINAL GAME")
+          websocket_obj.chatbot.game_type = 'final'
+        } else if (data.data.length == 2) {
+          console.log("SEMI FINAL")
+          websocket_obj.chatbot.game_type = 'semi_final'
+          websocket_obj.chatbot.user_three_name = data.data[1].user_one_str
+          websocket_obj.chatbot.user_three_id = data.data[1].user_one_num
+          websocket_obj.chatbot.user_four_name = data.data[1].user_two_str
+          websocket_obj.chatbot.user_four_id = data.data[1].user_two_num
+        }
+        console.log("CHATBOT: ", websocket_obj.chatbot)
         break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
@@ -246,12 +279,16 @@ async function establishWebsocketConnection() {
       case 'recieve_tourns':
         console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
-        // websocket_obj.game.invites = data.matches
         console.log('DATA: ', websocket_obj.game.invites)
-        // console.log('DATA: ', websocket_obj.game.invites[0])
-        // console.log('DATA: ', websocket_obj.game.invites[0][1])
-        // console.log('DATA: ', websocket_obj.game.invites[0][0])
-        // generateFrontendRepresentation(websocket_obj.game.invites)
+        if (userState.currPage !== 'tournPage')
+          renderTourns();
+        else
+          joinTourn(userState.tournId, websocket_obj.game.invites);
+        // console.log('DATA: ', websocket_obj.game.invites[1][1])
+        break
+      case 'recieve_tourn_history':
+        websocket_obj.game.invites = JSON.parse(data.matches)
+        console.log('DATA: ', websocket_obj.game.invites)
         if (userState.currPage !== 'tournPage')
           renderTourns();
         else
@@ -511,8 +548,17 @@ async function sendDataToBackend(request_type) {
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-          //   'invited_id': websocket_obj.invited_id,
             'game_id': 0,
+          }
+          break
+        case 'request_tourn_history':
+          console.log('request_tourn_his')
+          console.log(websocket_obj.user_id)
+          type = 'request_tourn_his'
+          logicType = 'game'
+          data = {
+              'user_id': websocket_obj.user_id,
+              'game_id': 0,
           }
           break
         // case 'new_profile_picture':
@@ -617,7 +663,8 @@ async function sendDataToBackend(request_type) {
       }));
       websocket_obj.websocket.addEventListener('error', sendError);
       resolve() // WITHOUT this we don't return to prev functions!!
-    } else {
+    }
+    else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));
     }
