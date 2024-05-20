@@ -313,19 +313,25 @@ class _Game:
         # await self.decrement_joined_players()
         # print("after decrement")
         # print(self.game_states.get(self.game_id, {}).get('joined_players'))
+        print(self.user['user_id'])
         if self.stable_game_id not in self.game_states:
+            print("no game")
             return None
-        if self.game_states.get(self.stable_game_id, {})['player_one'] == event['data']['user_id']:
+        if self.game_states.get(self.stable_game_id, {}).get('player_one') == event['data']['user_id']:
             self.game_states[self.stable_game_id]['player_one'] = None
-        elif self.game_states.get(self.stable_game_id, {})['player_two'] == event['data']['user_id']:
+        elif self.game_states.get(self.stable_game_id, {}).get('player_two') == event['data']['user_id']:
             self.game_states[self.stable_game_id]['player_two'] = None
 
-        if (self.game_states.get(self.stable_game_id, {})['player_one'] == None and self.game_states.get(self.stable_game_id, {})['player_two'] == None):
+        if (self.game_states.get(self.stable_game_id, {}).get('player_one') == None and self.game_states.get(self.stable_game_id, {}).get('player_two') == None):
             print("no players left")
             self.game_states[self.stable_game_id]['canceled'] = True
             # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
+        print("self.game_states.get(self.stable_game_id, {}).get('player_one')")
+        print(self.game_states.get(self.stable_game_id, {}).get('player_one'))
+        print("self.game_states.get(self.stable_game_id, {}).get('player_two')")
+        print(self.game_states.get(self.stable_game_id, {}).get('player_two'))
 
 
 
@@ -1218,7 +1224,7 @@ class _Game:
         # Iterate through game_sessions
         for game_session in game_sessions:
             # Extract opponent name and game id
-            print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
+            # print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
             print(game_session.hostId)
             if type(game_session.hostId) == str:
                 if game_session.hostId.isdigit():
@@ -1245,34 +1251,30 @@ class _Game:
                 user_id = user_instance.user_id
                 
             # if game_session.hostId == user_instance.name:
-            print("game_session.id")
-            print(game_session.id)
-            print("host")
-            print(type(host))
-            print(host)
-            print("guest")
-            print(type(guest))
-            print(guest)
-            print("user_id new")
-            print(type(user_id))
-            print(user_id)
+            # print("game_session.id")
+            # print(game_session.id)
+            # print("host")
+            # print(type(host))
+            # print(host)
+            # print("guest")
+            # print(type(guest))
+            # print(guest)
+            # print("user_id new")
+            # print(type(user_id))
+            # print(user_id)
 
             if int(user_id) == int(host):
                 opponent = guest
             else:
                 opponent = host
             game_id = game_session.id
-            print("game_id ivites")
-            print(game_id)
+            # print("game_id ivites")
+            # print(game_id)
 
             opponent_name = MyUser.objects.get(user_id=opponent)
-            # if opponent.isdigit() or type(opponent) == int:
-            #     opponent_name = MyUser.objects.get(user_id=opponent)
-            # else: 
-            #     opponent_name = MyUser.objects.get(name=opponent)
-            # opponent_name = MyUser.objects.get(user_id=opponent.name)
-            print("opponent_name")
-            print(opponent_name.name)
+
+            # print("opponent_name")
+            # print(opponent_name.name)
             # Append data to the match_data list
             match_data.append({
                 'opponent_name': opponent_name.name,

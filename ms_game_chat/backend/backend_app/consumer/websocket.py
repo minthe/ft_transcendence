@@ -70,20 +70,33 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.accept()
 
     async def disconnect(self, close_code):
+        print('DISCONNECTED')
+        print(self.user)
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
-        if self.game_group_id is not None and self.game_id is not None:
-            # self.game_states[self.game_id]['game_active'] = False
-            await self.channel_layer.group_send(
-                self.game_group_id,
-                {
-                    'type': 'send.opponent.disconnected',
-                    'data': {
-                        'user_id': self.user['user_id']
+        if self.game_group_id is not None and self.stable_game_id is not None:
+            if self.stable_game_id not in self.game_states:
+                print("no game")
+                return None
+            if self.game_states.get(self.stable_game_id, {}).get('player_one') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_one'] = None
+            elif self.game_states.get(self.stable_game_id, {}).get('player_two') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_two'] = None
 
-                    },
-                }
-            )
+            if (self.game_states.get(self.stable_game_id, {}).get('player_one') == None and self.game_states.get(self.stable_game_id, {}).get('player_two') == None):
+                print("no players left")
+                self.game_states[self.stable_game_id]['canceled'] = True
+                self.game_states[self.stable_game_id]['game_active'] = False
+            # await self.channel_layer.group_send(
+            #     self.game_group_id,
+            #     {
+            #         'type': 'send.opponent.disconnected',
+            #         'data': {
+            #             'user_id': self.user['user_id']
+
+            #         },
+            #     }
+            # )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
