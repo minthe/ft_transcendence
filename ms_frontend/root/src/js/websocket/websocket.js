@@ -77,18 +77,19 @@ websocket_obj = {
   game_stats: null,
   history: null,
   tourns: [],
-  chatbot:
-  {
-    game_type: null,
-    user_one_name: null,
-    user_one_id: null,
-    user_two_name: null,
-    user_two_id: null,
-    user_three_name: null,
-    user_three_id: null,
-    user_four_name: null,
-    user_four_id: null,
-  }
+  chatbot: [
+    {
+      game_type: null,
+      user_one_name: null,
+      user_one_id: null,
+      user_two_name: null,
+      user_two_id: null,
+      user_three_name: null,
+      user_three_id: null,
+      user_four_name: null,
+      user_four_id: null,
+    }
+  ]
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
@@ -121,9 +122,7 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
-        console.log("BEFORE")
         if (data.user_id === websocket_obj.user_id) {
-          console.log("USERS CHATS: ", data.users_chats)
           websocket_obj.chat_data = data.users_chats
           await renderChat()
         }
@@ -211,28 +210,20 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'chatbot_trigger':
-        console.log('chatbot_trigger')
-        console.log(data)
-        console.log(data.data[0])
-        console.log(data.data[0].user_one_str)
-
-
         websocket_obj.chatbot.user_one_name = data.data[0].user_one_str
         websocket_obj.chatbot.user_one_id = data.data[0].user_one_num
         websocket_obj.chatbot.user_two_name = data.data[0].user_two_str
         websocket_obj.chatbot.user_two_id = data.data[0].user_two_num
         if (data.data.length == 1) {
-          console.log("FINAL GAME")
           websocket_obj.chatbot.game_type = 'final'
         } else if (data.data.length == 2) {
-          console.log("SEMI FINAL")
           websocket_obj.chatbot.game_type = 'semi_final'
           websocket_obj.chatbot.user_three_name = data.data[1].user_one_str
           websocket_obj.chatbot.user_three_id = data.data[1].user_one_num
           websocket_obj.chatbot.user_four_name = data.data[1].user_two_str
           websocket_obj.chatbot.user_four_id = data.data[1].user_two_num
         }
-        console.log("CHATBOT: ", websocket_obj.chatbot)
+        await sendDataToBackend('inform_chatbot_new_game')
         break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
@@ -319,6 +310,12 @@ async function establishWebsocketConnection() {
       case 'already_in_game':
         console.log('already_in_game')
         requestInvites()
+        break
+      case 'inform_chatbot_new_game':
+        if (await user_got_invited(data.data)) {
+          websocket_obj.chatbot = data.data
+          await sendDataToBackend('send_chatbot_message_new_game')
+        }
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -651,6 +648,39 @@ async function sendDataToBackend(request_type) {
             'game_id': 0,
           }
           break
+        case 'inform_chatbot_new_game':
+          type = 'inform_chatbot_new_game'
+          logicType = 'chat'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'game_type': websocket_obj.chatbot.game_type,
+            'user_one_name': websocket_obj.chatbot.user_one_name,
+            'user_one_id': websocket_obj.chatbot.user_one_id,
+            'user_two_name': websocket_obj.chatbot.user_two_name,
+            'user_two_id': websocket_obj.chatbot.user_two_id,
+            'user_three_name': websocket_obj.chatbot.user_three_name,
+            'user_three_id': websocket_obj.chatbot.user_three_id,
+            'user_four_name': websocket_obj.chatbot.user_four_name,
+            'user_four_id': websocket_obj.chatbot.user_four_id,          }
+          break
+        case 'send_chatbot_message_new_game':
+          type = 'send_chatbot_message_new_game'
+          logicType = 'chat'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'game_type': websocket_obj.chatbot.game_type,
+            'user_one_name': websocket_obj.chatbot.user_one_name,
+            'user_one_id': websocket_obj.chatbot.user_one_id,
+            'user_two_name': websocket_obj.chatbot.user_two_name,
+            'user_two_id': websocket_obj.chatbot.user_two_id,
+            'user_three_name': websocket_obj.chatbot.user_three_name,
+            'user_three_id': websocket_obj.chatbot.user_three_id,
+            'user_four_name': websocket_obj.chatbot.user_four_name,
+            'user_four_id': websocket_obj.chatbot.user_four_id,
+          }
+          break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
@@ -669,4 +699,17 @@ async function sendDataToBackend(request_type) {
       reject(new Error("WebSocket connection is not open."));
     }
   });
+}
+
+
+async function user_got_invited(data) {
+  if (websocket_obj.user_id == data.user_one_id || websocket_obj.user_id == data.user_two_id) {
+    return true
+  }
+  if (data.game_type == 'semi_final') {
+    if (websocket_obj.user_id == data.user_three_id || websocket_obj.user_id == data.user_four_id) {
+      return true
+    }
+  }
+  return false
 }

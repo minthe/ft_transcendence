@@ -164,14 +164,13 @@ class _Message:
             return f'something big in createMessage: {e}'
 
     @database_sync_to_async
-    def create_message_chatbot(self, other_user_name, invited_user_name):
+    def create_message_chatbot(self, invited_user_name, message):
         try:
             chat_name = 'CHAT_BOT'
             user_instance = MyUser.objects.get(name=invited_user_name)
             chat_instance = user_instance.chats.get(chatName=chat_name)
             specific_timestamp = timezone.now()
-            text = "Hey, " + other_user_name + " invited you to a tournament! Go to the Game interface to play."
-            new_message = Message.objects.create(senderId=chat_instance.id, sender=chat_name, text=text,
+            new_message = Message.objects.create(senderId=chat_instance.id, sender=chat_name, text=message,
                                                  timestamp=specific_timestamp)
             chat_instance.messages.add(new_message.id)
             chat_instance.is_read = False
