@@ -247,7 +247,7 @@ class _Game:
 
 
     async def send_game_scene(self, event):
-        print("IN SEND GAME SCENE")
+        # print("IN SEND GAME SCENE")
         await self.send(text_data=json.dumps({
             'type': event['data']['response_type'],
             'new_pedal_pos': event['data']['new_pedal_pos']
