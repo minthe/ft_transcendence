@@ -566,9 +566,9 @@ class _Game:
                     'type': 'send.already.in.game',
                 })
             return None
-        active_game = await self.check_active_games()
+        active_game = await self.check_active_games(self.stable_game_id)
         if active_game:
-            print("active game")
+            print("active game or game is over")
             await self.channel_layer.send(
                 self.channel_name,
                 {
@@ -760,7 +760,7 @@ class _Game:
     
     
     @database_sync_to_async
-    def check_active_games(self):
+    def check_active_games(self, stable_game_id):
         print("in check_active_games")
         print("self.user['user_id']")
         print(self.user['user_id'])
@@ -785,6 +785,9 @@ class _Game:
                     print(str(game.id))
                     print(str(self.stable_game_id))
                     return True
+        game_isinstance = Game.objects.get(id=stable_game_id)
+        if game_isinstance.winnerId != None:
+            return True
         return False
 
 
