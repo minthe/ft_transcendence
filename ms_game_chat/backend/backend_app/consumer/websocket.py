@@ -220,13 +220,13 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             return -1
         if not isinstance(id, int):
             return -1
-        return 0
+        return id
 
     def get_and_check_name(self, name):
         if name is None:
             return -1
         if name == 'CHAT_BOT':
-            return 0
+            return name
         if not name.isalnum():
             return -1
-        return 0
+        return name 
