@@ -229,4 +229,4 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             return name
         if not name.isalnum():
             return -1
-        return name
+        return name 
