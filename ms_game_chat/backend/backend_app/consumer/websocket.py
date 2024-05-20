@@ -152,6 +152,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             await self.handle_new_tournament_chatbot(text_data_json)
         elif what_type == 'save_chatbot_message':
             await self.handle_save_chatbot_message(text_data_json)
+        elif what_type == 'inform_chatbot_new_game':
+            await self.handle_inform_chatbot_new_game(text_data_json)
+        elif what_type == 'send_chatbot_message_new_game':
+            await self.handle_send_chatbot_message_new_game(text_data_json)
 
     async def controlGameRequests(self, text_data_json):
         what_type = text_data_json["type"]
