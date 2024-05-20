@@ -50,7 +50,7 @@ function loginUserButton() {
   .catch(error => {
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
-  });
+  })
 }
 
 

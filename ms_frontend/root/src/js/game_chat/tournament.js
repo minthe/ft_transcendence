@@ -38,6 +38,9 @@ function joinTourn(tournId, matches) {
 	
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
+			if (match.length < 3)
+				return ;
+			
 			const joinButtons = document.querySelectorAll('#displayTourn .join-game-div');
 
 			joinButtons.forEach(joinButton => {
