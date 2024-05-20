@@ -22,7 +22,6 @@ function loginUserButton() {
       setUpTwoFaPage();      
       await verifyButtonClick();
       if (checkTwoFaCode()) {
-        console.log('this is the type of the 2fa:', typeof two_fa_code);
         const url = `${window.location.origin}/user/2fa/verify`
         return fetch(url, {
             method: 'POST',
@@ -51,7 +50,7 @@ function loginUserButton() {
   .catch(error => {
     setDownTwoFaPage();
     clearLoginInput(usernameElement, passwordElement);
-  });
+  })
 }
 
 

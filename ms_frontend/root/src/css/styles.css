@@ -15,7 +15,7 @@ body, html {
 
   /* background-repeat: no-repeat; */
   /* background-size: cover;  */
-  background-position: center; /* This centers the background image in the element */
+  background-position: center;
 }
 
 
@@ -66,13 +66,11 @@ body, html {
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   /* color: #ef7267; */
   outline: 4px dashed #f8efb5;
-
 }
 
 .input-login {
   max-width: 180px;
   background-color: #ecc85d;
-  /* margin-bottom: 20px; */
 }
 
 .glowing-or {
@@ -85,8 +83,8 @@ body, html {
 
 .codeInput {
   font-size: 32px;
-  letter-spacing: 10px; /* Creates space between characters */
-  width: 200px; /* Adjust width as needed */
+  letter-spacing: 10px;
+  width: 200px;
   padding: 10px;
   text-align: center;
   border: 2px solid #000;
@@ -100,7 +98,6 @@ body, html {
 
 .centered-form {
   display: flex;
-  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
 }
@@ -128,7 +125,6 @@ body, html {
 .pop-up {
 
   max-width: 600px;
-  /* max-height: 800px; */
   margin: 50px auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -302,8 +298,6 @@ body, html {
 
 .heading {
   white-space: nowrap;
- /*"nowrap" removes elements while
-  rezising instead of newlining them*/
   flex-wrap: nowrap;
   padding: 10px 0 10px 7px;
   margin: auto;
@@ -335,11 +329,9 @@ body, html {
 }
 
 .own-user-in-chat-profile {
-  /*cursor: pointer;*/
   margin: 4px;
   padding: 4px;
   background-color: #c9c9c9;
-  /*border: 1px solid black;*/
   border-radius: 5px;
 }
 
@@ -605,7 +597,7 @@ body, html {
 }
 .receiver-message-content {
   color: #e6e6e6eb;
-  background-color: #313131;  /* Example background color for own messages */
+  background-color: #313131;
   padding: 5px 8px 5px 8px;
   border-radius: 20px 20px 20px 0;
   display: inline-block;
@@ -626,6 +618,15 @@ body, html {
 
 
 /* game page */
+
+.tourn-not-full {
+  color: #f8efb5;
+  font-size: 6vh;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  background-color: #000;
+}
+
 .display-tourn {
   height: 100%;
   background-image: url('../img/championsTrophie.webp');
@@ -636,9 +637,7 @@ body, html {
 }
 
 .basic-tourn-element {
-  /* margin-left: 3.5vw; */
   position: absolute;
-  /* text-transform: uppercase; */
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -654,7 +653,6 @@ body, html {
   outline: 10px solid #f8efb5;
   border-radius: 50%;
   color: #f8efb5;
-  /* color: #131615; */
 }
 
 .winner-div {
@@ -728,53 +726,6 @@ body, html {
 }
 
 
-/* .arrow-tourn {
-  color: #ecc85d;
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-}
-
-.bi-arrow-right-rotate::before {
-    left: 25vw;
-    top: 30vh;
-    color: limegreen;
-    font-size: 13vh;
-    transform: rotate(30deg);
-}
-.bi-arrow-right-rotate-two::before {
-    margin-left: 25vw;
-    color: limegreen;
-    font-size: 13vh;
-    margin-top: 50vh;
-    transform: rotate(-30deg);
-}
-
-.bi-arrow-left-rotate::before {
-    left: 70vw;
-    color: limegreen;
-    font-size: 13vh;
-    top: 50vh;
-    transform: rotate(-150deg);
-}
-.bi-arrow-left-rotate-two::before {
-  left: 70vw;
-  top: 30vh;
-  font-size: 13vh;
-  transform: rotate(150deg);
-}
-
-.bi-arrow-left-center-rotate::before {
-  left: 42vw;
-  top: 55vh;
-  font-size: 8vh;
-  transform: rotate(55deg);
-}
-
-.bi-arrow-right-center-rotate::before {
-  right: 42vw;
-  top: 55vh;
-  font-size: 8vh;
-  transform: rotate(125deg);
-} */
 
 .bi-arrow-right-rotate::before {
   position: absolute;
@@ -900,9 +851,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 
 .game-site {
   height: 100vh;
-  /* background-color: #124457; */
-
-   background: url("../img/povPingPongPlayer.webp") no-repeat center;
+  background: url("../img/povPingPongPlayer.webp") no-repeat center;
   background-size: cover;
 }
 
@@ -928,15 +877,15 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   padding: 10px 20px;
   color: #f8efb5;
   border: none;
-  width: 200px; /* Example width */
-  height: 80px; /* Example height */
+  width: 200px;
+  height: 80px;
   background-color: #131615;
   box-shadow: 0 0 10px 2px rgba(236, 200, 93, 0.8);
   font-weight: bold;
   margin-right: 30px;
 }
 .start-screen-btn:hover {
-  transform: scale(1.1); /* Scale the button by 10% when hovered over */
+  transform: scale(1.1);
   color: #f8efb5;
   background-color: #131615;
   box-shadow: 0 0 20px 4px rgba(236, 200, 93, 0.8),
@@ -973,16 +922,8 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 
 .input-user-field {
   height: 40px;
-  width: 50%; /* Adjust the width as needed */
+  width: 50%;
   margin: 0 auto;
-}
-
-.enter-name-text {
-  font-size: 40px;
-  color: #ecc85d;
-  /* text-shadow: 2px 2px 4px #ecc85d; */
-  box-shadow: 0 0 20px 4px rgba(236, 200, 93, 0.8),
-  0 0 40px 8px rgba(236, 200, 93, 0.6);
 }
 
 .send-invite-btn {
@@ -1004,8 +945,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   text-align: center;
 }
 
-/* .display-players {
-} */
 
 .playerInfo {
   flex: 1;
@@ -1020,7 +959,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 .player-name {
   margin-top: 20px;
   color: #ecc85d;
-  /* text-shadow: 2px 2px 4px #ecc85d; */
   text-shadow: 2px 2px 4px #131615;
 }
 
@@ -1028,7 +966,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   font-size: 3vh;
   margin-top: 20px;
   color: #131615;
-  /* text-shadow: 2px 2px 4px #131615; */
 }
 
 .reloader {
@@ -1036,7 +973,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   background-size: cover;
   background-position: center;
   height: 100%;
-  /* height: 100vh;  */
   flex: 1;
   display: none;
   flex-direction: column;
@@ -1050,7 +986,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   background-size: cover;
   background-position: center;
   height: 100%;
-  /* height: 100vh;  */
   flex: 1;
   display: none;
   flex-direction: column;
@@ -1133,11 +1068,9 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 
 
 
-/* adjust profile to be centered in the sidebar */
 .sidebar-btn-profile {
   background-size: cover;
   background-position: center;
-
   background-color: #f8efb5;
   display: flex;
   justify-content: center;
@@ -1147,13 +1080,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   height: 8vh;
   font-size: 5vh;
 }
-/* .sidebar-btn-profile:hover {
-  background: #ecc85d !important;
-  border-radius: 10px;
-  box-shadow: 0 0 10px 2px rgba(239, 114, 103, 0.8), 0 0 20px 6px rgba(239, 114, 103, 0.6), 0 0 30px 10px rgba(239, 114, 103, 0.4);
-} */
-
-
 
 
 .circular-image {
@@ -1205,20 +1131,14 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .profile-page {
-  position: relative;
-
-  /* height: 100%; */
-  /* position: absolute; */
-  
+  position: relative;  
   height: 74vh;
   background-color: #131615;
-  
   width: 60vw;
   margin: 50px auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #ecc85d;
-
   outline: 4px solid #131615;
 }
 
@@ -1240,8 +1160,8 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 
 .change-profile-image {
   background-color: #124457;
-  width: 15vh; /* Adjust size as needed */
-  height: 15vh; /* Adjust size as needed */
+  width: 15vh;
+  height: 15vh;
   overflow: hidden;
   border-radius: 50%;
   transition: transform 0.3s ease-in-out;
@@ -1250,7 +1170,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .change-profile-image:hover {
-  transform: scale(1.2); /* Increase size on hover */
+  transform: scale(1.2);
 }
 
 
@@ -1272,16 +1192,13 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   margin-top: 20px;
   font-size: 3vh;
   color: #124457;
-  /* color: #333; */
 }
 
 .profile-details,
 .game-stats {
   padding: 20px;
   text-align: left;
-  /* color: #ffffab; */
   color: #124457;
-  /* margin: 20px; */
 }
 
 .profile-details * {
@@ -1354,7 +1271,6 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .user-history {
-  /* max-width: 80vw; */
   width: 60vw;
   height: 80vh;
 }
@@ -1365,51 +1281,37 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .stats-site {
-  /* background-size: cover;
-  background-position: center; */
   height: 100vh;
   width: 100vw;
-  /* background-image: url('../img/statsSiteBackground.webp'); */
 }
 
 .panel {
-
-  /* max-width: 600px; */
   margin: 50px auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #ecc85d;
-
   border: 1px solid #ccc;
   padding: 20px;
   outline: 4px solid #131615;
-
 }
 
 .glowing-text {
   font-size: 16px;
-  color: #132400; /* Initial color of text */
-  /* text-shadow: 0 0 10px #00ff00, 0 0 15px #00ff00, 0 0 20px #00ff00;  */
+  color: #132400; 
 }
 
 @keyframes glow {
   from {
-    text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #0000ff; /* Start glowing with yellow and blue */
-    /* text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; */
+    text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #0000ff;
   }
-  /* to {
-    text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000;
-  } */
 }
 
 .stats {
-  /* margin-top: 20px; */
   margin-top: 2vh;
 
   color: #124457;
 }
 .stats-item {
-  /* margin-bottom: 10px; */
   margin-bottom: 2vh;
   color: #124457;
 }
@@ -1435,16 +1337,11 @@ padding: 0;
 }
 
 .sidebar-nav li {
-  /* position: relative; 
-  line-height: 20px;
-  display: inline-block; */
   width: 100%;
   margin-bottom: 5px;
-
-
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 /* 2s 8 */
 .sidebar-nav li:before {
@@ -1465,8 +1362,6 @@ padding: 0;
 .sidebar-nav li:hover{
 background: #ecc85d !important;
 border-radius: 10px;
-/* margin-left: 10px;
-margin-right: 10px; */
 }
 .sidebar-nav li:hover:before,
 .sidebar-nav li.open:hover:before {
@@ -1563,10 +1458,7 @@ margin-right: 10px; */
   display: none;
 }
 
-.shrink {
-  margin-left: 15vw;
-  /* flex-shrink: 2; */
-}
+
 
 
 /* media queries */
@@ -1577,7 +1469,6 @@ margin-right: 10px; */
   }
 }
 
-/*conditions that happen if max-width is not possible to display anymore*/
 @media screen and (max-width: 200px) {
   .format-input-group {
     display: none;
@@ -1632,17 +1523,6 @@ margin-right: 10px; */
 
 
 
-
-
-
-/* 320px — 480px: Mobile devices
-481px — 768px: iPads, Tablets
-769px — 1024px: Small screens, laptops
-1025px — 1200px: Desktops, large screens
-1201px and more —  Extra large screens, TV */
-
-
-
 /* For mobile devices */
 @media (max-width: 480px) {
   .sidebar-btn-profile {
@@ -1656,22 +1536,10 @@ margin-right: 10px; */
 }
 
 /* For iPads and tablets */
-@media (min-width: 481px) and (max-width: 768px) {
-  /* home page */
-  
-  
+@media (min-width: 481px) and (max-width: 768px) {  
   .centered-container {
     height: 100vh;
   }
-  /* .game-invitation {
-    height: 80vh; 
-  }
-  .loader {
-    height: 80vh; 
-  } */
-  /* .home {
-    height: 80vh;
-  } */
   .sidebar-btn-profile {
     width: 4vh;
     height: 4vh;
@@ -1690,9 +1558,6 @@ margin-right: 10px; */
   .loader {
     height: 100vh;
   }
-  /* .home {
-    height: 100vh;
-  } */
 
   .sidebar-btn-profile {
     width: 6vh;

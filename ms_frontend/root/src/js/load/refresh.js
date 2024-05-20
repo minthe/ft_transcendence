@@ -149,6 +149,7 @@ function checkPageState() {
 			hideDiv('userIsNotAuth');
 			showDiv('userIsAuth');
 			updatePage();
+			setDownTwoFaPage();
 		}, 500);
 	})
 	.catch(error => {

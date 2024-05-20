@@ -185,14 +185,15 @@ async function requestInvites() {
 }
 
 
-async function requestTournHis() {
-    console.log('In requestTournHis');
-    if (userState.currPage !== 'tournPage') {
-      document.getElementById("start-screen").classList.add("hidden");
-      document.getElementById("tournInvitesScreen").classList.remove("hidden");
-    }
-    await sendDataToBackend('request_tourn_history');
-  }
+// async function requestTournHis() {
+//     console.log('In requestTournHis');
+//     // if (userState.currPage !== 'tournPage') {
+//     //   document.getElementById("start-screen").classList.add("hidden");
+//     //   document.getElementById("tournInvitesScreen").classList.remove("hidden");
+//     // }
+
+//     await sendDataToBackend('request_tourn_history');
+//   }
 
 async function requestTourns() {
   if (userState.currPage !== 'tournPage') {
@@ -215,11 +216,11 @@ async function generateFrontendRepresentation(data) {
 
 
 async function renderInvites() {
-  if (websocket_obj.game.invites != 0) {
-    const matches = websocket_obj.game.invites;
-    const container = document.getElementById('game-session-container');
+  const matches = websocket_obj.game.invites;
+  const container = document.getElementById('game-session-container');
 
-    container.innerHTML = generateHTMLContentInv(matches);
+  container.innerHTML = generateHTMLContentInv(matches);
+  if (websocket_obj.game.invites != 0) {
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
     button.addEventListener('click', async function() {
