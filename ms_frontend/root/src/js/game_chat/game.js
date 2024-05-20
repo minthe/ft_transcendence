@@ -186,6 +186,15 @@ async function requestInvites() {
 }
 
 
+async function requestTournHis() {
+    console.log('In requestTournHis');
+    if (userState.currPage !== 'tournPage') {
+      document.getElementById("start-screen").classList.add("hidden");
+      document.getElementById("tournInvitesScreen").classList.remove("hidden");
+    }
+    await sendDataToBackend('request_tourn_history');
+  }
+
 async function requestTourns() {
   console.log('In requestTourns');
   if (userState.currPage !== 'tournPage') {

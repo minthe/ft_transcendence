@@ -339,8 +339,12 @@ class _Game:
 
     async def send_request_tourns(self, event):
         print("in send_request_tourns")
+        if event['real_type'] == 'send_request_tourns':
+            type = 'recieve_tourns'
+        elif event['real_type'] == 'request_tourn_his':
+            type = 'recieve_tourn_history'
         await self.send(text_data=json.dumps({
-            'type': 'recieve_tourns',
+            'type': type,
             'matches': event['data'],
 
         }))
@@ -687,14 +691,19 @@ class _Game:
         except Exception as e:
             print(f"Error in handle_send_score: {e}")
 
-    async def handle_send_tourns(self):
-        return_data = await self.get_tourns(self.user['user_id'])
+    async def handle_send_tourns(self, type):
+        if type == 'send_request_tourns':
+            prop = 'active'
+        elif type == 'request_tourn_his':
+            prop = 'finished'
+        return_data = await self.get_tourns(self.user['user_id'], prop)
         print("return_data 0")
         print(return_data[0])
         await self.channel_layer.send(
         self.channel_name,
         {
             'type': 'send.request.tourns',
+            'real_type': type,
             'data': return_data,
         })
 
@@ -1120,11 +1129,11 @@ class _Game:
         return check_host
 
     @database_sync_to_async
-    def get_tourns(self, user_id):
+    def get_tourns(self, user_id, prop):
         print("in get_tourns")
         print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        tourn_instances = user_instance.tourns.filter(status="active")
+        tourn_instances = user_instance.tourns.filter(status=prop)
         print("tourn_instances")
         print(tourn_instances)
 
@@ -1137,6 +1146,8 @@ class _Game:
             unsorted_game_sessions = active_sessions.union(passed_sessions)
             game_sessions = sorted(unsorted_game_sessions, key=lambda session: session.id)
             # game_sessions = tourns.active_matches.all()
+            print("game_sessions")
+            print(game_sessions)
 
             unit = []
             tourn_entry = []

@@ -100,7 +100,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         print('RECEIVED: ', what_type)
         # IF what_type is equal to a game request -> change later to something better
         if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', \
-            'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score', 'reset_stable_id']:
+            'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score', 'reset_stable_id', 'request_tourn_his']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
@@ -197,8 +197,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             # self.game_id = game_id
             await self.handle_send_invites()
         elif what_type == 'send_request_tourns':
-            self.game_id = game_id
-            await self.handle_send_tourns()
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         elif what_type == 'send_join_tournament':
             self.invited_id = text_data_json["data"]["invited_id"]
             await self.handle_send_join_tournament()
@@ -207,14 +207,16 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         elif what_type == 'send_history':
             await self.handle_send_history()
         elif what_type == 'user_left_game':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_user_left_game()
         elif what_type == 'request_score':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_request_score()
         elif what_type == 'reset_stable_id':
             self.stable_game_id = 0
-            # await self.handle_reset_stable_id()
+        elif what_type == 'request_tourn_his':
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         else:
             print('IS SOMETHING ELSE')
 
