@@ -76,7 +76,19 @@ websocket_obj = {
   user_id: null,
   game_stats: null,
   history: null,
-  tourns: []
+  tourns: [],
+  chatbot:
+  {
+    game_type: null,
+    user_one_name: null,
+    user_one_id: null,
+    user_two_name: null,
+    user_two_id: null,
+    user_three_name: null,
+    user_three_id: null,
+    user_four_name: null,
+    user_four_id: null,
+  }
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
@@ -109,7 +121,9 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
+        console.log("BEFORE")
         if (data.user_id === websocket_obj.user_id) {
+          console.log("USERS CHATS: ", data.users_chats)
           websocket_obj.chat_data = data.users_chats
           await renderChat()
         }
@@ -200,6 +214,25 @@ async function establishWebsocketConnection() {
         console.log('chatbot_trigger')
         console.log(data)
         console.log(data.data[0])
+        console.log(data.data[0].user_one_str)
+
+
+        websocket_obj.chatbot.user_one_name = data.data[0].user_one_str
+        websocket_obj.chatbot.user_one_id = data.data[0].user_one_num
+        websocket_obj.chatbot.user_two_name = data.data[0].user_two_str
+        websocket_obj.chatbot.user_two_id = data.data[0].user_two_num
+        if (data.data.length == 1) {
+          console.log("FINAL GAME")
+          websocket_obj.chatbot.game_type = 'final'
+        } else if (data.data.length == 2) {
+          console.log("SEMI FINAL")
+          websocket_obj.chatbot.game_type = 'semi_final'
+          websocket_obj.chatbot.user_three_name = data.data[1].user_one_str
+          websocket_obj.chatbot.user_three_id = data.data[1].user_one_num
+          websocket_obj.chatbot.user_four_name = data.data[1].user_two_str
+          websocket_obj.chatbot.user_four_id = data.data[1].user_two_num
+        }
+        console.log("CHATBOT: ", websocket_obj.chatbot)
         break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
@@ -617,7 +650,8 @@ async function sendDataToBackend(request_type) {
       }));
       websocket_obj.websocket.addEventListener('error', sendError);
       resolve() // WITHOUT this we don't return to prev functions!!
-    } else {
+    }
+    else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));
     }

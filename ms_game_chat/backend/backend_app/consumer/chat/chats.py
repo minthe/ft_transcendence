@@ -9,9 +9,8 @@ class _Chat:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
 
     async def handle_send_current_users_chats(self, text_data_json):
-        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
         user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
-        if chat_id == -1 or user_id == -1: return
+        if user_id == -1: return
         users_chats = await self.get_users_chats(user_id)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -19,7 +18,6 @@ class _Chat:
                 'type': 'send.current.users.chats',
                 'data': {
                     'user_id': user_id,
-                    'chat_id': chat_id,
                     'users_chats': users_chats,
                 },
             }
@@ -243,6 +241,9 @@ class _Chat:
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_users_chats")
+            return
         user_instance = MyUser.objects.get(user_id=user_id)
         all_chats = user_instance.chats.all()
         user_chats = []
@@ -372,6 +373,9 @@ class _Chat:
 
     @database_sync_to_async
     def get_blocked_by_user(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_blocked_by_user")
+            return
         user_instance = MyUser.objects.get(user_id=user_id)
         blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_names)
@@ -379,6 +383,9 @@ class _Chat:
 
     @database_sync_to_async
     def get_blocked_user(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_blocked_user")
+            return
         current_user = MyUser.objects.get(user_id=user_id)
         users_blocking_current_user = MyUser.objects.filter(blockedBy=current_user)
         blocked_by_current_user_names = users_blocking_current_user.values_list('name', flat=True)

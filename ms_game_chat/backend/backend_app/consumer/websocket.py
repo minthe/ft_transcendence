@@ -54,12 +54,13 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
 
     async def connect(self):
-        token = self.scope['cookies'].get('jwt_token')
-        if not jwt.validateToken(token):
-            # print("TOKEN IS NOT VALID")
-            return
+        # token = self.scope['cookies'].get('jwt_token')
+        # if not jwt.validateToken(token):
+        #     print("TOKEN IS NOT VALID")
+        #     return
         # print("TOKEN IS VALID")
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        print("USER_ID GOT FROM FRONTEND: ", user_id)
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
@@ -217,8 +218,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
     def get_and_check_id(self, id):
         if id is None:
+            print("id is None: ", id)
             return -1
         if not isinstance(id, int):
+            print("id is not number: ", id)
             return -1
         return id
 
@@ -229,4 +232,4 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             return name
         if not name.isalnum():
             return -1
-        return name 
+        return name
