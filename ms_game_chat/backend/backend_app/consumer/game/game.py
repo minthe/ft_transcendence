@@ -886,7 +886,10 @@ class _Game:
 
         total_games = won_games + lost_games + won_tourn_games + lost_tourn_games
 
-        return { 'won_games': won_games + won_tourn_games, 'lost_games': lost_games + lost_tourn_games, 'total_games': total_games }
+        won_tourns = user_instance.tourns.filter(winnerId=user_instance.user_id).count()
+        all_tourns = user_instance.tourns.filter(status='finished').count()
+
+        return { 'won_games': won_games + won_tourn_games, 'lost_games': lost_games + lost_tourn_games, 'total_games': total_games, 'won_tourns': won_tourns, 'all_tourns': all_tourns }
 
     @database_sync_to_async
     def setWinner(self, game_struct):
