@@ -196,11 +196,15 @@ async function handleClickEvent(event) {
     else if (event.target.closest('#twoFAButtonD'))
       updateTwoFactor('DELETE');
     
-    else if (event.target.closest('#userStatsBtn'))
+    else if (event.target.closest('#userStatsBtn') || event.target.closest('#userStatsBtnTwo'))
       statsBtnClicked();
-    else if (event.target.closest('#userHistoryBtn'))
+    else if (event.target.closest('#userHistoryBtn') || event.target.closest('#userHistoryBtnTwo'))
       historyBtnClicked();
-    
+
+    else if (event.target.closest('#tournHistoryBtn') || event.target.closest('#tournHistoryBtnTwo')) {
+      tournHistoryBtnClicked();
+    }
+
   })
 	.catch(error => {
     // console.error('Error during login:', error);

@@ -536,14 +536,17 @@ function gameOver(data) {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  if (websocket_obj.game.game_id === data.game_id) {
-    activateFireworks();
+  // if (websocket_obj.game.game_id === data.game_id) {
+  //   activateFireworks();
 
-    // setTimeout(function() {
-    //   stopFirework();
+  //   // setTimeout(function() {
+  //   //   stopFirework();
       
-    //   }, 4400);
-  }
+  //   //   }, 4400);
+  // }
+  activateFireworks();
+  // stopFirework();
+
   
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');

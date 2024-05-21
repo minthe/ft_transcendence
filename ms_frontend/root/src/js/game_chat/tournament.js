@@ -14,7 +14,7 @@ async function renderTourns() {
 	//   handleButtonClick("");
 	});
 	});
-  }
+}
 
 
 function generateHTMLContentTourns(matches) {
@@ -37,8 +37,12 @@ function joinTourn(tournId, matches) {
 	let userId = `${websocket_obj.user_id}`;
 	let emptyTourn = false;
 
+	removeTournViewDisplay();
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
+			
+			
+			
 			if (match.length < 3){
 				document.getElementById('tournNotFull').classList.remove('hidden');
 				document.getElementById('tournGameSessionContainer').classList.add('hidden');
@@ -51,7 +55,7 @@ function joinTourn(tournId, matches) {
 			}
 			
 			const joinButtons = document.querySelectorAll('#displayTourn .join-game-div');
-
+			
 			joinButtons.forEach(joinButton => {
 				joinButton.remove();
 			});
@@ -78,6 +82,38 @@ function joinTourn(tournId, matches) {
 			joinGame(gameId);
 		});
 	});
+}
+
+function removeTournViewDisplay() {
+	let playerOne = document.getElementById('playerTopLeft');
+	let playerTwo = document.getElementById('playerBottomLeft');
+	let winnerGameOne = document.getElementById('playerLeftCenter');
+	let playerThree	= document.getElementById('playerTopRight');
+	let playerFour	= document.getElementById('playerBottomRight');
+	let winnerGameTwo = document.getElementById('playerRightCenter');
+
+	playerOne.classList.remove('winner-tourn-game');
+	playerTwo.classList.remove('winner-tourn-game');
+	playerThree.classList.remove('winner-tourn-game');
+	playerFour.classList.remove('winner-tourn-game');
+	winnerGameOne.classList.remove('winner-tourn-game');
+	winnerGameTwo.classList.remove('winner-tourn-game');
+
+	playerOne.classList.remove('loser-tourn-game');
+	playerTwo.classList.remove('loser-tourn-game');
+	playerThree.classList.remove('loser-tourn-game');
+	playerFour.classList.remove('loser-tourn-game');
+	winnerGameOne.classList.remove('loser-tourn-game');
+	winnerGameTwo.classList.remove('loser-tourn-game');
+
+	playerOne.textContent = '';
+	playerTwo.textContent = '';
+	playerThree.textContent = '';
+	playerFour.textContent = '';
+	winnerGameOne.textContent = 'Winner One';
+	winnerGameTwo.textContent = 'Winner Two';
+
+	document.getElementById('tournamentWinner').textContent = 'Winner';
 }
 
 function stageSemi(semi, userId) {
@@ -142,12 +178,14 @@ function stageFinal(final, userId) {
 	let winnerGameTwo = document.getElementById('playerRightCenter');
 	
 	if (final.winner_id) {
-		document.getElementById('tournamentWinner').textContent = final.winner_id;
+		// document.getElementById('tournamentWinner').textContent = final.winner_id;
 		if (final.winner_id === final.player_one) {
+			document.getElementById('tournamentWinner').textContent = final.alias_one;
 			winnerGameOne.classList.add('winner-tourn-game');
 			winnerGameTwo.classList.add('loser-tourn-game');
 		}
 		else {
+			document.getElementById('tournamentWinner').textContent = final.alias_two;
 			winnerGameOne.classList.add('loser-tourn-game');
 			winnerGameTwo.classList.add('winner-tourn-game');
 		}
