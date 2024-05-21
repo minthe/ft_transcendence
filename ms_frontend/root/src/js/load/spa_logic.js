@@ -110,6 +110,9 @@ async function handleClickEvent(event) {
       document.getElementById('passwordInfo').classList.add('hidden');
     }, 5000);
   }
+
+  if (document.getElementById('userIsAuth').classList.contains('hidden'))
+    return ;
   
   fetch(url, {
     method: 'GET',
