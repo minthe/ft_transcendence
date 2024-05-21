@@ -106,6 +106,7 @@ def login(request):
 	API Endpoint: /user/login
 	'''
 	try:
+		intra_status = 200
 		if request.method == "POST":
 			data =json.loads(request.body)
 			username = data.get('username')
@@ -178,12 +179,14 @@ def login(request):
 				return response
 			else:
 				if intra_status == 400:
-					return HttpResponse(status=400)
+					return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 				return JsonResponse({'message': 'Unauthorized'}, status=401)
 	except Exception as e:
 		error_message = str(e)
 		if settings.DEBUG == "True":
 			print(f"An error occurred in api_login: {error_message}")
+		if intra_status == 400:
+			return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST"])
