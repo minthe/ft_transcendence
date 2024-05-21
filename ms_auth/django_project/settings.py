@@ -69,7 +69,7 @@ GET_INTRA_USERS_LIST = os.environ.get('GET_INTRA_USERS_LIST')
 STRONG_PASSWORD = os.environ.get('STRONG_PASSWORD')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG')
 
 INSTALLED_APPS = [
     "api",

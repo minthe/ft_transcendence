@@ -1,29 +1,28 @@
-import json
+import json, http.client
 from django.conf import settings
 from django.http import JsonResponse
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
 # get access_token
 def getToken(request):
 	try:
-		data = {
-			"grant_type": "authorization_code",
-			"client_id": settings.CLIENT_ID,
-			"client_secret": settings.CLIENT_SECRET,
-			"code": request.GET.get("code"),
-			"redirect_uri": settings.REDIRECT_URI,
-			"state": settings.INTRA_STATE,
-		}
+		data = json.dumps({
+			'client_id': settings.CLIENT_ID,
+			'client_secret': settings.CLIENT_SECRET,
+			'redirect_uri': settings.REDIRECT_URI,
+			'code': request.GET.get("code"),
+			'grant_type': 'authorization_code'
+		})
 		headers = {
-			"Content-Type": 'application/x-www-form-urlencoded'
+			'Content-Type': 'application/json'
 		}
-		request = Request(settings.OAUTH_TOKEN, data=urlencode(data).encode("utf-8"), headers=headers)
+		print("data:", data)
+		conn = http.client.HTTPSConnection('api.intra.42.fr')
+		conn.request('POST', '/oauth/token', data, headers)
 
-		response = urlopen(request)
-		response_data = response.read().decode("utf-8")
-		credentials = json.loads(response_data)
-		access_token = credentials.get("access_token")
+		response_raw = conn.getresponse()
+		response = json.loads(response_raw.read().decode('utf-8'))
+
+		access_token = response.get("access_token")
 
 		return (access_token)
 	except Exception as e:
