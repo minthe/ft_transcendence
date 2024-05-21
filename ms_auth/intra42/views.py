@@ -1,4 +1,5 @@
 import json, http.client
+from django.conf import settings
 from urllib.request import Request, urlopen
 
 def getUserData(access_token):
@@ -26,7 +27,8 @@ def getUserData(access_token):
 		return None
 
 def getIntraUsersList(access_token):
-	print("getIntraUsersList")
+	if settings.DEBUG == "True":
+		print("getIntraUsersList")
 	user_request = Request("https://api.intra.42.fr/v2/users?campus_id=wolfsburg&range[pool_year]=2021,2024&range[updated_at]=2024-05-01T00:00:00.000Z,22024-06-01T00:00:00.000Z&sort=-last_seen_at&page=1", headers = {"Authorization": f"Bearer {access_token}"})
 	user_response = urlopen(user_request)
 	user_data = user_response.read().decode("utf-8")
@@ -36,10 +38,9 @@ def getIntraUsersList(access_token):
 	x_page = user_response.headers.get('X-Page')
 	x_per_page = user_response.headers.get('X-Per-Page')
 	x_total = user_response.headers.get('X-Total')
-	
-	print("X-Page:", x_page)
-	print("X-Per-Page:", x_per_page)
-	print("X-Total:", x_total)
+	if settings.DEBUG == "True":
+		print("X-Page:", x_page)
+		print("X-Per-Page:", x_per_page)
+		print("X-Total:", x_total)
 
-	# print(users_list)
 	return users_list
