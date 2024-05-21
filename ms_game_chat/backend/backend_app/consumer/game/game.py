@@ -20,25 +20,25 @@ class _Game:
 
     # Update these methods
     async def assign_left_pedal(cls, val):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['left_pedal'] = val
 
 
     async def assign_right_pedal(cls, val):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['right_pedal'] = val
 
 
     async def increment_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] += 1
 
     async def decrement_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] -= 1
 
     async def reset_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] = 0
 
 
@@ -53,8 +53,10 @@ class _Game:
         canvas_width = 4
         canvas_height = 2
 
-        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx']
-        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy']
+        enhancer = 4.0
+
+        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx'] * enhancer
+        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy'] * enhancer
 
         # Handle ball-wall collisions
         if self.game_states[self.stable_game_id]['ball_y'] - self.game_states[self.stable_game_id]['ball_radius'] < 0 or \
@@ -148,7 +150,7 @@ class _Game:
                     )
                 # print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.1)
                 # await asyncio.sleep(1)
 
                 # print("GAME ACTIVE")
@@ -220,7 +222,7 @@ class _Game:
         print("-----GAME LOOP OVER-----")
         print(self.game_states.get(self.stable_game_id, {}).get('game_loop_task'))
         self.game_states[self.stable_game_id]['game_loop_task'] = None
-        tmp_group_id = 'group_%s' % self.stable_game_id
+        # tmp_group_id = 'game_group_%s' % self.stable_game_id
         # await self.update_stable_game_id_for_group(self.game_group_id, 0)
         tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
         print("tmp_id")
@@ -247,7 +249,8 @@ class _Game:
 
 
     async def send_game_scene(self, event):
-        # print("IN SEND GAME SCENE")
+        print("IN SEND GAME SCENE")
+        print(self.user)
         await self.send(text_data=json.dumps({
             'type': event['data']['response_type'],
             'new_pedal_pos': event['data']['new_pedal_pos']
@@ -556,9 +559,11 @@ class _Game:
         print(self.game_id)
         print(type(self.stable_game_id))
         print(type(self.game_id))
-        if self.stable_game_id == 0:
-            self.stable_game_id = self.game_id
-        elif self.stable_game_id != self.game_id:
+        if int(self.stable_game_id) == 0:
+            # self.stable_game_id = int(self.game_id)
+            self.stable_game_id = int(self.game_id)
+
+        elif int(self.stable_game_id) != int(self.game_id):
             print("FINISH GAME FIRST")
             await self.channel_layer.send(
                 self.channel_name,
