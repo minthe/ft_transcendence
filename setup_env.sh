@@ -11,5 +11,4 @@ else
 	echo "Please update the GIST_URL in .env"
 	exit 1
 fi
-sed -i -e "s/^${CURRENT_HOST}=.*/${CURRENT_HOST}=${localhost}/" .env
 

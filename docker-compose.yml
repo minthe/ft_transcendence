@@ -191,6 +191,7 @@ volumes:
   game_chat_db:
   users_db:
   static_files:
+  vault_secrets:
 
 networks:
   app_net:
