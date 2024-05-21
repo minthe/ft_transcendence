@@ -12,7 +12,7 @@ function loadContent(file, targetId) {
       document.getElementById(targetId).innerHTML = html;
     //   addEventListenersNotAuth();
     })
-    .catch(error => console.error('Error loading content:', error));
+    .catch(error => console.error('Error loading content:', error, 'try reloading'));
 }
 
 function loadContentIsAuth(file, targetId) {
@@ -22,7 +22,7 @@ function loadContentIsAuth(file, targetId) {
       document.getElementById(targetId).innerHTML = html;
       addEventListenersIsAuth();
     })
-    .catch(error => console.error('Error loading content:', error));
+    .catch(error => console.error('Error loading content:', error, 'try reloading'));
   }
 
 function loadContentGame(file, targetId) {
@@ -32,7 +32,7 @@ function loadContentGame(file, targetId) {
 		document.getElementById(targetId).innerHTML = html;
 		gameDom();
 	})
-	.catch(error => console.error('Error loading content:', error));
+	.catch(error => console.error('Error loading content:', error, 'try reloading'));
 }
 
 function loadContentChat(file, targetId) {
@@ -41,7 +41,7 @@ function loadContentChat(file, targetId) {
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
 	})
-	.catch(error => console.error('Error loading content:', error));
+	.catch(error => console.error('Error loading content:', error, 'try reloading'));
 }
 
 function loadContentProfile(file, targetId) {
@@ -50,7 +50,7 @@ function loadContentProfile(file, targetId) {
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
 	})
-	.catch(error => console.error('Error loading content:', error));
+	.catch(error => console.error('Error loading content:', error, 'try reloading'));
 }
 
 function loadStats(file, targetId) {
@@ -59,7 +59,7 @@ function loadStats(file, targetId) {
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
 	})
-	.catch(error => console.error('Error loading content:', error));
+	.catch(error => console.error('Error loading content:', error, 'try reloading'));
 }
 
 function loadCreators(file, targetId) {
@@ -68,5 +68,5 @@ function loadCreators(file, targetId) {
 	.then(html => {
 		document.getElementById(targetId).innerHTML = html;
 	})
-	.catch(error => console.error('Error loading content:', error));
+	.catch(error => console.error('Error loading content:', error, 'try reloading'));
 }

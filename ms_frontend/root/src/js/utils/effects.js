@@ -73,7 +73,6 @@ function Run() {
 	const currentTime = getCurrentTime();
 	const elapsedTime = currentTime - startTime;
 	
-	// Stop the animation loop after 5 seconds (5000 milliseconds)
 	if (elapsedTime >= 8000)
 		return stopFirework();
 
@@ -141,7 +140,9 @@ for (let ix = 0; ix < pass.length; ix++) {
 
 
 function stopFirework() {
+	//
 	document.getElementById('fireworkCanvas').style.zIndex = -1;
+	//
 	document.getElementById('winningScreen').classList.add('hidden');
 	document.getElementById('endScreen').classList.remove('hidden');
 	userState.currPage = 'endScreen';

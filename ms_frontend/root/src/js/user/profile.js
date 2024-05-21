@@ -106,7 +106,7 @@ function changeProfileImage() {
         })
         .catch(error => {
           updateTwoFaStatus(false, error);
-          console.error('There was a problem with the fetch operation:', error);
+          // console.error('There was a problem with the fetch operation:', error);
         });
       };
     }
@@ -128,7 +128,7 @@ async function getProfileData() {
     document.getElementById("gameAlias").value = data.alias;
   })
   .catch(error => {
-    console.error('There was a problem getting profile data: ', error);
+    // console.error('There was a problem getting profile data: ', error);
   });
 }
 
@@ -154,7 +154,7 @@ async function getProfilePicture(id) {
     avatarUrl = data.avatar;
   }
   catch (error) {
-    console.error('There was a problem with the fetch operation:', error);
+    // console.error('There was a problem with the fetch operation:', error);
   }
   return avatarUrl;
 }
