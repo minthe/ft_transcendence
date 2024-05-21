@@ -1,13 +1,11 @@
 # Code Review Assignment
 
-* @minthe
-
 /ms_auth/* @minthe
 
 /ms_frontend/* @cryptoclown132
 
 /ms_game_chat/* @kris-bo @mariekart42
 
-/ms_vault/* @NULL-Term1nat0r
+/ms_hashi_vault/* @NULL-Term1nat0r
 
-/ms_modsec/* @NULL-Term1nat0r
+/ms_modsecurity/* @NULL-Term1nat0r

@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 
 def send_welcome_email(username, email_to):
     email_from = settings.EMAIL_HOST_USER
@@ -26,3 +28,13 @@ def send_verification_email(username, code, email_to):
         [email_to],
         fail_silently=False,
     )
+    if settings.DEBUG == "True":
+        print(f'2FA code sent to {email_to}')
+
+def validator(email):
+	email_validator = EmailValidator(message='Email invalid')
+	try:
+		email_validator(email)
+		return True
+	except ValidationError as e:
+		return False

@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>game-chat REST API v1.1.0</title>
+    <title>game-chat REST API v1.1.1</title>
 
     <style>
     </style>
@@ -1502,7 +1502,7 @@ var n=this.pipeline.run(e.tokenizer(t)),r=new e.Vector,i=[],o=this._fields.reduc
 	  	<ul class="toc-list-h1">
         
           <li>
-            <a href="#game-chat-rest-api" class="toc-h1 toc-link" data-title="game-chat REST API v1.1.0">game-chat REST API v1.1.0</a>
+            <a href="#game-chat-rest-api" class="toc-h1 toc-link" data-title="game-chat REST API v1.1.1">game-chat REST API v1.1.1</a>
             
           </li>
         
@@ -1512,22 +1512,12 @@ var n=this.pipeline.run(e.tokenizer(t)),r=new e.Vector,i=[],o=this._fields.reduc
           </li>
         
           <li>
-            <a href="#game-chat-rest-api-default" class="toc-h1 toc-link" data-title="Default">Default</a>
+            <a href="#game-chat-rest-api-status" class="toc-h1 toc-link" data-title="Status">Status</a>
             
               <ul class="toc-list-h2">
                 
                   <li>
-                    <a href="#post__user_-user_id-" class="toc-h2 toc-link" data-title="">post__user_{user_id}</a>
-                    
-                  </li>
-                
-                  <li>
-                    <a href="#put__user_-user_id-_avatar" class="toc-h2 toc-link" data-title="">put__user_{user_id}_avatar</a>
-                    
-                  </li>
-                
-                  <li>
-                    <a href="#put__user_-user_id-_alias" class="toc-h2 toc-link" data-title="">put__user_{user_id}_alias</a>
+                    <a href="#get__game_status" class="toc-h2 toc-link" data-title="">get__game_status</a>
                     
                   </li>
                 
@@ -1536,12 +1526,22 @@ var n=this.pipeline.run(e.tokenizer(t)),r=new e.Vector,i=[],o=this._fields.reduc
           </li>
         
           <li>
-            <a href="#game-chat-rest-api-status" class="toc-h1 toc-link" data-title="Status">Status</a>
+            <a href="#game-chat-rest-api-user" class="toc-h1 toc-link" data-title="User">User</a>
             
               <ul class="toc-list-h2">
                 
                   <li>
-                    <a href="#get__status" class="toc-h2 toc-link" data-title="">get__status</a>
+                    <a href="#post__game_user" class="toc-h2 toc-link" data-title="">post__game_user</a>
+                    
+                  </li>
+                
+                  <li>
+                    <a href="#put__game_user_avatar" class="toc-h2 toc-link" data-title="">put__game_user_avatar</a>
+                    
+                  </li>
+                
+                  <li>
+                    <a href="#put__game_user_alias" class="toc-h2 toc-link" data-title="">put__game_user_alias</a>
                     
                   </li>
                 
@@ -1574,7 +1574,7 @@ var n=this.pipeline.run(e.tokenizer(t)),r=new e.Vector,i=[],o=this._fields.reduc
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="game-chat-rest-api">game-chat REST API v1.1.0</h1>
+        <h1 id="game-chat-rest-api">game-chat REST API v1.1.1</h1>
 <blockquote>
 <p>Scroll down for code samples, example requests and responses. Select a language for code samples from the tabs above or the mobile navigation menu.</p>
 </blockquote>
@@ -1583,18 +1583,88 @@ Under heavy development. Expect breaking changes.</p>
 <p>Base URLs:</p>
 <ul>
 <li>
-<p><a href="https://localhost/game">https://localhost/game</a></p>
+<p><a href="https://localhost">https://localhost</a></p>
 </li>
 <li>
-<p><a href="https://playpong.duckdns.org/game">https://playpong.duckdns.org/game</a></p>
+<p><a href="https://playpong.duckdns.org">https://playpong.duckdns.org</a></p>
 </li>
 </ul>
 <h1 id="authentication">Authentication</h1>
 <ul>
 <li>HTTP Authentication, scheme: bearer</li>
 </ul>
-<h1 id="game-chat-rest-api-default">Default</h1>
-<h2 id="post__user_-user_id-">post__user_{user_id}</h2>
+<h1 id="game-chat-rest-api-status">Status</h1>
+<h2 id="get__game_status">get__game_status</h2>
+<blockquote>
+<p>Code samples</p>
+</blockquote>
+<pre class="highlight tab tab-javascript"><code>
+<span class="hljs-keyword">const</span> headers = {
+  <span class="hljs-string">&#x27;Authorization&#x27;</span>:<span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
+};
+
+fetch(<span class="hljs-string">&#x27;https://localhost/game/status&#x27;</span>,
+{
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;GET&#x27;</span>,
+
+  <span class="hljs-attr">headers</span>: headers
+})
+.then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) </span>{
+    <span class="hljs-keyword">return</span> res.json();
+}).then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">body</span>) </span>{
+    <span class="hljs-built_in">console</span>.log(body);
+});
+
+</code></pre>
+<pre class="highlight tab tab-python"><code><span class="hljs-keyword">import</span> requests
+headers = {
+  <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
+}
+
+r = requests.get(<span class="hljs-string">&#x27;https://localhost/game/status&#x27;</span>, headers = headers)
+
+<span class="hljs-built_in">print</span>(r.json())
+
+</code></pre>
+<p><code>GET /game/status</code></p>
+<p><em>Check Heartbeat Status</em></p>
+<h3 id="get__game_status-responses">Responses</h3>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+<th>Description</th>
+<th>Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td><a href="https://tools.ietf.org/html/rfc7231#section-6.3.1">OK</a></td>
+<td>Service is up and running</td>
+<td>None</td>
+</tr>
+<tr>
+<td>401</td>
+<td><a href="https://tools.ietf.org/html/rfc7235#section-3.1">Unauthorized</a></td>
+<td>Unauthorized</td>
+<td>None</td>
+</tr>
+<tr>
+<td>503</td>
+<td><a href="https://tools.ietf.org/html/rfc7231#section-6.6.4">Service Unavailable</a></td>
+<td>Service is down or unhealthy</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+<h1 id="game-chat-rest-api-user">User</h1>
+<h2 id="post__game_user">post__game_user</h2>
 <blockquote>
 <p>Code samples</p>
 </blockquote>
@@ -1608,7 +1678,7 @@ Under heavy development. Expect breaking changes.</p>
   <span class="hljs-string">&#x27;Authorization&#x27;</span>:<span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 };
 
-fetch(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}&#x27;</span>,
+fetch(<span class="hljs-string">&#x27;https://localhost/game/user&#x27;</span>,
 {
   <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;POST&#x27;</span>,
   <span class="hljs-attr">body</span>: inputBody,
@@ -1628,12 +1698,12 @@ headers = {
   <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 }
 
-r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}&#x27;</span>, headers = headers)
+r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user&#x27;</span>, headers = headers)
 
 <span class="hljs-built_in">print</span>(r.json())
 
 </code></pre>
-<p><code>POST /user/{user_id}</code></p>
+<p><code>POST /game/user</code></p>
 <p><em>add new User</em></p>
 <blockquote>
 <p>Body parameter</p>
@@ -1643,7 +1713,7 @@ r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{u
   <span class="hljs-attr">&quot;avatar&quot;</span>: <span class="hljs-string">&quot;https://localhost/static/avatar/abcdef1234567890.png&quot;</span>
 }
 </code></pre>
-<h3 id="post__user_-user_id--parameters">Parameters</h3>
+<h3 id="post__game_user-parameters">Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1662,13 +1732,6 @@ r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{u
 <td>true</td>
 <td>none</td>
 </tr>
-<tr>
-<td>user_id</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td>none</td>
-</tr>
 </tbody>
 </table>
 <blockquote>
@@ -1677,9 +1740,9 @@ r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{u
 <blockquote>
 <p>400 Response</p>
 </blockquote>
-<pre class="highlight"><code>&quot;User already exists&quot;
+<pre class="highlight"><code>&quot;input validation error&quot;
 </code></pre>
-<h3 id="post__user_-user_id--responses">Responses</h3>
+<h3 id="post__game_user-responses">Responses</h3>
 <table>
 <thead>
 <tr>
@@ -1699,7 +1762,7 @@ r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{u
 <tr>
 <td>400</td>
 <td><a href="https://tools.ietf.org/html/rfc7231#section-6.5.1">Bad Request</a></td>
-<td>Bad request (e.g., email or username already taken, or password too weak)</td>
+<td>Bad request (for example user already exists, input validation error)</td>
 <td>string</td>
 </tr>
 <tr>
@@ -1720,7 +1783,7 @@ r = requests.post(<span class="hljs-string">&#x27;https://localhost/game/user/{u
 To perform this operation, you must be authenticated by means of one of the following methods:
 bearerAuth
 </aside>
-<h2 id="put__user_-user_id-_avatar">put__user_{user_id}_avatar</h2>
+<h2 id="put__game_user_avatar">put__game_user_avatar</h2>
 <blockquote>
 <p>Code samples</p>
 </blockquote>
@@ -1730,7 +1793,7 @@ bearerAuth
   <span class="hljs-string">&#x27;Authorization&#x27;</span>:<span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 };
 
-fetch(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}/avatar&#x27;</span>,
+fetch(<span class="hljs-string">&#x27;https://localhost/game/user/avatar&#x27;</span>,
 {
   <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;PUT&#x27;</span>,
   <span class="hljs-attr">body</span>: inputBody,
@@ -1749,12 +1812,12 @@ headers = {
   <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 }
 
-r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}/avatar&#x27;</span>, headers = headers)
+r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/avatar&#x27;</span>, headers = headers)
 
 <span class="hljs-built_in">print</span>(r.json())
 
 </code></pre>
-<p><code>PUT /user/{user_id}/avatar</code></p>
+<p><code>PUT /game/user/avatar</code></p>
 <p><em>Update Avatar</em></p>
 <blockquote>
 <p>Body parameter</p>
@@ -1762,7 +1825,7 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 <pre class="highlight"><code>https://localhost/static/avatar/abcdef1234567890.png
 
 </code></pre>
-<h3 id="put__user_-user_id-_avatar-parameters">Parameters</h3>
+<h3 id="put__game_user_avatar-parameters">Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1781,16 +1844,9 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 <td>true</td>
 <td>none</td>
 </tr>
-<tr>
-<td>user_id</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td>none</td>
-</tr>
 </tbody>
 </table>
-<h3 id="put__user_-user_id-_avatar-responses">Responses</h3>
+<h3 id="put__game_user_avatar-responses">Responses</h3>
 <table>
 <thead>
 <tr>
@@ -1831,7 +1887,7 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 To perform this operation, you must be authenticated by means of one of the following methods:
 bearerAuth
 </aside>
-<h2 id="put__user_-user_id-_alias">put__user_{user_id}_alias</h2>
+<h2 id="put__game_user_alias">put__game_user_alias</h2>
 <blockquote>
 <p>Code samples</p>
 </blockquote>
@@ -1841,7 +1897,7 @@ bearerAuth
   <span class="hljs-string">&#x27;Authorization&#x27;</span>:<span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 };
 
-fetch(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}/alias&#x27;</span>,
+fetch(<span class="hljs-string">&#x27;https://localhost/game/user/alias&#x27;</span>,
 {
   <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;PUT&#x27;</span>,
   <span class="hljs-attr">body</span>: inputBody,
@@ -1860,12 +1916,12 @@ headers = {
   <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
 }
 
-r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{user_id}/alias&#x27;</span>, headers = headers)
+r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/alias&#x27;</span>, headers = headers)
 
 <span class="hljs-built_in">print</span>(r.json())
 
 </code></pre>
-<p><code>PUT /user/{user_id}/alias</code></p>
+<p><code>PUT /game/user/alias</code></p>
 <p><em>Update Alias</em></p>
 <blockquote>
 <p>Body parameter</p>
@@ -1873,7 +1929,7 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 <pre class="highlight"><code>moon-dog.jpg
 
 </code></pre>
-<h3 id="put__user_-user_id-_alias-parameters">Parameters</h3>
+<h3 id="put__game_user_alias-parameters">Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1892,16 +1948,9 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 <td>true</td>
 <td>none</td>
 </tr>
-<tr>
-<td>user_id</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td>none</td>
-</tr>
 </tbody>
 </table>
-<h3 id="put__user_-user_id-_alias-responses">Responses</h3>
+<h3 id="put__game_user_alias-responses">Responses</h3>
 <table>
 <thead>
 <tr>
@@ -1934,76 +1983,6 @@ r = requests.put(<span class="hljs-string">&#x27;https://localhost/game/user/{us
 <td>500</td>
 <td><a href="https://tools.ietf.org/html/rfc7231#section-6.6.1">Internal Server Error</a></td>
 <td>Internal server error</td>
-<td>None</td>
-</tr>
-</tbody>
-</table>
-<aside class="warning">
-To perform this operation, you must be authenticated by means of one of the following methods:
-bearerAuth
-</aside>
-<h1 id="game-chat-rest-api-status">Status</h1>
-<h2 id="get__status">get__status</h2>
-<blockquote>
-<p>Code samples</p>
-</blockquote>
-<pre class="highlight tab tab-javascript"><code>
-<span class="hljs-keyword">const</span> headers = {
-  <span class="hljs-string">&#x27;Authorization&#x27;</span>:<span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
-};
-
-fetch(<span class="hljs-string">&#x27;https://localhost/game/status&#x27;</span>,
-{
-  <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;GET&#x27;</span>,
-
-  <span class="hljs-attr">headers</span>: headers
-})
-.then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) </span>{
-    <span class="hljs-keyword">return</span> res.json();
-}).then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">body</span>) </span>{
-    <span class="hljs-built_in">console</span>.log(body);
-});
-
-</code></pre>
-<pre class="highlight tab tab-python"><code><span class="hljs-keyword">import</span> requests
-headers = {
-  <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">&#x27;Bearer {access-token}&#x27;</span>
-}
-
-r = requests.get(<span class="hljs-string">&#x27;https://localhost/game/status&#x27;</span>, headers = headers)
-
-<span class="hljs-built_in">print</span>(r.json())
-
-</code></pre>
-<p><code>GET /status</code></p>
-<p><em>Check Heartbeat Status</em></p>
-<h3 id="get__status-responses">Responses</h3>
-<table>
-<thead>
-<tr>
-<th>Status</th>
-<th>Meaning</th>
-<th>Description</th>
-<th>Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>200</td>
-<td><a href="https://tools.ietf.org/html/rfc7231#section-6.3.1">OK</a></td>
-<td>Service is up and running</td>
-<td>None</td>
-</tr>
-<tr>
-<td>401</td>
-<td><a href="https://tools.ietf.org/html/rfc7235#section-3.1">Unauthorized</a></td>
-<td>Unauthorized</td>
-<td>None</td>
-</tr>
-<tr>
-<td>503</td>
-<td><a href="https://tools.ietf.org/html/rfc7231#section-6.6.4">Service Unavailable</a></td>
-<td>Service is down or unhealthy</td>
 <td>None</td>
 </tr>
 </tbody>

@@ -2,6 +2,8 @@ events {}
 
 http {
 
+    client_max_body_size 2M;
+
     server {
         listen 80;
         server_name ${CURRENT_HOST};
@@ -15,13 +17,35 @@ http {
         ssl_certificate /etc/nginx/ssl/fullchain_${CURRENT_HOST}.pem;
         ssl_certificate_key /etc/nginx/ssl/privkey_${CURRENT_HOST}.pem;
 
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+
         # allow 130.61.227.0/24;
         # allow 62.176.248.0/24;
         # deny all;
 
+        root /usr/share/nginx/html;
+
+        error_page 403 404 405 408 /errPages/error40x.html;
+        error_page 502 /errPages/error50x.html;
+        error_page 413 /413.json;
+
+        location = /413.json {
+            internal;
+            default_type application/json;
+            return 413 '{"message": "Request entity too large"}';
+        }
+
         location / {
             proxy_pass http://frontend:4242;
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /static {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ /errPages/error40x.html;
         }
 
         location /swagger/ {
@@ -37,6 +61,9 @@ http {
         location ~ ^/game/ {
             proxy_pass http://game_chat_backend:6969;
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
 
         location ~ ^/ws/ {
@@ -44,11 +71,17 @@ http {
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
 
         location ~ ^/user/ {
-        proxy_pass http://auth_backend:8000;
-        proxy_set_header Host $host;
+            proxy_pass http://auth_backend:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
 }

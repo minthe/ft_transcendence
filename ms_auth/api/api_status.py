@@ -7,7 +7,7 @@ jwt = FT_JWT(settings.JWT_SECRET)
 
 @jwt.token_required
 @require_http_methods(["GET"])
-def heartbeat(request, user_id):
+def heartbeat(request):
 	'''
 	This function is used to check if the service is up and running
 	API Endpoint: /user/heartbeat
@@ -16,5 +16,6 @@ def heartbeat(request, user_id):
 		return JsonResponse({'message': "Service is up and running"}, status=200)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_status: {error_message}")
 		return JsonResponse({'message': error_message}, status=503)

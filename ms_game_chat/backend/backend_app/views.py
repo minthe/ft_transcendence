@@ -5,176 +5,118 @@ from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.db import models
+from backend_app.models import Game, MyUser, Chat, Message
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def goToFrontend(request):
-    return render(request, 'goToFrontend.html')
-
-
-# Create new user:
-# - Endpoint: game/user/{user_id}/
-# - Method:   POST
+# - Endpoint: game/user/
 # - Payload:  username:string, avatar:string
 @require_POST
-def createUser(request, user_id):
+@jwt.token_required
+def createUser(request):
     try:
+        jwt_user_id = request.user_id
+        if MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User already exists'}, status=409)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
-
-        # check if user already exists
-        user_exist = MyUser.objects.filter(user_id=user_id).exists()
-        if user_exist:
-            return JsonResponse({}, status=409)
-
         new_user = MyUser()
-        new_user.user_id = user_id
+        new_user.user_id = jwt_user_id
         new_user.name = username
         new_user.avatar = avatar
-        new_user.age = 69
+        new_user.alias = username
         new_user.save()
-
-        return JsonResponse({}, status=200)
+        response = createChatWithChatBot(new_user.user_id)
+        if response == 'ok':
+            return JsonResponse({}, status=200)
+        raise Exception("Failed to create Chat Bot: ", response)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
+        return JsonResponse({'message': e}, status=500)
 
+from django.utils import timezone
 
-# Update Avatar:
-# - Endpoint: game/user/{user_id}/avatar/
-# - Method:   PUT
+def createChatWithChatBot(user_id):
+    try:
+        chat_name = 'CHAT_BOT'
+        if not MyUser.objects.filter(name=chat_name).exists():
+            createChatBot(chat_name)
+        chat_bot_instance = MyUser.objects.get(name=chat_name)
+        user_instance = MyUser.objects.get(user_id=user_id)
+        new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True, is_read=False)
+        new_chat.save()
+        user_instance.chats.add(new_chat.id)
+        user_instance.save()
+        chat_bot_instance.chats.add(new_chat.id)
+        chat_bot_instance.save()
+
+        # create message in chat
+        specific_timestamp = timezone.now()
+        text = 'Hey! I am CHAT_BOT lol'
+        new_message = Message.objects.create(senderId=chat_bot_instance.user_id, sender=chat_name, text=text,
+                                             timestamp=specific_timestamp)
+        chat_instance = Chat.objects.get(id=new_chat.id)
+        new_message.save()
+        chat_instance.messages.add(new_message.id)
+        return "ok"
+    except ValueError:
+        return "User does not exist"
+    except Exception as e:
+        return str(e)
+
+def createChatBot(chat_name):
+    chat_bot = MyUser()
+    chat_bot.user_id = 1
+    chat_bot.name = chat_name
+    chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
+    chat_bot.alias = chat_name
+    chat_bot.save()
+
+# - Endpoint: game/user/avatar/
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
-def updateAvatar(request, user_id):
-    try:
-        return JsonResponse({}, status=501)
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-
-# Update game alias:
-# - Endpoint: game/user/{user_id}/alias/
-# - Method:   PUT
-# - Payload:  alias:string
-@require_http_methods(["PUT"])
-def updateAlias(request, user_id):
-    try:
-        return JsonResponse({}, status=501)
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-
-
-@csrf_exempt
-@require_POST
-def checkUserCredentials(request):#TODO Marie: user user_id to get user
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
-
-        # enable2FA boolean | later get this from db instead of frontend
-        enable2FA:bool = data.get('enable2FA')
-        email_to = data.get('email')
-
-        user_exist_check = MyUser.objects.filter(name=username).exists()
-        if not user_exist_check:
-            return JsonResponse({}, status=404)
-        user_object = MyUser.objects.get(name=username)
-        if password == user_object.password:
-            if enable2FA:
-                send_email_to_user(user_object, email_to)
-            return JsonResponse({'user_id': user_object.user_id, 'twoFactorAuth': enable2FA}, status=200)
-        else:
-            return JsonResponse({}, status=401)  # wrong credentials
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({}, status=500)
-
-def send_email_to_user(user, email_to):
-    email_from = settings.EMAIL_HOST_USER
-    code = user.generate_verification_code()
-    send_mail(
-        'Your 2FA Code',
-        f'Your 2FA code is: {code}',
-        email_from,
-        [email_to],
-        fail_silently=False,
-    )
-
-def verifyTwoFactorCode(request, code, username):
-    try:
-        user_exists = MyUser.objects.filter(name=username).exists()
-        if not user_exists:
-            return JsonResponse({'message': 'User not found'}, status=404)
-        user_instance = MyUser.objects.get(name=username)
-        if user_instance.verify_verification_code(code):
-            return JsonResponse({}, status=200)
-        else:
-            return JsonResponse({'message': 'Invalid or expired verification code'}, status=400)
-    except Exception as e:
-        print("in verifyTwoFactorCode: ", e)
-        return JsonResponse({}, status=500)
-
-
-
-from django.core.mail import send_mail
-@csrf_exempt
-@require_POST
-def createAccount(request):#TODO Marie: user user_id to get user
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        username = data.get('username')
-        password = data.get('password')
-
-        user_exist = MyUser.objects.filter(name=username).exists()
-        if user_exist:
-            return JsonResponse({}, status=409)
-        user_data = {
-            "name": username,
-            "password": password,
-            "age": 69
-        }
-        new_user = MyUser(**user_data)
-        new_user.save()
-        user_instance = MyUser.objects.get(name=username)
-        return JsonResponse({'user_id': user_instance.user_id}, status=200)
-    except Exception as e:
-        print("in createAccount: ", e)
-        return JsonResponse({}, status=500)
-
-
-@require_POST
 @jwt.token_required
-def uploadAvatar(request, username):
+def updateAvatar(request):
     try:
-        print("REQUEST: ", request.headers)
-
-        print('username: ', username)
-        user_exist = MyUser.objects.filter(name=username).exists()
-        if not user_exist:
-            return JsonResponse({}, status=409)
-
-        if request.method == 'POST':
-            user_instance = MyUser.objects.get(name=username)
-            avatar_file = request.FILES.get('avatar')
-            print('response file: ', avatar_file)
-            if avatar_file:
-                user_instance.avatar = avatar_file
-                user_instance.save()
+        jwt_user_id = request.user_id
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exist'}, status=409)
+        data = json.loads(request.body.decode('utf-8'))
+        avatar = data.get('avatar')
+        user_instance = MyUser.objects.get(user_id=jwt_user_id)
+        setattr(user_instance, 'avatar', avatar)
+        user_instance.save()
         return JsonResponse({}, status=200)
     except Exception as e:
-        return JsonResponse({}, status=500)
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({'message': e}, status=500)
+
+# - Endpoint: game/user/alias/
+# - Payload:  alias:string
+@require_http_methods(["PUT"])
+@jwt.token_required
+def updateAlias(request):
+    try:
+        jwt_user_id = request.user_id
+        if not MyUser.objects.filter(user_id=jwt_user_id).exists():
+            return JsonResponse({'message': 'User does not exists'}, status=409)
+        data = json.loads(request.body.decode('utf-8'))
+        alias = data.get('alias')
+        user_instance = MyUser.objects.get(user_id=jwt_user_id)
+        setattr(user_instance, 'alias', alias)
+        user_instance.save()
+        return JsonResponse({}, status=200)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({'message': e}, status=500)
 
 
 ######### GAMEEEEEEEEEEEEEEEEEEEE ######### kristinas kingdom:
 
 
 from django.http import JsonResponse
-from backend_app.models import Game, MyUser
 
 def createGame(request, username, invited_username):
     try:

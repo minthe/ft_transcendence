@@ -6,6 +6,7 @@ if [ ! -d "./.cert" ]; then
     mkdir .cert
 fi
 
+# Generate a self-signed certificate for the current host
 if grep -q "^CURRENT_HOST=" .env; then
 	current_host=$(grep "^CURRENT_HOST=" .env | cut -d= -f2- | tr -d "'")
 else

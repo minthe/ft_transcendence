@@ -2,9 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="Play Pong games against your friends, enjoy multiplayer functionality, and engage in real-time chat on our site. Join the fun now!">
     <title>Multiplayer Pong Game with Chat Feature</title>
+
+
+    <!-- <meta http-equiv="Cache-Control" content="max-age=3600, must-revalidate">
+<meta http-equiv="Expires" content="Wed, 21 Oct 2023 07:28:00 GMT"> -->
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+
+    <link rel="icon" href="img/icons/playPongIcon.ico" type="image/x-icon">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
@@ -26,20 +37,39 @@
 <div id="userIsAuth" class="hidden"></div>
 
 
-<script defer src="js/loadFiles.js"></script>
-<script defer src="js/websocket.js"></script>
-<script defer src="js/login_register.js"></script>
-<script defer src="js/user_is_auth.js"></script>
-<script defer src="js/chat.js"></script>
-<script defer src="js/game.js"></script>
 
-<script defer src="js/profile.js"></script>
-<script defer src="js/spa_logic.js"></script>
-<script defer src="js/effects.js"></script>
-<script defer src="js/sql.js"></script>
-<script defer src="js/header_body_fetch.js"></script>
+<!-- reload -->
+<script defer src="js/load/refresh.js"></script>
+<script defer src="js/load/spa_logic.js"></script>
+<script defer src="js/load/header_body_fetch.js"></script>
+<script defer src="js/load/user_is_auth.js"></script>
+<script defer src="js/load/loadFiles.js"></script>
 
-<script defer src="js/test.js"></script>
+
+<!-- auth -->
+<script defer src="js/auth/2fa.js"></script>
+<script defer src="js/auth/42login.js"></script>
+<script defer src="js/auth/auth_utils.js"></script>
+<script defer src="js/auth/login.js"></script>
+<script defer src="js/auth/logout.js"></script>
+<script defer src="js/auth/register.js"></script>
+
+<!-- game_chat -->
+<script defer src="js/game_chat/chat.js"></script>
+<script defer src="js/game_chat/game.js"></script>
+<script defer src="js/game_chat/tournament.js"></script>
+
+<!-- user -->
+<script defer src="js/user/profile.js"></script>
+<script defer src="js/user/stats_history.js"></script>
+
+<!-- websocket -->
+<script defer src="js/websocket/websocket.js"></script>
+
+
+<!-- utils -->
+<script defer src="js/utils/effects.js"></script>
+<script defer src="js/utils/sql.js"></script>
 
 </body>
 </html>
