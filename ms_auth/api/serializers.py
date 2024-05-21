@@ -19,7 +19,6 @@ def validate_alias(alias):
 def validate_password(password):
 	try:
 		error_message = 'Password too weak'
-		print(password)
 		if password.isalnum():
 			raise ValidationError(error_message)
 		pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&,;:])[A-Za-z\d@$!%*?&,;:]{8,}$'
