@@ -31,7 +31,6 @@ POSTGRES_USER = read_secret_from_vault('POSTGRES_USER')
 POSTGRES_PASSWORD = read_secret_from_vault('POSTGRES_PASSWORD')
 POSTGRES_HOST = 'users_db'
 POSTGRES_PORT = read_secret_from_vault('POSTGRES_PORT')
-REDIRECT_URI = os.environ.get('REDIRECT_URI')
 CLIENT_ID = read_secret_from_vault('CLIENT_ID')
 CLIENT_SECRET = read_secret_from_vault('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
@@ -64,6 +63,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ASGI_APPLICATION = 'django_project.asgi.application'
 
 SECRET_KEY = DJANGO_SECRET
+
+WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
+GET_INTRA_USERS_LIST = os.environ.get('GET_INTRA_USERS_LIST')
+STRONG_PASSWORD = os.environ.get('STRONG_PASSWORD')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'

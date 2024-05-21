@@ -82,7 +82,8 @@ services:
         ipv4_address: 172.16.10.5
     restart: always
     depends_on:
-      - users_db
+      users_db:
+        condition: service_healthy
     expose:
       - 8000
   users_db:
@@ -143,7 +144,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.8
     ports:
-      - 6969:6969 # for admin page, delete later
+      - 6969 # for admin page, delete later
     volumes:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
@@ -155,7 +156,7 @@ services:
   vault:
     build: ./ms_hashi_vault/vault
     ports:
-      - "8200:8200"
+      - 8200
     environment:
       VAULT_DEV_ROOT_TOKEN_ID: "root"
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
