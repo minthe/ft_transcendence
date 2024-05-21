@@ -281,7 +281,7 @@ async function establishWebsocketConnection() {
         break
       case 'recieve_tourn_history':
         websocket_obj.tourn_history = JSON.parse(data.matches)
-        console.log('DATA: ', websocket_obj.game.invites)
+        console.log('DATA tourn history: ', data.matches)
         displayTournHistory();
         // if (userState.currPage !== 'tournPage')
         //   renderTourns();
@@ -291,7 +291,7 @@ async function establishWebsocketConnection() {
         break
       case 'recieve_stats':
         console.log('recieve_stats')
-        console.log(data)
+        console.log(data);
         websocket_obj.game_stats = data.stats;
         displayStats();
         // getUserStats(data.stats);

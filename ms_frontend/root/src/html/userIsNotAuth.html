@@ -8,11 +8,15 @@
   <h1>Login Page</h1>
   <!-- Username Input -->
 
-      <input type="text" class="form-control input-login" id="loginUsername" placeholder="username">
-
+  
   <!-- Password Input -->
+  <form>
+    <input type="text" class="form-control input-login" id="loginUsername" placeholder="username" autocomplete="username">
+    <input type="password" id="loginPassword" class="form-control input-login" placeholder="password" aria-describedby="passwordHelpBlock" autocomplete="current-password">
+  </form>
+  
 
-      <input type="password" id="loginPassword" class="form-control input-login" placeholder="password" aria-describedby="passwordHelpBlock">
+      <!-- <input type="password" id="loginPassword" class="form-control input-login" placeholder="password" aria-describedby="passwordHelpBlock"> -->
 
     <div id="wrong-password" class="hidden" style="color: red;"></div>
 
@@ -32,14 +36,20 @@
   <h1>Register Page</h1>
   <!-- Username Input -->
   
-  <input type="text" class="form-control input-login" id="registerUsername" placeholder="username">
   <!-- E-Mail Input -->
   
-  <input type="text" class="form-control input-login" id="registerMail"placeholder="e-mail">
   
   <!-- Password Input -->
   <!-- <div style="display: flex; align-items: center;"> -->
-    <input type="password" class="form-control input-login" id="registerPassword" placeholder="password">
+    
+    <form>
+      <input type="text" class="form-control input-login" id="registerUsername" placeholder="username" autocomplete="username">
+      <input type="text" class="form-control input-login" id="registerMail"placeholder="e-mail" autocomplete="username">
+      <input type="password" class="form-control input-login" id="registerPassword" placeholder="password" autocomplete="new-password">
+    </form>
+
+    <!-- <input type="password" class="form-control input-login" id="registerPassword" placeholder="password"> -->
+
   <!-- </div> -->
   <button type="button" class="info-button" id="infoButton">i</button>
   <div id="passwordInfo" class="info-message hidden">
