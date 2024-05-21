@@ -18,6 +18,6 @@ async function logoutUser() {
 	  hideDiv('userIsAuth')
 	})
 	.catch(error => {
-	  console.error('There was a problem loging out:', error);
+	//   console.error('There was a problem loging out:', error);
 	});
 }

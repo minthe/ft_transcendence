@@ -1,5 +1,6 @@
 
 async function updatePage() {
+	changeToProfile();
 
     if (userState.userName === websocket_obj.username) {
 
@@ -53,6 +54,7 @@ async function updatePage() {
 		window.history.replaceState(userState, null, "");
 		render(userState);
 	}
+	document.getElementById('updateTwoFa').classList.add('hidden');
 }
 
 window.addEventListener('beforeunload', function(event) {
@@ -153,6 +155,6 @@ function checkPageState() {
 		}, 500);
 	})
 	.catch(error => {
-		console.error('Error during login:', error);
+		// console.error('Error during login:', error);
 	});
 }
