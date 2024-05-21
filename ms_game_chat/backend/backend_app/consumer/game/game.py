@@ -53,8 +53,10 @@ class _Game:
         canvas_width = 4
         canvas_height = 2
 
-        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx']
-        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy']
+        enhancer = 4.0
+
+        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx'] * enhancer
+        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy'] * enhancer
 
         # Handle ball-wall collisions
         if self.game_states[self.stable_game_id]['ball_y'] - self.game_states[self.stable_game_id]['ball_radius'] < 0 or \
