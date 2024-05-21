@@ -846,7 +846,7 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   /* display: flex;
   justify-content: center;
   align-items: center; */
-  /* margin-left: 15.5vw; */
+  margin-left: 15.5vw;
   background-color: #f8efb5;
   outline: 10px solid #131615;
 }
