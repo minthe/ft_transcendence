@@ -38,7 +38,7 @@ function checkForToken(popup) {
 				
 				//check again
 				if (!response.ok && !data.second_factor) {
-					if (response.status === 400) {
+					if (response.status === 400 || response.status === 500) {
 						popup.close();
 						loginErrors(data);
 					}
