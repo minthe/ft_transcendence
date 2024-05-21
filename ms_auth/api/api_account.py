@@ -73,8 +73,8 @@ def register(request):
 			}
 			game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 			encoded_data = json.dumps(game_chat_data).encode("utf-8")
-
-			print(f"request_to_game_chat url: {game_chat_request_url}")
+			if settings.DEBUG == "True":
+				print(f"request_to_game_chat url: {game_chat_request_url}")
 			game_chat_request = Request(game_chat_request_url, method='POST', data=encoded_data, headers=game_chat_headers)
 			game_chat_response = urlopen(game_chat_request)
 			if game_chat_response.getcode() == 200:
@@ -241,8 +241,6 @@ def oauth2_redirect(request):
 		with transaction.atomic():
 			id_hash = get_random_string(length=12)
 			access_token = oauth2_views.getToken(request)
-			if settings.DEBUG == "True":
-				print(f"access token: {access_token}")
 
 			user_data = intra42_views.getUserData(access_token)
 			if not user_data:
@@ -274,8 +272,8 @@ def oauth2_redirect(request):
 				}
 				game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 				encoded_data = json.dumps(game_chat_data).encode("utf-8")
-
-				# print(f"request_to_game_chat url: {game_chat_request_url}")
+				if settings.DEBUG == "True":
+					print(f"request_to_game_chat url: {game_chat_request_url}")
 				game_chat_request = Request(game_chat_request_url, method='POST', data=encoded_data, headers=game_chat_headers)
 				game_chat_response = urlopen(game_chat_request)
 				if game_chat_response.getcode() == 200:
@@ -294,7 +292,6 @@ def oauth2_redirect(request):
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
 				store_secret(id_hash, access_token, 'oauth2_token')
-				print (f"token: {access_token}")
 				# second_factor_views.create_2fa(user_id)
 				response = HttpResponse(status=200)
 				response.set_cookie('id',id_hash, httponly=True, expires=300)

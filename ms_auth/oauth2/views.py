@@ -15,7 +15,6 @@ def getToken(request):
 		headers = {
 			'Content-Type': 'application/json'
 		}
-		print("data:", data)
 		conn = http.client.HTTPSConnection('api.intra.42.fr')
 		conn.request('POST', '/oauth/token', data, headers)
 
@@ -27,5 +26,6 @@ def getToken(request):
 		return (access_token)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
