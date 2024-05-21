@@ -25,30 +25,30 @@ services:
       - 8080
 
 # MICROSERVICE API-GATEWAY
-  api_gateway:
-    env_file: .env
-    container_name: api_gateway
-    build:
-      context: ms_api_gateway
-      args:
-        CURRENT_HOST: ${CURRENT_HOST}
-    volumes:
-      - static_files:/usr/share/nginx/html/static
-      - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
-      - ./.cert/:/etc/nginx/ssl/
-    ports:
-      - 80:80
-      - 443:443
-    restart: always
-    networks:
-      app_net:
-        ipv4_address: 172.16.10.3
-    depends_on:
-      - auth_backend
-      - users_db
-      - frontend
-      - game_chat_backend
-      - game_chat_db
+  # api_gateway:
+  #   env_file: .env
+  #   container_name: api_gateway
+  #   build:
+  #     context: ms_api_gateway
+  #     args:
+  #       CURRENT_HOST: ${CURRENT_HOST}
+  #   volumes:
+  #     - static_files:/usr/share/nginx/html/static
+  #     - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
+  #     - ./.cert/:/etc/nginx/ssl/
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   restart: always
+  #   networks:
+  #     app_net:
+  #       ipv4_address: 172.16.10.3
+  #   depends_on:
+  #     - auth_backend
+  #     - users_db
+  #     - frontend
+  #     - game_chat_backend
+  #     - game_chat_db
 
 # MICROSERVICE FRONTEND
   frontend:
@@ -149,8 +149,31 @@ services:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
       - 5432
+  
+  modsecurity:
+    env_file: .env
+    container_name: modsecurity
+    build:
+      context: ms_modsec
+      args:
+        CURRENT_HOST: ${CURRENT_HOST}
+    restart: always
+    volumes:
+    - ./ms_modsec/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+    - ./ms_modsec/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    - ./ms_modsec/nginx.conf:/nginx.conf
+    - ./ms_modsec/modsecurity.conf:/etc/modsecurity.d/modsecurity.conf
+    - ./.cert/:/etc/nginx/ssl/
+    ports:
+      - 80:80
+      - 443:443
     depends_on:
-     - vault_store_secrets
+      - auth_backend
+      - users_db
+      - frontend
+      - game_chat_backend
+      - game_chat_db
+      - vault_store_secrets
     
   #MICROSERVICE HASHI_VAULT
   vault:
@@ -165,7 +188,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.9
     expose:
-      - 8200
+      - 9000
 
   vault_store_secrets:
     build: ./ms_hashi_vault/vault_store_secrets
@@ -185,8 +208,6 @@ services:
       retries: 3
       start_period: 10s
     
-
-
 volumes:
   game_chat_db:
   users_db:
