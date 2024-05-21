@@ -45,7 +45,7 @@ ASGI_APPLICATION = 'django_project.asgi.application'
 SECRET_KEY = DJANGO_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG')
 
 INSTALLED_APPS = [
     "api",
