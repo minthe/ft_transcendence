@@ -44,7 +44,6 @@ def verify_2fa(user_id, submitted_code):
 		user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
 		return False, 'Rate limit exceeded'
 	if not submitted_code == stored_code:
-		print(f"submitted_code: {submitted_code}, code: {stored_code}")
 		second_factor_dict['last_retry'] = current_time.isoformat()
 		user_views.updateValue(user_id, 'second_factor_dict', second_factor_dict)
 		return False, 'Invalid code'
