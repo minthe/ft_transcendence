@@ -39,7 +39,7 @@ def createIntraUser(user_data):
 		user.alias = user_data['username']
 	user.email = user_data['email']
 	user.avatar = user_data['image']
-	user.set_password('') # TODO valentin: change before production
+	user.set_password('')
 	user.second_factor_enabled = False
 	max_id = User.get_highest_user_id()
 	if max_id and max_id >= 2:
@@ -76,16 +76,17 @@ def updateValue(user_id, key, value):
 	user.save()
 
 def getValue(user_id, key):
-    try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
-        user = User.objects.get(user_id=user_id)
-        value = getattr(user, key, None)
-        return value
-    except User.DoesNotExist:
-        return JsonResponse({'message': 'User not found'}, status=404)
-    except AttributeError:
-        return JsonResponse({'message': f'Attribute "{key}" not found for the user'}, status=400)
-    except Exception as e:
-        error_message = str(e)
-        print(f"An error occurred: {error_message}")
-        return JsonResponse({'message': 'An error occurred while retrieving the value'}, status=500)
+	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
+		user = User.objects.get(user_id=user_id)
+		value = getattr(user, key, None)
+		return value
+	except User.DoesNotExist:
+		return JsonResponse({'message': 'User not found'}, status=404)
+	except AttributeError:
+		return JsonResponse({'message': f'Attribute "{key}" not found for the user'}, status=400)
+	except Exception as e:
+		error_message = str(e)
+		if settings.DEBUG == "True":
+			print(f"An error occurred: {error_message}")
+		return JsonResponse({'message': 'An error occurred while retrieving the value'}, status=500)
 

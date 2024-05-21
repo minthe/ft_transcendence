@@ -1,5 +1,6 @@
 
 async function updatePage() {
+	changeToProfile();
 
     if (userState.userName === websocket_obj.username) {
 
@@ -23,7 +24,7 @@ async function updatePage() {
 		if (userState.currPage === 'chat' || userState.currPage === 'group_chat') {
 			await sendDataToBackend('get_current_users_chats')
 			await sendDataToBackend('get_blocked_by_user')
-			await sendDataToBackend('get_blocked_user') // NEW since 02.02
+			await sendDataToBackend('get_blocked_user')
 		  }
 		if (userState.currPage === 'group_chat') {
 		if (userState.chatOpen)
@@ -32,16 +33,10 @@ async function updatePage() {
 			userState.chatOpen = true;
 		await handleClickedOnChatElement(userState.chatObj);
 		}
-		if (userState.currPage === 'invites') //refresh the invites
+		if (userState.currPage === 'invites')
 			await requestInvites();
 		if (userState.currPage === 'invitesTourn')
 			await requestTourns();
-		// if (userState.currPage === 'tournPage') {
-		// 	await requestTourns();
-													// websocket_obj.game.invites
-			// console.log('waht is in web invites: ', websocket_obj.game.invites);
-			// joinTourn(userState.tournId, websocket_obj.game.invites);
-		// }
 
 		render(userState);
 		if (userState.currPage === 'chat') {
@@ -51,7 +46,6 @@ async function updatePage() {
 		}
 	}
 	else {
-		console.log('goes into else of popstate');
 		// showSiteHideOthers('homeSite');
 		showSiteHideOthersSpa('homeSite');
 		document.getElementById('displayUserName').innerHTML = 'Hey '+ websocket_obj.username +' 🫠';
@@ -60,6 +54,8 @@ async function updatePage() {
 		window.history.replaceState(userState, null, "");
 		render(userState);
 	}
+	if (document.getElementById('updateTwoFa'))
+		document.getElementById('updateTwoFa').classList.add('hidden');
 }
 
 window.addEventListener('beforeunload', function(event) {
@@ -74,6 +70,7 @@ window.addEventListener('beforeunload', function(event) {
 
 window.addEventListener('load', function() {
 	const myData = JSON.parse(localStorage.getItem('myData'));
+
 	if (myData) {
 		// localStorage.clear();
 		websocket_obj = myData.ws_obj
@@ -82,8 +79,6 @@ window.addEventListener('load', function() {
 		user_id = myData.ws_obj.user_id
 		userState = myData.ls_state;
 	}
-	
-	// sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
 	checkPageState();
 });
 
@@ -107,13 +102,14 @@ function checkPageState() {
 	})
 	.then(async response => {
 		if (!response.ok) {
+			const data = await response.json();
+			
 			await logoutUser();
 			userState.bodyText = document.body.innerHTML;
 			// userState.currPage = "homeSite";
 			userState.chatObj = {};
 			userState.chatOpen = false;
 			userState.userName = null;
-			console.log('reload not success');
 
 			//problem of storing currPage from before maybe new var in userState needed
 			if (userState.currPageNotLogedIn === null) {
@@ -135,7 +131,6 @@ function checkPageState() {
 			}
 			else if (userState.currPageNotLogedIn === 'registerPage') {
 				hideDiv('loginPage')
-				console.log("in the show function");
 				showDiv('registerPage')
 				document.getElementById("wrong-password").classList.add("hidden");
 				document.getElementById('loginUsername').value = null;
@@ -148,9 +143,8 @@ function checkPageState() {
 			}
 			// else
 			// 	spaNotLogedIn(userState.currPage);
-			throw new Error(response.message);
+			throw new Error(data.message);
 		}
-		console.log('reload was succesfull');
 		sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
 		document.getElementById("reloadScreen").style.display = "block";
 		setTimeout(function() {
@@ -158,9 +152,10 @@ function checkPageState() {
 			hideDiv('userIsNotAuth');
 			showDiv('userIsAuth');
 			updatePage();
+			setDownTwoFaPage();
 		}, 500);
 	})
 	.catch(error => {
-		console.log('Error during login:', error);
+		// console.error('Error during login:', error);
 	});
 }

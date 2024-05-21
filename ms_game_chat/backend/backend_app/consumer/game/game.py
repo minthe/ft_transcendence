@@ -20,41 +20,43 @@ class _Game:
 
     # Update these methods
     async def assign_left_pedal(cls, val):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['left_pedal'] = val
 
 
     async def assign_right_pedal(cls, val):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['right_pedal'] = val
 
 
     async def increment_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] += 1
 
     async def decrement_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] -= 1
 
     async def reset_joined_players(cls):
-        game_state = cls.game_states.get(cls.game_id, {})
+        game_state = cls.game_states.get(cls.stable_game_id, {})
         game_state['joined_players'] = 0
 
 
     async def calculate_ball_state(self):
         # Adjust the paddle height as needed
-        print("left pedal")
-        print(self.game_states.get(self.stable_game_id, {}).get('left_pedal'))
-        print("right pedal")
-        print(self.game_states.get(self.stable_game_id, {}).get('right_pedal'))
+        # print("left pedal")
+#         print(self.game_states.get(self.stable_game_id, {}).get('left_pedal'))
+        # print("right pedal")
+        # print(self.game_states.get(self.stable_game_id, {}).get('right_pedal'))
 
         paddle_height = 0.5
         canvas_width = 4
         canvas_height = 2
 
-        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx']
-        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy']
+        enhancer = 4.0
+
+        self.game_states[self.stable_game_id]['ball_x'] += self.game_states[self.stable_game_id]['ball_dx'] * enhancer
+        self.game_states[self.stable_game_id]['ball_y'] += self.game_states[self.stable_game_id]['ball_dy'] * enhancer
 
         # Handle ball-wall collisions
         if self.game_states[self.stable_game_id]['ball_y'] - self.game_states[self.stable_game_id]['ball_radius'] < 0 or \
@@ -98,10 +100,10 @@ class _Game:
 
                 self.game_states[self.stable_game_id]['host_score'] += 1
 
-            print("HOST SCORE")
-            print(self.game_states[self.stable_game_id]['host_score'])
-            print("GUEST SCORE")
-            print(self.game_states[self.stable_game_id]['guest_score'])
+            # print("HOST SCORE")
+            # print(self.game_states[self.stable_game_id]['host_score'])
+            # print("GUEST SCORE")
+            # print(self.game_states[self.stable_game_id]['guest_score'])
 
             # Reset ball position to the center
             self.game_states[self.stable_game_id]['ball_x'] = canvas_width // 2
@@ -119,42 +121,39 @@ class _Game:
             print(self.game_states[self.stable_game_id]['game_active'])
             await self.handle_send_score_update()
             # self.stable_game_id = 0
-        print("End of calculate_ball_state")
+        # print("End of calculate_ball_state")
 
 
     async def game_loop(self):
         # game_status = self.game_states.get(self.stable_game_id, {}).get('game_active')
         while True:
-            print(self.game_states.get(self.stable_game_id, {}).get('game_loop_task'))
-            # print("game_status")
-            # print(game_status)
+
             try:
-                print("CALCULATING BALL STATE")
+                # print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
-                print("SENDING BALL UPDATE")
-                print(self.game_group_id)
-                print(self.user)
-                print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
+                # print("SENDING BALL UPDATE")
+                # print(self.game_group_id)
+                # print(self.user)
+                # print(self.game_states.get(self.stable_game_id, {}).get('group_id'))
 
-
-                await self.channel_layer.group_send(
-                    # self.game_group_id,
-                    self.game_states.get(self.stable_game_id, {}).get('group_id'),
-                    {
-                        'type': 'send.ball.update',
-                        'data': {
-                            'ball_x': self.game_states[self.stable_game_id]['ball_x'],
-                            'ball_y': self.game_states[self.stable_game_id]['ball_y'],
-                        },
-                    }
-                )
-                print("SENT BALL UPDATE")
+                if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
+                    await self.channel_layer.group_send(
+                        # self.game_group_id,
+                        self.game_states.get(self.stable_game_id, {}).get('group_id'),
+                        {
+                            'type': 'send.ball.update',
+                            'data': {
+                                'ball_x': self.game_states[self.stable_game_id]['ball_x'],
+                                'ball_y': self.game_states[self.stable_game_id]['ball_y'],
+                            },
+                        }
+                    )
+                # print("SENT BALL UPDATE")
                 # await asyncio.sleep(1 / 60)
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.1)
                 # await asyncio.sleep(1)
 
-                # game_status = self.game_states.get(self.stable_game_id, {}).get('game_active')
-                print("GAME ACTIVE")
+                # print("GAME ACTIVE")
 
             except Exception as e:
                 print(f"Error in game_loop: {e}")
@@ -164,28 +163,49 @@ class _Game:
                 print(self.game_states[self.stable_game_id]['canceled'])
                 if self.game_states[self.stable_game_id]['canceled'] == True:
                     print("game canceled")
-                    await self.clear_game_struct()
+                    # tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+                    # prefixed_value = f"b_{tmp_id}"
+                    # self.game_states.pop(self.stable_game_id, None)
+                    # print("tmp_id")
+                    # print(prefixed_value)
+                    # await self.channel_layer.group_send(
+                    #     prefixed_value,
+                    #     {
+                    #         'type': 'reset.stable.id'
+                    #     }
+                    # )
+                    # await self.clear_game_struct()
                     break
                 print("in game_active = false")
                 print("self.game_states[self.stable_game_id]")
                 print(self.game_states[self.stable_game_id])
                 await self.setWinner(self.game_states[self.stable_game_id])
                 # tourn_id = await self.matchResults(self.game_states[self.stable_game_id])
-                tourn_id = await self.matchResults()
+                return_data = await self.matchResults()
+                if return_data:
+                    print("return_data")
+                    print(return_data)
+                    await self.channel_layer.send(
+                        self.channel_name,
+                        {
+                            'type': 'send.chatbot.trigger',
+                            'data': return_data,
+                        })
 
                 print("111111")
                 print(self.stable_game_id)
-                await self.channel_layer.group_send(
-                    # self.game_group_id,
-                    self.game_states.get(self.stable_game_id, {}).get('group_id'),
-                    {
-                        'type': 'send.game.over',
-                        'data': {
-                            'game_id': self.stable_game_id,
+                if self.game_states.get(self.stable_game_id, {}).get('group_id') is not None:
+                    await self.channel_layer.group_send(
+                        # self.game_group_id,
+                        self.game_states.get(self.stable_game_id, {}).get('group_id'),
+                        {
+                            'type': 'send.game.over',
+                            'data': {
+                                'game_id': self.stable_game_id,
 
-                        },
-                    }
-                )
+                            },
+                        }
+                    )
                 # self.game_states.pop(self.stable_game_id, None)
                 try:
                     await self.remove_ended_match(self.user['user_id'], self.stable_game_id)
@@ -202,14 +222,35 @@ class _Game:
         print("-----GAME LOOP OVER-----")
         print(self.game_states.get(self.stable_game_id, {}).get('game_loop_task'))
         self.game_states[self.stable_game_id]['game_loop_task'] = None
+        # tmp_group_id = 'game_group_%s' % self.stable_game_id
+        # await self.update_stable_game_id_for_group(self.game_group_id, 0)
+        tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+        print("tmp_id")
+        prefixed_value = f"b_{tmp_id}"
+        print(prefixed_value)
         self.game_states.pop(self.stable_game_id, None)
-        self.stable_game_id = 0
+        await self.channel_layer.group_send(
+                prefixed_value,
+                {
+                    'type': 'reset.stable.id'
+                }
+        )
+
+
+
+        # self.stable_game_id = 0
+
+
+
+        print("self.stable_game_id")
+        print(self.stable_game_id)
 
         # self.game_states.get(self.stable_game_id, {}).get('game_loop_task').cancel()
 
 
     async def send_game_scene(self, event):
         print("IN SEND GAME SCENE")
+        print(self.user)
         await self.send(text_data=json.dumps({
             'type': event['data']['response_type'],
             'new_pedal_pos': event['data']['new_pedal_pos']
@@ -243,7 +284,7 @@ class _Game:
 
 
     async def send_ball_update(self, event):
-        print("IN SEND BALL UPDATE")
+        # print("IN SEND BALL UPDATE")
         await self.send(text_data=json.dumps({
             'type': 'ball_update',
             'ball_x': event['data']['ball_x'],
@@ -263,7 +304,7 @@ class _Game:
 
 
     async def send_game_over(self, event):
-        print("IN SEND BALL UPDATE")
+        # print("IN SEND BALL UPDATE")
         await self.send(text_data=json.dumps({
             'type': 'game_over',
             'game_id': event['data']['game_id'],
@@ -275,29 +316,27 @@ class _Game:
         # await self.decrement_joined_players()
         # print("after decrement")
         # print(self.game_states.get(self.game_id, {}).get('joined_players'))
-        if self.game_states.get(self.stable_game_id, {})['player_one'] == event['data']['user_id']:
+        print(self.user['user_id'])
+        if self.stable_game_id not in self.game_states:
+            print("no game")
+            return None
+        if self.game_states.get(self.stable_game_id, {}).get('player_one') == event['data']['user_id']:
             self.game_states[self.stable_game_id]['player_one'] = None
-        elif self.game_states.get(self.stable_game_id, {})['player_two'] == event['data']['user_id']:
+        elif self.game_states.get(self.stable_game_id, {}).get('player_two') == event['data']['user_id']:
             self.game_states[self.stable_game_id]['player_two'] = None
 
-        if (self.game_states.get(self.stable_game_id, {})['player_one'] == None and self.game_states.get(self.stable_game_id, {})['player_two'] == None):
+        if (self.game_states.get(self.stable_game_id, {}).get('player_one') == None and self.game_states.get(self.stable_game_id, {}).get('player_two') == None):
             print("no players left")
             self.game_states[self.stable_game_id]['canceled'] = True
             # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
+        print("self.game_states.get(self.stable_game_id, {}).get('player_one')")
+        print(self.game_states.get(self.stable_game_id, {}).get('player_one'))
+        print("self.game_states.get(self.stable_game_id, {}).get('player_two')")
+        print(self.game_states.get(self.stable_game_id, {}).get('player_two'))
 
-        # await self.set_technical_winner(self.game_id, self.user['user_id'])
 
-        # self.game_states[self.game_id]['canceled'] = True
-        # await self.reset_joined_players()
-        # # await self.init_game_struct()
-        # self.game_states[self.game_id]['game_active'] = False
-
-        # await self.send(text_data=json.dumps({
-        #     'type': 'opponent_disconnected',
-
-        # }))
 
     async def send_request_invites(self, event):
         print("in send_request_invites")
@@ -309,8 +348,12 @@ class _Game:
 
     async def send_request_tourns(self, event):
         print("in send_request_tourns")
+        if event['real_type'] == 'send_request_tourns':
+            type = 'recieve_tourns'
+        elif event['real_type'] == 'request_tourn_his':
+            type = 'recieve_tourn_history'
         await self.send(text_data=json.dumps({
-            'type': 'recieve_tourns',
+            'type': type,
             'matches': event['data'],
 
         }))
@@ -337,6 +380,19 @@ class _Game:
 
         }))
 
+    async def send_chatbot_trigger(self, event):
+        print("in send_chatbot_trigger")
+        await self.send(text_data=json.dumps({
+            'type': 'chatbot_trigger',
+            'data': event['data'],
+
+        }))
+
+    async def reset_stable_id(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'reset_stable_id',
+        }))
+
     async def handle_user_left_game(self):
         print("in handle_user_left_game")
         print("self.game_states.get(self.stable_game_id, {}).get('player_one')")
@@ -348,16 +404,39 @@ class _Game:
         elif self.game_states.get(self.stable_game_id, {})['player_two'] == self.user['user_id']:
             self.game_states[self.stable_game_id]['player_two'] = None
         # await self.decrement_joined_players()
-        await self.channel_layer.group_discard(self.game_group_id, self.channel_name)
         if (self.game_states.get(self.stable_game_id, {})['player_one'] == None and self.game_states.get(self.stable_game_id, {})['player_two'] == None):
             print("no players left")
             self.game_states[self.stable_game_id]['canceled'] = True
             # await self.reset_joined_players()
             # await self.init_game_struct()
             self.game_states[self.stable_game_id]['game_active'] = False
+            tmp_id = self.game_states.get(self.stable_game_id, {}).get('group_id')
+            prefixed_value = f"b_{tmp_id}"
+
+            if self.game_states.get(self.stable_game_id, {}).get('game_loop_task') is None:
+                await self.channel_layer.group_send(
+                    prefixed_value,
+                    {
+                        'type': 'reset.stable.id'
+                    }
+                )
         
+        await self.channel_layer.group_discard(self.game_group_id, self.channel_name)
 
+    async def update_stable_game_id_for_group(self, group_id, new_value):
+        print("in update_stable_game_id_for_group")
+        users_in_group = await self.get_users_in_group(group_id)
+        print("users_in_group")
+        print(users_in_group)
+        for conn in self.connections:
+            if conn['user_id'] in [user['user_id'] for user in users_in_group]:
+                conn['stable_game_id'] = new_value
+                print("conn['user_id']")
+                print(conn['user_id'])
+                print(conn['user_id'])
 
+    async def get_users_in_group(self, group_id):
+        return [conn for conn in self.connections if conn['user_id'] in (channel['user_id'] for channel in self.channels if channel['channel_name'] == group_id)]
 
         # await self.set_technical_winner(self.game_id, self.user['user_id'])
         # await self.channel_layer.group_send(
@@ -441,7 +520,7 @@ class _Game:
             'previous_join': 0,
             'canceled': False,
             'game_loop_task': None,
-            'group_id': None,
+            # 'group_id': None,
         }
         print("self.game_states[self.stable_game_id]")
         print(self.game_states[self.stable_game_id])
@@ -469,14 +548,22 @@ class _Game:
                 'canceled': False,
                 'game_loop_task': None,
                 'group_id': self.game_group_id,
-
             }
 
 
     async def handle_send_init_game(self):
-        if self.stable_game_id == 0:
-            self.stable_game_id = self.game_id
-        elif self.stable_game_id != self.game_id:
+        print("in handle_send_init_game")
+        print("self.stable_game_id")
+        print(self.stable_game_id)
+        print("self.game_id")
+        print(self.game_id)
+        print(type(self.stable_game_id))
+        print(type(self.game_id))
+        if int(self.stable_game_id) == 0:
+            # self.stable_game_id = int(self.game_id)
+            self.stable_game_id = int(self.game_id)
+
+        elif int(self.stable_game_id) != int(self.game_id):
             print("FINISH GAME FIRST")
             await self.channel_layer.send(
                 self.channel_name,
@@ -484,9 +571,9 @@ class _Game:
                     'type': 'send.already.in.game',
                 })
             return None
-        active_game = await self.check_active_games()
+        active_game = await self.check_active_games(self.stable_game_id)
         if active_game:
-            print("active game")
+            print("active game or game is over")
             await self.channel_layer.send(
                 self.channel_name,
                 {
@@ -573,30 +660,17 @@ class _Game:
                 print("START GAME LOOP THREAD=====================")
                 self.game_states[self.stable_game_id]['game_loop_task'] = asyncio.create_task(self.game_loop())
 
-            # if self.game_states.get(self.game_id, {}).get('previous_join') == 0:
-            #     await asyncio.sleep(3)
-            #     asyncio.create_task(self.game_loop())
-            #     print("START GAME LOOP THREAD=====================")
-            #     print("self.game_states.get(self.game_id, {}).get('previous_join')")
-            #     print(self.game_states.get(self.game_id, {}).get('previous_join'))
-            #     self.game_states.get(self.game_id, {})['previous_join'] += 1
-            # else:
-            #     asyncio.create_task(self.game_loop())
-            #     print("game loop already running")
-        # if self.stable_game_id == 0:
-        #     self.stable_game_id = self.game_id
-        # else:
-        #     print("FINISH GAME FIRST")
         print("END OF SEND INIT GAME")
         print("self.game_states.get(self.stable_game_id, {}).get('player_one')")
         print(self.game_states.get(self.stable_game_id, {}).get('player_one'))
         print("self.game_states.get(self.stable_game_id, {}).get('player_two')")
         print(self.game_states.get(self.stable_game_id, {}).get('player_two'))
+        print(self.game_states.get(self.stable_game_id, {}))
 
 
     async def handle_send_ball_update(self):
         await self.calculate_ball_state()
-        print("BALL_UPDATEEEE")
+        # print("BALL_UPDATEEEE")
         await self.channel_layer.group_send(
             self.game_group_id,
             {
@@ -628,14 +702,19 @@ class _Game:
         except Exception as e:
             print(f"Error in handle_send_score: {e}")
 
-    async def handle_send_tourns(self):
-        return_data = await self.get_tourns(self.user['user_id'])
+    async def handle_send_tourns(self, type):
+        if type == 'send_request_tourns':
+            prop = 'active'
+        elif type == 'request_tourn_his':
+            prop = 'finished'
+        return_data = await self.get_tourns(self.user['user_id'], prop)
         print("return_data 0")
         print(return_data[0])
         await self.channel_layer.send(
         self.channel_name,
         {
             'type': 'send.request.tourns',
+            'real_type': type,
             'data': return_data,
         })
 
@@ -652,7 +731,16 @@ class _Game:
         print("in handle_send_join_tournament")
         tourn_id = await self.add_to_tourn(self.user['user_id'], self.invited_id)
         if tourn_id:
-            await self.semiFull(tourn_id)
+            return_data = await self.semiFull(tourn_id)
+            if return_data:
+                print("return_data")
+                print(return_data)
+                await self.channel_layer.send(
+                    self.channel_name,
+                    {
+                        'type': 'send.chatbot.trigger',
+                        'data': return_data,
+                    })
 
     async def handle_send_stats(self):
         return_data = await self.get_stats(self.user['user_id'])
@@ -677,7 +765,7 @@ class _Game:
     
     
     @database_sync_to_async
-    def check_active_games(self):
+    def check_active_games(self, stable_game_id):
         print("in check_active_games")
         print("self.user['user_id']")
         print(self.user['user_id'])
@@ -697,8 +785,14 @@ class _Game:
                 if self.game_states.get(str(game.id), {}).get('player_one') == self.user['user_id'] or self.game_states.get(str(game.id), {}).get('player_two') == self.user['user_id']:
                     print("user already in game")
                 elif self.game_states.get(str(game.id), {}).get('game_active') == True and str(game.id) != str(self.stable_game_id):
+                    print(self.game_states.get(str(game.id), {}).get('game_active'))
                     print("finish current game first!")
+                    print(str(game.id))
+                    print(str(self.stable_game_id))
                     return True
+        game_isinstance = Game.objects.get(id=stable_game_id)
+        if game_isinstance.winnerId != None:
+            return True
         return False
 
 
@@ -797,7 +891,10 @@ class _Game:
 
         total_games = won_games + lost_games + won_tourn_games + lost_tourn_games
 
-        return { 'won_games': won_games + won_tourn_games, 'lost_games': lost_games + lost_tourn_games, 'total_games': total_games }
+        won_tourns = user_instance.tourns.filter(winnerId=user_instance.user_id).count()
+        all_tourns = user_instance.tourns.filter(status='finished').count()
+
+        return { 'won_games': won_games + won_tourn_games, 'lost_games': lost_games + lost_tourn_games, 'total_games': total_games, 'won_tourns': won_tourns, 'all_tourns': all_tourns }
 
     @database_sync_to_async
     def setWinner(self, game_struct):
@@ -847,19 +944,8 @@ class _Game:
         user_two.save()
 
 
-        # if game_struct['host_score'] == game_struct['score_limit']:
-        #     print("game_struct['host_score']")
-        #     game_instance.winnerId = game_instance.hostId
-        #     game_instance.loserId = game_instance.guestId
-        # elif game_struct['guest_score'] == game_struct['score_limit']:
-        #     print("game_struct['guest_score']")
-        #     game_instance.winnerId = game_instance.guestId
-        #     game_instance.loserId = game_instance.hostId
-        # # game_instance.date = timezone.now()
-        # game_instance.date = timezone.localtime(timezone.now())
-        # game_instance.save()
-
         if game_instance.tournId is not None:
+            return_data = []
             print("matchResults tourn")
             tourn_instance = Tournament.objects.get(id=game_instance.tournId)
             tourn_instance.active_matches.remove(game_instance)
@@ -888,8 +974,19 @@ class _Game:
                     user_two.new_matches.add(new_game)
                     user_one.save()
                     user_two.save()
-
+                    game_entry = {
+                        'user_one_str': user_one.name,
+                        'user_two_str': user_two.name,
+                        'user_one_num': user_one.user_id,
+                        'user_two_num': user_two.user_id,
+                        'user_one_alias': user_one.alias,
+                        'user_two_alias': user_two.alias,
+                        'game_id': new_game.id,
+                        'tourn_instance_id': tourn_instance.id
+                    }
                     tourn_instance.save()
+                    return_data.append(game_entry)
+                    return return_data
                 else:
                     tourn_instance.winnerId = game_instance.winnerId
                     tourn_instance.status = "finished"
@@ -898,7 +995,7 @@ class _Game:
     @database_sync_to_async
     def semiFull(self, invited_id):
         print("in semiFull")
-
+        return_data = []
         tourn_instance = Tournament.objects.get(id=invited_id)
         if len(tourn_instance.semiMatch) == 4:
             # print("semiMatch is full")
@@ -932,12 +1029,25 @@ class _Game:
                 user_two.new_matches.add(game_instance)
                 user_one.save()
                 user_two.save()
+                game_entry = {
+                    'user_one_str': user_one.name,
+                    'user_two_str': user_two.name,
+                    'user_one_num': user_one.user_id,
+                    'user_two_num': user_two.user_id,
+                    'user_one_alias': user_one.alias,
+                    'user_two_alias': user_two.alias,
+                    'game_id': game_instance.id,
+                    'tourn_instance_id': tourn_instance.id
+                }
+                return_data.append(game_entry)
 
             tourn_instance.save()
+            return return_data
             print("tourn_instance.active_matches")
             print(tourn_instance.active_matches)
             print("tourn_instance.active_matches")
             print(tourn_instance.active_matches.all())
+
         else:
             print("semiMatch is not full")
 
@@ -1036,11 +1146,11 @@ class _Game:
         return check_host
 
     @database_sync_to_async
-    def get_tourns(self, user_id):
+    def get_tourns(self, user_id, prop):
         print("in get_tourns")
         print(user_id)
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        tourn_instances = user_instance.tourns.filter(status="active")
+        tourn_instances = user_instance.tourns.filter(status=prop)
         print("tourn_instances")
         print(tourn_instances)
 
@@ -1050,8 +1160,11 @@ class _Game:
             # game_sessions = tourns.active_matches.all()
             active_sessions = tourns.active_matches.all()
             passed_sessions = tourns.passed_matches.all()
-            game_sessions = active_sessions.union(passed_sessions)
+            unsorted_game_sessions = active_sessions.union(passed_sessions)
+            game_sessions = sorted(unsorted_game_sessions, key=lambda session: session.id)
             # game_sessions = tourns.active_matches.all()
+            print("game_sessions")
+            print(game_sessions)
 
             unit = []
             tourn_entry = []
@@ -1115,14 +1228,14 @@ class _Game:
     def get_matches(self, user_id):
         print("in GET MATCHES")
         user_instance = MyUser.objects.get(user_id=user_id)  # changed id to user_id
-        game_sessions = user_instance.new_matches.all()
-
+        # game_sessions = user_instance.new_matches.all()
+        game_sessions = user_instance.new_matches.exclude(tournId__isnull=False)
         match_data = []
 
         # Iterate through game_sessions
         for game_session in game_sessions:
             # Extract opponent name and game id
-            print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
+            # print(type(game_session.hostId)) #TEMPORARY FIX FOR TOURNS. REMOVE LATER
             print(game_session.hostId)
             if type(game_session.hostId) == str:
                 if game_session.hostId.isdigit():
@@ -1149,34 +1262,30 @@ class _Game:
                 user_id = user_instance.user_id
                 
             # if game_session.hostId == user_instance.name:
-            print("game_session.id")
-            print(game_session.id)
-            print("host")
-            print(type(host))
-            print(host)
-            print("guest")
-            print(type(guest))
-            print(guest)
-            print("user_id new")
-            print(type(user_id))
-            print(user_id)
+            # print("game_session.id")
+            # print(game_session.id)
+            # print("host")
+            # print(type(host))
+            # print(host)
+            # print("guest")
+            # print(type(guest))
+            # print(guest)
+            # print("user_id new")
+            # print(type(user_id))
+            # print(user_id)
 
             if int(user_id) == int(host):
                 opponent = guest
             else:
                 opponent = host
             game_id = game_session.id
-            print("game_id ivites")
-            print(game_id)
+            # print("game_id ivites")
+            # print(game_id)
 
             opponent_name = MyUser.objects.get(user_id=opponent)
-            # if opponent.isdigit() or type(opponent) == int:
-            #     opponent_name = MyUser.objects.get(user_id=opponent)
-            # else: 
-            #     opponent_name = MyUser.objects.get(name=opponent)
-            # opponent_name = MyUser.objects.get(user_id=opponent.name)
-            print("opponent_name")
-            print(opponent_name.name)
+
+            # print("opponent_name")
+            # print(opponent_name.name)
             # Append data to the match_data list
             match_data.append({
                 'opponent_name': opponent_name.name,

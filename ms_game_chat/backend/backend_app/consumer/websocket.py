@@ -2,7 +2,6 @@ import asyncio
 import json
 from django.http import JsonResponse
 from backend_app.models import MyUser, Chat, Message, Game
-from backend_app import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.utils import timezone
@@ -57,11 +56,11 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
     async def connect(self):
         # token = self.scope['cookies'].get('jwt_token')
         # if not jwt.validateToken(token):
-        #     # print("TOKEN IS NOT VALID")
+        #     print("TOKEN IS NOT VALID")
         #     return
-        # # print("TOKEN IS VALID")
-
+        # print("TOKEN IS VALID")
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        print("USER_ID GOT FROM FRONTEND: ", user_id)
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
@@ -71,95 +70,104 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         await self.accept()
 
     async def disconnect(self, close_code):
+        print('DISCONNECTED')
+        print(self.user)
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
-        if self.game_group_id is not None and self.game_id is not None:
-            # self.game_states[self.game_id]['game_active'] = False
+        if self.game_group_id is not None and self.stable_game_id is not None:
+            if self.stable_game_id not in self.game_states:
+                print("no game")
+                return None
+            if self.game_states.get(self.stable_game_id, {}).get('player_one') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_one'] = None
+            elif self.game_states.get(self.stable_game_id, {}).get('player_two') == self.user['user_id']:
+                self.game_states[self.stable_game_id]['player_two'] = None
 
-            await self.channel_layer.group_send(
-                self.game_group_id,
-                {
-                    'type': 'send.opponent.disconnected',
-                    'data': {
-                        'user_id': self.user['user_id']
+            if (self.game_states.get(self.stable_game_id, {}).get('player_one') == None and self.game_states.get(self.stable_game_id, {}).get('player_two') == None):
+                print("no players left")
+                self.game_states[self.stable_game_id]['canceled'] = True
+                self.game_states[self.stable_game_id]['game_active'] = False
+            # await self.channel_layer.group_send(
+            #     self.game_group_id,
+            #     {
+            #         'type': 'send.opponent.disconnected',
+            #         'data': {
+            #             'user_id': self.user['user_id']
 
-                    },
-                }
-            )
+            #         },
+            #     }
+            # )
 
     async def receive(self, text_data):
-        token = self.scope['cookies'].get('jwt_token')
-        # print("TOKEN: ", token)
-        # if not jwt.validateToken():
-        #     # print("TOKEN IS NOT VALID")
-        #     await self.close()
-        #     return
-        # print("TOKEN IS VALID")
-
         text_data_json = json.loads(text_data)
-        what_type = text_data_json["type"]
-
-        # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_request_tourns', 'send_join_tournament', 'send_stats', 'send_history', 'user_left_game', 'request_score']:
-            await self.controlGameRequests(text_data_json, what_type)
+        logicType = text_data_json["logicType"]
+        if logicType == 'game':
+            await self.controlGameRequests(text_data_json)
+        elif logicType == 'chat':
+            await self.controlChatRequests(text_data_json)
         else:
-            chat_id = text_data_json["data"]["chat_id"]
-            self.my_group_id = 'group_%s' % chat_id
-            #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
-            await self.channel_layer.group_add(self.my_group_id, self.channel_name)
-            if what_type == 'save_message_in_db':
-                await self.handle_save_message_in_db(text_data_json)
-            elif what_type == 'send_chat_messages':
-                await self.handle_send_chat_messages(text_data_json)
-            elif what_type == 'send_online_stats':
-                await self.handle_send_online_stats()
-            elif what_type == 'send_user_in_current_chat':
-                await self.handle_send_user_in_current_chat(chat_id)
-            elif what_type == 'send_current_users_chats':
-                await self.handle_send_current_users_chats(text_data_json)
-            elif what_type == 'get_all_user':
-                await self.handle_send_all_user()
-            elif what_type == 'send_user_left_chat':
-                await self.handle_current_user_left_chat(text_data_json)
-            elif what_type == 'send_created_new_chat':
-                await self.handle_create_new_public_chat(text_data_json)
-            elif what_type == 'send_created_new_private_chat':
-                await self.handle_create_new_private_chat(text_data_json)
-            elif what_type == 'set_invited_user_to_chat':
-                await self.handle_invite_user_to_chat(text_data_json)
-            elif what_type == 'block_user':
-                await self.handle_block_user(text_data_json)
-            elif what_type == 'get_blocked_by_user':
-                await self.handle_get_blocked_by_user(text_data_json)
-            elif what_type == 'get_blocked_user':
-                await self.handle_get_blocked_user(text_data_json)
-            elif what_type == 'unblock_user':
-                await self.handle_unblock_user(text_data_json)
-            elif what_type == 'get_avatar':
-                await self.handle_get_avatar(text_data_json)
-            elif what_type == 'messages_in_chat_read':
-                await self.handle_messages_in_chat_read(text_data_json)
-            elif what_type == 'messages_in_chat_unread':
-                await self.handle_messages_in_chat_unread(text_data_json)
-            elif what_type == 'new_tournament_chatbot':
-                await self.handle_new_tournament_chatbot(text_data_json)
-            elif what_type == 'save_chatbot_message':
-                await self.handle_save_chatbot_message(text_data_json)
-            else:
-                print('IS SOMETHING ELSE')
+            print('IS SOMETHING ELSE')
 
+    async def controlChatRequests(self, text_data_json):
+        chat_id = text_data_json["data"]["chat_id"]
+        self.my_group_id = 'group_%s' % chat_id
+        what_type = text_data_json["type"]
+        #print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
+        await self.channel_layer.group_add(self.my_group_id, self.channel_name)
+        if what_type == 'save_message_in_db':
+            await self.handle_save_message_in_db(text_data_json)
+        elif what_type == 'send_chat_messages':
+            await self.handle_send_chat_messages(text_data_json)
+        elif what_type == 'send_online_stats':
+            await self.handle_send_online_stats()
+        elif what_type == 'send_user_in_current_chat':
+            await self.handle_send_user_in_current_chat(chat_id)
+        elif what_type == 'send_current_users_chats':
+            await self.handle_send_current_users_chats(text_data_json)
+        elif what_type == 'get_all_user':
+            await self.handle_send_all_user()
+        elif what_type == 'send_user_left_chat':
+            await self.handle_current_user_left_chat(text_data_json)
+        elif what_type == 'send_created_new_chat':
+            await self.handle_create_new_public_chat(text_data_json)
+        elif what_type == 'send_created_new_private_chat':
+            await self.handle_create_new_private_chat(text_data_json)
+        elif what_type == 'set_invited_user_to_chat':
+            await self.handle_invite_user_to_chat(text_data_json)
+        elif what_type == 'block_user':
+            await self.handle_block_user(text_data_json)
+        elif what_type == 'get_blocked_by_user':
+            await self.handle_get_blocked_by_user(text_data_json)
+        elif what_type == 'get_blocked_user':
+            await self.handle_get_blocked_user(text_data_json)
+        elif what_type == 'unblock_user':
+            await self.handle_unblock_user(text_data_json)
+        elif what_type == 'get_avatar':
+            await self.handle_get_avatar(text_data_json)
+        elif what_type == 'messages_in_chat_read':
+            await self.handle_messages_in_chat_read(text_data_json)
+        elif what_type == 'messages_in_chat_unread':
+            await self.handle_messages_in_chat_unread(text_data_json)
+        elif what_type == 'new_tournament_chatbot':
+            await self.handle_new_tournament_chatbot(text_data_json)
+        elif what_type == 'save_chatbot_message':
+            await self.handle_save_chatbot_message(text_data_json)
+        elif what_type == 'inform_chatbot_new_game':
+            await self.handle_inform_chatbot_new_game(text_data_json)
+        elif what_type == 'send_chatbot_message_new_game':
+            await self.handle_send_chatbot_message_new_game(text_data_json)
 
-    async def controlGameRequests(self, text_data_json, what_type):
+    async def controlGameRequests(self, text_data_json):
+        what_type = text_data_json["type"]
         print("IN GAME REQUESTS+")
         print(what_type)
         game_id = text_data_json["data"]["game_id"]
         print(type(game_id))
         print(game_id)
-        if int(game_id) != 0:
-            print('creating group')
-            self.game_group_id = 'group_%s' % game_id
-        else:
-            self.game_group_id = None
+
+        self.game_group_id = 'game_group_%s' % game_id
+        self.b_game_group_id = 'b_game_group_%s' % game_id
+
 
         if self.game_group_id:
             print(self.game_group_id)
@@ -167,8 +175,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             self.game_group_id,
             self.channel_name
             )
+            await self.channel_layer.group_add(
+            self.b_game_group_id,
+            self.channel_name
+            )
         else:
             print('NO GAME GROUP ID')
+
+            
         print(self.user)
         print('______________\n')
 
@@ -186,8 +200,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
             # self.game_id = game_id
             await self.handle_send_invites()
         elif what_type == 'send_request_tourns':
-            self.game_id = game_id
-            await self.handle_send_tourns()
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         elif what_type == 'send_join_tournament':
             self.invited_id = text_data_json["data"]["invited_id"]
             await self.handle_send_join_tournament()
@@ -196,12 +210,16 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         elif what_type == 'send_history':
             await self.handle_send_history()
         elif what_type == 'user_left_game':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_user_left_game()
         elif what_type == 'request_score':
-            self.game_id = game_id
+            # self.game_id = game_id
             await self.handle_request_score()
-            # await self.send_opponent_disconnected()
+        elif what_type == 'reset_stable_id':
+            self.stable_game_id = 0
+        elif what_type == 'request_tourn_his':
+            # self.game_id = game_id
+            await self.handle_send_tourns(what_type)
         else:
             print('IS SOMETHING ELSE')
 
@@ -211,3 +229,21 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
     def group_exists(self, group_name):
         channel_layer = get_channel_layer()
         return channel_layer.group_exists(group_name)
+
+    def get_and_check_id(self, id):
+        if id is None:
+            print("id is None: ", id)
+            return -1
+        if not isinstance(id, int):
+            print("id is not number: ", id)
+            return -1
+        return id
+
+    def get_and_check_name(self, name):
+        if name is None:
+            return -1
+        if name == 'CHAT_BOT':
+            return name
+        if not name.isalnum():
+            return -1
+        return name

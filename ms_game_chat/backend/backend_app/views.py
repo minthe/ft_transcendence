@@ -8,15 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 from backend_app.models import Game, MyUser, Chat, Message
 
-
 jwt = FT_JWT(settings.JWT_SECRET)
 
-def goToFrontend(request):
-    return render(request, 'goToFrontend.html')
-
-# Create new user:
 # - Endpoint: game/user/
-# - Method:   POST
 # - Payload:  username:string, avatar:string
 @require_POST
 @jwt.token_required
@@ -24,12 +18,7 @@ def createUser(request):
     try:
         jwt_user_id = request.user_id
         if MyUser.objects.filter(user_id=jwt_user_id).exists():
-            print(f"User {jwt_user_id} already exists")
             return JsonResponse({'message': 'User already exists'}, status=409)
-        if jwt_user_id == 1:
-            delete_later = "USER ID 1 SHOULD BE FOR CHATBOT, VALENTIN PLS FIX"
-            print(delete_later)
-            return JsonResponse({'message', delete_later}, status=500)
         data = json.loads(request.body.decode('utf-8'))
         username = data.get('username')
         avatar = data.get('avatar')
@@ -42,7 +31,6 @@ def createUser(request):
         response = createChatWithChatBot(new_user.user_id)
         if response == 'ok':
             return JsonResponse({}, status=200)
-        print(f"FAILED TO CREATE CHAT BOT: {response}")
         raise Exception("Failed to create Chat Bot: ", response)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
@@ -54,9 +42,7 @@ def createChatWithChatBot(user_id):
     try:
         chat_name = 'CHAT_BOT'
         if not MyUser.objects.filter(name=chat_name).exists():
-            delete_later = createChatBot(chat_name)
-            if delete_later != 'ok':
-                JsonResponse({'message': delete_later}, status=499) # delete later, debug
+            createChatBot(chat_name)
         chat_bot_instance = MyUser.objects.get(name=chat_name)
         user_instance = MyUser.objects.get(user_id=user_id)
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True, is_read=False)
@@ -76,26 +62,19 @@ def createChatWithChatBot(user_id):
         chat_instance.messages.add(new_message.id)
         return "ok"
     except ValueError:
-        return "User does not exist 2"
+        return "User does not exist"
     except Exception as e:
         return str(e)
 
-
 def createChatBot(chat_name):
-    if MyUser.objects.filter(user_id=1).exists(): # delete later when chatbot works
-        return "CHATBOT DOES NOT EXIST YET BUT USER ID 1 IS NOT FREE, MARIE & VALENTIN PLS FIX"
     chat_bot = MyUser()
     chat_bot.user_id = 1
     chat_bot.name = chat_name
-    # chat_bot.avatar = f"https://api.dicebear.com/8.x/{settings.AVATAR_STYLE_BOT}/svg?seed=ChatBot"
     chat_bot.avatar = 'https://pics.craiyon.com/2024-02-12/aHmqcreDRDasUbg-rJVcCA.webp'
     chat_bot.alias = chat_name
     chat_bot.save()
-    return "ok"
 
-# Update Avatar:
 # - Endpoint: game/user/avatar/
-# - Method:   PUT
 # - Payload:  avatar:string
 @require_http_methods(["PUT"])
 @jwt.token_required
@@ -114,9 +93,7 @@ def updateAvatar(request):
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'message': e}, status=500)
 
-# Update game alias:
 # - Endpoint: game/user/alias/
-# - Method:   PUT
 # - Payload:  alias:string
 @require_http_methods(["PUT"])
 @jwt.token_required

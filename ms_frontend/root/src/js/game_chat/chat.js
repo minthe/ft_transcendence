@@ -468,7 +468,7 @@ async function challengeUserClicked() {
     displayError(data.error);
     }
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    // console.error('Error fetching user data:', error);
     displayError('Error fetching user data');
   }
 }

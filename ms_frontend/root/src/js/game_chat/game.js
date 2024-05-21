@@ -97,7 +97,6 @@ async function joinGame(gameId) {
     console.log('websocket_obj.game.active_state: ', websocket_obj.game.active_state);
     // if (websocket_obj.game.active_state == false)
     // {
-    console.log('In joinGame');
     websocket_obj.game.game_id = gameId;
     await sendDataToBackend('init_game');
     websocket_obj.game.active_state = true;
@@ -186,8 +185,17 @@ async function requestInvites() {
 }
 
 
+// async function requestTournHis() {
+//     console.log('In requestTournHis');
+//     // if (userState.currPage !== 'tournPage') {
+//     //   document.getElementById("start-screen").classList.add("hidden");
+//     //   document.getElementById("tournInvitesScreen").classList.remove("hidden");
+//     // }
+
+//     await sendDataToBackend('request_tourn_history');
+//   }
+
 async function requestTourns() {
-  console.log('In requestTourns');
   if (userState.currPage !== 'tournPage') {
     document.getElementById("start-screen").classList.add("hidden");
     document.getElementById("tournInvitesScreen").classList.remove("hidden");
@@ -208,29 +216,18 @@ async function generateFrontendRepresentation(data) {
 
 
 async function renderInvites() {
-  // console.log(websocket_obj.game);
+  const matches = websocket_obj.game.invites;
+  const container = document.getElementById('game-session-container');
 
-  if (websocket_obj.game.invites != 0)
-  {
-    // const htmlContent = await response.text();
-
-    // const container = document.getElementById('game-session-container');
-    // container.innerHTML = htmlContent;
-    // websocket_obj.game.active_game = false;
-    const username = websocket_obj.username;
-    const matches = websocket_obj.game.invites;
-    console.log(matches);
-    const container = document.getElementById('game-session-container');
-
-    container.innerHTML = generateHTMLContentInv(matches);
+  container.innerHTML = generateHTMLContentInv(matches);
+  if (websocket_obj.game.invites != 0) {
 
     container.querySelectorAll('.join-game-btn').forEach(button => {
-      // let userName = '';
-      button.addEventListener('click', async function() {
+    button.addEventListener('click', async function() {
 
-        const gameId = this.getAttribute('data-gameid');
+      const gameId = this.getAttribute('data-gameid');
 
-          joinGame(gameId); // Call your function with gameId
+        joinGame(gameId); // Call your function with gameId
       });
     });
   }
@@ -238,7 +235,7 @@ async function renderInvites() {
 
 function generateHTMLContentInv(matches) {
   let htmlContent = '';
-  console.log('length of matches : ', matches.length);
+
   if (matches.length > 0) {
     htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
     matches.forEach(match => {
@@ -295,7 +292,7 @@ async function sendGameInvitation() {
     displayError(data.error);
     }
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    // console.error('Error fetching user data:', error);
     displayError('Error fetching user data');
   }
 }
@@ -335,7 +332,7 @@ try {
   displayError(data.error);
   }
 } catch (error) {
-  console.error('Error fetching user data:', error);
+  // console.error('Error fetching user data:', error);
   displayError('Error fetching user data');
 }
 
@@ -539,11 +536,17 @@ function gameOver(data) {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  console.log("GAME_OVER");
-  console.log(websocket_obj.game.game_id);
-  console.log(data.game_id);
-  if (websocket_obj.game.game_id === data.game_id)
-    activateFireworks();
+  // if (websocket_obj.game.game_id === data.game_id) {
+  //   activateFireworks();
+
+  //   // setTimeout(function() {
+  //   //   stopFirework();
+      
+  //   //   }, 4400);
+  // }
+  activateFireworks();
+  // stopFirework();
+
   
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');
@@ -560,22 +563,8 @@ function gameOver(data) {
   updateScore();
 }
 
-// guest_id
-// : 
-// "jkroger"
-// host_id
-// : 
-// "julien"
-// is_host
-// : 
-// "False"
-// is_tourn
-// : 
-// "False"
-
 
 async function initGame(data) {
-  console.log(data);
   document.getElementById("waitingScreen").style.display = "block";
   if (data.is_tourn === "True") {
     document.getElementById('playerOne').textContent = data.alias_one;
@@ -593,5 +582,4 @@ async function initGame(data) {
     websocket_obj.game.is_host = true
   else
     websocket_obj.game.is_host = false
-  // websocket_obj.game.game_joined = true;
 }

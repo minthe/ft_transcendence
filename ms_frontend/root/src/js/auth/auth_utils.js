@@ -2,22 +2,12 @@
 function initUserData(data, username) {
 	showDiv('userIsAuth')
 	hideDiv('userIsNotAuth')
-
 	websocket_obj.username = username
-
-
-	console.log('INIT USER DATA: USER_ID: ', data.user_id)
 	websocket_obj.user_id = data.user_id
-
-
   document.getElementById('profileName').textContent = websocket_obj.username;
-  // if (!websocket_obj.game_alias)
-
-  // document.getElementById('gameAlias').value = websocket_obj.username;
-
-  // document.getElementById("profilePicture").src = websocket_obj.profile_picture;
-
 }
+
+//test
 
 async function authSucces() {
   showDiv('showUserProfile')
@@ -57,7 +47,10 @@ function setUpTwoFaPage() {
 }
 
 function setDownTwoFaPage() {
-  document.getElementById('loginHeader').classList.remove('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-  document.getElementById('twoFA').classList.add('hidden');
+  if (document.getElementById('loginHeader'))
+   document.getElementById('loginHeader').classList.remove('hidden');
+  if (document.getElementById('loginPage'))
+   document.getElementById('loginPage').classList.remove('hidden');
+  if (document.getElementById('twoFA'))
+   document.getElementById('twoFA').classList.add('hidden');
 }

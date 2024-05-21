@@ -76,11 +76,24 @@ websocket_obj = {
   user_id: null,
   game_stats: null,
   history: null,
-  tourns: []
+  tourn_history: null,
+  tourns: [],
+  chatbot: [
+    {
+      game_type: null,
+      user_one_name: null,
+      user_one_id: null,
+      user_two_name: null,
+      user_two_id: null,
+      user_three_name: null,
+      user_three_id: null,
+      user_four_name: null,
+      user_four_id: null,
+    }
+  ]
 }
 async function establishWebsocketConnection() {
   websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
-  console.log('what is in web: ', websocket_obj.websocket);
   websocket_obj.websocket.onopen = function () {
     sendDataToBackend('get_all_user')
     sendDataToBackend('get_avatar')
@@ -140,21 +153,16 @@ async function establishWebsocketConnection() {
         }
         break
       case 'render_left':
-        // var canvas = document.getElementById("pongCanvas");
-        // websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+
         websocket_obj.game.left_pedal = data.new_pedal_pos
         console.log("new left_pedal: ", websocket_obj.game.left_pedal);
         await update();
-        // await renderGame()
         break
       case 'render_right':
         console.log("RENDER_RIGHT");
-        // var canvas = document.getElementById("pongCanvas");
+        console.log(data.new_pedal_pos);
         websocket_obj.game.right_pedal = data.new_pedal_pos
-        // websocket_obj.game.right_pedal = data.new_pedal_pos
-        console.log("new right_pedal: ", websocket_obj.game.right_pedal);
         await update();
-        // await renderGame()
         break
       case 'init_game':
         console.log(data);
@@ -167,7 +175,7 @@ async function establishWebsocketConnection() {
         console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
-        sendDataToBackend('request_score')
+        // sendDataToBackend('request_score')
         // startCountdownAnimation();
         break
       case 'ball_update':
@@ -175,10 +183,6 @@ async function establishWebsocketConnection() {
         // websocket_obj.game.ball_x = data.ball_x
         const canvas = document.getElementById("pongCanvas");
         websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
-        // console.log("ball_x: ", websocket_obj.game.ball_x)
-        // console.log("data.ball_x: ", data.ball_x)
-        // console.log("data.ball_y: ", data.ball_y)
-        // // websocket_obj.game.ball_y = data.ball_y
         websocket_obj.game.ball_y = data.ball_y * canvas.height / 2;
         // console.log("ball_y: ", websocket_obj.game.ball_y);
         await update();
@@ -195,13 +199,34 @@ async function establishWebsocketConnection() {
         console.log("GAME OVER");
         gameOver(data);
         break
+      case 'reset_stable_id':
+        console.log("RESET STABLE ID");
+        websocket_obj.game.active_state = false
+        sendDataToBackend('reset_stable_id')
+        break
       case 'opponent_disconnected':
         console.log("YOUR APPONENT LEFT THE GAME");
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
         await updateScore();
-        break  
+        break
+      case 'chatbot_trigger':
+        websocket_obj.chatbot.user_one_name = data.data[0].user_one_str
+        websocket_obj.chatbot.user_one_id = data.data[0].user_one_num
+        websocket_obj.chatbot.user_two_name = data.data[0].user_two_str
+        websocket_obj.chatbot.user_two_id = data.data[0].user_two_num
+        if (data.data.length == 1) {
+          websocket_obj.chatbot.game_type = 'final'
+        } else if (data.data.length == 2) {
+          websocket_obj.chatbot.game_type = 'semi_final'
+          websocket_obj.chatbot.user_three_name = data.data[1].user_one_str
+          websocket_obj.chatbot.user_three_id = data.data[1].user_one_num
+          websocket_obj.chatbot.user_four_name = data.data[1].user_two_str
+          websocket_obj.chatbot.user_four_id = data.data[1].user_two_num
+        }
+        await sendDataToBackend('inform_chatbot_new_game')
+        break
       case 'blocked_user_info':
         await sendDataToBackend('get_blocked_by_user')
         await sendDataToBackend('get_blocked_user')
@@ -247,28 +272,32 @@ async function establishWebsocketConnection() {
       case 'recieve_tourns':
         console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
-        // websocket_obj.game.invites = data.matches
         console.log('DATA: ', websocket_obj.game.invites)
-        // console.log('DATA: ', websocket_obj.game.invites[0])
-        // console.log('DATA: ', websocket_obj.game.invites[0][1])
-        // console.log('DATA: ', websocket_obj.game.invites[0][0])
-        // generateFrontendRepresentation(websocket_obj.game.invites)
         if (userState.currPage !== 'tournPage')
           renderTourns();
         else
           joinTourn(userState.tournId, websocket_obj.game.invites);
         // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
+      case 'recieve_tourn_history':
+        websocket_obj.tourn_history = JSON.parse(data.matches)
+        console.log('DATA tourn history: ', data.matches)
+        displayTournHistory();
+        // if (userState.currPage !== 'tournPage')
+        //   renderTourns();
+        // else
+        //   joinTourn(userState.tournId, websocket_obj.game.invites);
+        // console.log('DATA: ', websocket_obj.game.invites[1][1])
+        break
       case 'recieve_stats':
         console.log('recieve_stats')
-        console.log(data)
+        console.log(data);
         websocket_obj.game_stats = data.stats;
         displayStats();
         // getUserStats(data.stats);
         break
       case 'recieve_history':
         console.log('recieve_history')
-        console.log(data)
         websocket_obj.history = data.history;
         displayHistory();
         break
@@ -284,6 +313,12 @@ async function establishWebsocketConnection() {
       case 'already_in_game':
         console.log('already_in_game')
         requestInvites()
+        break
+      case 'inform_chatbot_new_game':
+        if (await user_got_invited(data.data)) {
+          websocket_obj.chatbot = data.data
+          await sendDataToBackend('send_chatbot_message_new_game')
+        }
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -311,10 +346,12 @@ async function sendDataToBackend(request_type) {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
       let type = 'none'
       let data = 'none'
+      let logicType = 'none'
 
       switch (request_type) {
         case 'send_chat_message':
-          type = 'save_message_in_db'
+          type = 'save_message_in_db',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -323,42 +360,48 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'get_chat_messages':
-          type = 'send_chat_messages'
+          type = 'send_chat_messages',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'get_online_stats':
-          type = 'send_online_stats'
+          type = 'send_online_stats',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'get_user_in_current_chat':
-          type = 'send_user_in_current_chat'
+          type = 'send_user_in_current_chat',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'get_current_users_chats':
-          type = 'send_current_users_chats'
+          type = 'send_current_users_chats',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'set_user_left_chat':
-          type = 'send_user_left_chat'
+          type = 'send_user_left_chat',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'set_new_chat':
-          type = 'send_created_new_chat'
+          type = 'send_created_new_chat',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -367,7 +410,8 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'set_new_private_chat':
-          type = 'send_created_new_private_chat'
+          type = 'send_created_new_private_chat',
+          logicType = 'chat'
             data = {
               'user_id': websocket_obj.user_id,
               'chat_id': websocket_obj.chat_id,
@@ -375,7 +419,8 @@ async function sendDataToBackend(request_type) {
             }
           break
         case 'set_invited_user_to_chat':
-          type = 'set_invited_user_to_chat'
+          type = 'set_invited_user_to_chat',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -386,7 +431,7 @@ async function sendDataToBackend(request_type) {
           // const canvas = document.getElementById("pongCanvas");
           console.log("in game_new_move");
           console.log(websocket_obj.game.is_host);
-          // prev_pos =  websocket_obj.game.left_pedal;
+        //   prev_pos =  websocket_obj.game.left_pedal;
           if (websocket_obj.game.is_host === true)
             pedal_pos = websocket_obj.game.left_pedal
           else
@@ -394,8 +439,9 @@ async function sendDataToBackend(request_type) {
           // console.log(prev_pos);
 
           // pedal_pos = pedal_pos * 2 / canvas.height;
-          console.log("pedal_pos: ", pedal_pos);
+          // console.log("pedal_pos: ", pedal_pos);
           type = 'send_game_scene'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             // 'chat_id': websocket_obj.chat_id,
@@ -407,7 +453,8 @@ async function sendDataToBackend(request_type) {
           break
         case 'init_game':
           console.log("in init_game");
-          type = 'send_init_game'
+          type = 'send_init_game',
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             // 'chat_id': websocket_obj.chat_id,
@@ -415,7 +462,8 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'send_ball_update':
-          type = 'send_ball_update'
+          type = 'send_ball_update',
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             // 'chat_id': websocket_obj.chat_id,
@@ -423,7 +471,8 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'block_user':
-          type = 'block_user'
+          type = 'block_user',
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -432,6 +481,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'unblock_user':
           type = 'unblock_user'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -440,6 +490,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_blocked_by_user':
           type = 'get_blocked_by_user'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -447,6 +498,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_blocked_user':
           type = 'get_blocked_user'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -454,6 +506,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_all_user':
           type = 'get_all_user'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -461,6 +514,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_avatar':
           type = 'get_avatar'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -469,6 +523,7 @@ async function sendDataToBackend(request_type) {
         case 'request_invites':
           console.log('request_invites')
           type = 'send_request_invites'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
@@ -479,6 +534,7 @@ async function sendDataToBackend(request_type) {
           console.log('join_tournamentttttttt')
           console.log(websocket_obj.user_id)
           type = 'send_join_tournament'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'invited_id': websocket_obj.invited_id,
@@ -489,14 +545,24 @@ async function sendDataToBackend(request_type) {
           console.log('request_tournssss')
           console.log(websocket_obj.user_id)
           type = 'send_request_tourns'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-          //   'invited_id': websocket_obj.invited_id,
             'game_id': 0,
           }
           break
+        case 'request_tourn_history':
+          console.log('request_tourn_his')
+          console.log(websocket_obj.user_id)
+          type = 'request_tourn_his'
+          logicType = 'game'
+          data = {
+              'user_id': websocket_obj.user_id,
+              'game_id': 0,
+          }
+          break
         // case 'new_profile_picture':
-        //   type = 'new_profile_picture'
+        //   type = 'new_profile_picture',
         //   data = {
         //     'profile_picture': websocket_obj.profile_picture,
         //     'file_data': websocket_obj.file_data,
@@ -504,6 +570,7 @@ async function sendDataToBackend(request_type) {
         //   break
         case 'request_stats':
           type = 'send_stats'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
@@ -511,6 +578,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'request_history':
           type = 'send_history'
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
@@ -518,6 +586,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'messages_in_chat_read':
           type = 'messages_in_chat_read'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -525,6 +594,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'messages_in_chat_unread':
           type = 'messages_in_chat_unread'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -532,6 +602,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'inform_chatbot':
           type = 'new_tournament_chatbot'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -541,6 +612,7 @@ async function sendDataToBackend(request_type) {
           break
         case 'save_chatbot_message':
           type = 'save_chatbot_message'
+          logicType = 'chat'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -549,7 +621,8 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'user_left_game':
-          type = 'user_left_game'
+          type = 'user_left_game',
+          logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': websocket_obj.game.game_id,
@@ -562,11 +635,53 @@ async function sendDataToBackend(request_type) {
           break
         case 'request_score':
           type = 'request_score'
+          logicType = 'game'
           console.log('request_score')
           console.log(websocket_obj.game.active_state)
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': websocket_obj.game.game_id,
+          }
+          break
+        case 'reset_stable_id':
+          type = 'reset_stable_id'
+          logicType = 'game'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 0,
+          }
+          break
+        case 'inform_chatbot_new_game':
+          type = 'inform_chatbot_new_game'
+          logicType = 'chat'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'game_type': websocket_obj.chatbot.game_type,
+            'user_one_name': websocket_obj.chatbot.user_one_name,
+            'user_one_id': websocket_obj.chatbot.user_one_id,
+            'user_two_name': websocket_obj.chatbot.user_two_name,
+            'user_two_id': websocket_obj.chatbot.user_two_id,
+            'user_three_name': websocket_obj.chatbot.user_three_name,
+            'user_three_id': websocket_obj.chatbot.user_three_id,
+            'user_four_name': websocket_obj.chatbot.user_four_name,
+            'user_four_id': websocket_obj.chatbot.user_four_id,          }
+          break
+        case 'send_chatbot_message_new_game':
+          type = 'send_chatbot_message_new_game'
+          logicType = 'chat'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'game_type': websocket_obj.chatbot.game_type,
+            'user_one_name': websocket_obj.chatbot.user_one_name,
+            'user_one_id': websocket_obj.chatbot.user_one_id,
+            'user_two_name': websocket_obj.chatbot.user_two_name,
+            'user_two_id': websocket_obj.chatbot.user_two_id,
+            'user_three_name': websocket_obj.chatbot.user_three_name,
+            'user_three_id': websocket_obj.chatbot.user_three_id,
+            'user_four_name': websocket_obj.chatbot.user_four_name,
+            'user_four_id': websocket_obj.chatbot.user_four_id,
           }
           break
         default:
@@ -576,13 +691,28 @@ async function sendDataToBackend(request_type) {
       websocket_obj.websocket.send(JSON.stringify({
         'status': 'ok',
         'type': type,
+        'logicType': logicType,
         'data': data
       }));
       websocket_obj.websocket.addEventListener('error', sendError);
       resolve() // WITHOUT this we don't return to prev functions!!
-    } else {
+    }
+    else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));
     }
   });
+}
+
+
+async function user_got_invited(data) {
+  if (websocket_obj.user_id == data.user_one_id || websocket_obj.user_id == data.user_two_id) {
+    return true
+  }
+  if (data.game_type == 'semi_final') {
+    if (websocket_obj.user_id == data.user_three_id || websocket_obj.user_id == data.user_four_id) {
+      return true
+    }
+  }
+  return false
 }

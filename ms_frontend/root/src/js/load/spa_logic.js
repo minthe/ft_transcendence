@@ -1,3 +1,6 @@
+
+let logedOutSpaCount = 0;
+
 let userState = { 
   bodyText: "<div id=userIsNotAuth></div>",
   currPage: null,
@@ -35,7 +38,6 @@ function handleButtonClick(url) {
 
 
 
-// Tell your browser to give you old state and re-render on back
 window.onpopstate = async function (event) {
   console.log('onpopstate triggered')
 
@@ -61,23 +63,23 @@ window.onpopstate = async function (event) {
   fetch(url)
     .then(async response => {
       if (!response.ok) {
+        const data = await response.json()
+       
         location.reload();
-        throw new Error('Token could not be deleted!');
+        throw new Error(data.message);
       }
       updatePage();
     })
     .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
+      // console.error('There was a problem showing the page:', error);
     });
 };
 
 function showSiteHideOthersSpa(site_to_show) {
-  console.log(site_to_show);
-
   if (userState.currPage === site_to_show)
     return ;
 
-  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];//gameSiteStart, gameSiteInvite, gameSitePlay, gameSiteEnd
+  const sites = ['gameSite', 'statsSite', 'homeSite', 'chat', 'profileSite', 'creatorsSite'];
   sites.forEach(site => {
     if (site === site_to_show) showDiv(site)
     else hideDiv(site)
@@ -86,7 +88,6 @@ function showSiteHideOthersSpa(site_to_show) {
 }
 
 async function handleClickEvent(event) {
-  // console.log(event);
   const url = `${window.location.origin}/user/token/existence`
 
   if (event.target.closest('#loginUserButton'))
@@ -100,6 +101,19 @@ async function handleClickEvent(event) {
   else if (event.target.closest('#login42Button'))
     openAuthPopup();
   
+  else if (event.target.closest('#infoButton')) {
+    document.getElementById('infoButton').classList.add('hidden');
+    document.getElementById('passwordInfo').classList.remove('hidden');
+
+    setTimeout(() => {
+      document.getElementById('infoButton').classList.remove('hidden');
+      document.getElementById('passwordInfo').classList.add('hidden');
+    }, 5000);
+  }
+
+  if (document.getElementById('userIsAuth').classList.contains('hidden'))
+    return ;
+  
   fetch(url, {
     method: 'GET',
     headers: {
@@ -110,15 +124,15 @@ async function handleClickEvent(event) {
 	.then(async response => {
     if (!response.ok) {
       await logoutUser();
+      const data = await response.json();
 			userState.bodyText = document.body.innerHTML;
 			// userState.currPage = "homeSite";
 			userState.chatObj = {};
 			userState.chatOpen = false;
 			userState.userName = null;
-			console.log('reload not success');
-			throw new Error(response.message);
+			throw new Error(data.message);
 		}
-    
+    // changeToProfile();
     
     if (event.target.closest('#homeButton'))
       showSiteHideOthers('homeSite', 'homeButton');
@@ -182,14 +196,18 @@ async function handleClickEvent(event) {
     else if (event.target.closest('#twoFAButtonD'))
       updateTwoFactor('DELETE');
     
-    else if (event.target.closest('#userStatsBtn'))
+    else if (event.target.closest('#userStatsBtn') || event.target.closest('#userStatsBtnTwo'))
       statsBtnClicked();
-    else if (event.target.closest('#userHistoryBtn'))
+    else if (event.target.closest('#userHistoryBtn') || event.target.closest('#userHistoryBtnTwo'))
       historyBtnClicked();
-    
+
+    else if (event.target.closest('#tournHistoryBtn') || event.target.closest('#tournHistoryBtnTwo')) {
+      tournHistoryBtnClicked();
+    }
+
   })
 	.catch(error => {
-    console.log('Error during login:', error);
+    // console.error('Error during login:', error);
 	});
   
   
@@ -198,7 +216,6 @@ async function handleClickEvent(event) {
 }
 
 
-let logedOutSpaCount = 0;
 
 function spaNotLogedIn(site_to_show) {
   logedOutSpaCount++;

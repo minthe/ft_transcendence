@@ -73,8 +73,8 @@ def register(request):
 			}
 			game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 			encoded_data = json.dumps(game_chat_data).encode("utf-8")
-
-			print(f"request_to_game_chat url: {game_chat_request_url}")
+			if settings.DEBUG == "True":
+				print(f"request_to_game_chat url: {game_chat_request_url}")
 			game_chat_request = Request(game_chat_request_url, method='POST', data=encoded_data, headers=game_chat_headers)
 			game_chat_response = urlopen(game_chat_request)
 			if game_chat_response.getcode() == 200:
@@ -95,7 +95,8 @@ def register(request):
 				return JsonResponse({'message': "Failed to create user in game chat"}, status=500)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_register: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST", "GET"])
@@ -105,6 +106,7 @@ def login(request):
 	API Endpoint: /user/login
 	'''
 	try:
+		intra_status = 200
 		if request.method == "POST":
 			data =json.loads(request.body)
 			username = data.get('username')
@@ -138,6 +140,10 @@ def login(request):
 		elif request.method == "GET":
 			jwt_token = request.COOKIES.get('jwt_token')
 			id_cookie = request.COOKIES.get('id')
+			intra_status = get_secret(id_cookie, 'intra_status')
+			if settings.DEBUG == "True":
+				print (intra_status)
+				print (id_cookie)
 			if jwt_token and jwt.validateToken(jwt_token):
 				user_id = jwt.getUserId(jwt_token)
 				username = user_views.getValue(user_id, 'username')
@@ -172,10 +178,15 @@ def login(request):
 				response.status_code = 200
 				return response
 			else:
+				if intra_status == 400:
+					return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 				return JsonResponse({'message': 'Unauthorized'}, status=401)
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_login: {error_message}")
+		if intra_status == 400:
+			return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST"])
@@ -199,7 +210,8 @@ def logout(request):
 		return response
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_logout: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 # ----------- OAUTH2 -----------
@@ -212,28 +224,27 @@ def oauth2_login(request):
 	'''
 	try:
 		data = {
-			"client_id": settings.CLIENT_ID,
-			"redirect_uri": settings.REDIRECT_URI,
-			"scope": settings.INTRA_SCOPE,
-			"state": settings.INTRA_STATE,
-			"response_type": "code"
+			'client_id': settings.CLIENT_ID,
+			'redirect_uri': settings.REDIRECT_URI,
+			'scope': settings.INTRA_SCOPE,
+			'response_type': 'code'
 		}
 		return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_oauth2_login: {error_message}")
 		return JsonResponse({'message': error_message}, status=500)
 
 def oauth2_redirect(request):
 	try:
 		with transaction.atomic():
-			if request.GET.get('state') != settings.INTRA_STATE:
-				return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
-
+			id_hash = get_random_string(length=12)
 			access_token = oauth2_views.getToken(request)
 
-
 			user_data = intra42_views.getUserData(access_token)
+			if not user_data:
+				raise Exception("Failed to get user data")
 
 			if settings.GET_INTRA_USERS_LIST == "True" and user_data['username'] == "vfuhlenb":
 				intra42_views.getIntraUsersList(access_token)
@@ -261,12 +272,13 @@ def oauth2_redirect(request):
 				}
 				game_chat_request_url = f"{settings.MS_GAME_CHAT}/game/user"
 				encoded_data = json.dumps(game_chat_data).encode("utf-8")
-
-				# print(f"request_to_game_chat url: {game_chat_request_url}")
+				if settings.DEBUG == "True":
+					print(f"request_to_game_chat url: {game_chat_request_url}")
 				game_chat_request = Request(game_chat_request_url, method='POST', data=encoded_data, headers=game_chat_headers)
 				game_chat_response = urlopen(game_chat_request)
 				if game_chat_response.getcode() == 200:
 					response = HttpResponse(status=200)
+					response.set_cookie('id',id_hash, httponly=True, expires=300)
 					response.set_cookie('jwt_token', jwt_token, httponly=True)
 					return response
 				elif game_chat_response.getcode() == 409:
@@ -279,9 +291,7 @@ def oauth2_redirect(request):
 
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
-				id_hash = get_random_string(length=12)
 				store_secret(id_hash, access_token, 'oauth2_token')
-				print (f"token: {access_token}")
 				# second_factor_views.create_2fa(user_id)
 				response = HttpResponse(status=200)
 				response.set_cookie('id',id_hash, httponly=True, expires=300)
@@ -290,9 +300,14 @@ def oauth2_redirect(request):
 			jwt_token = jwt.createToken(user_id)
 
 			response = HttpResponse(status=200)
+			response.set_cookie('id',id_hash, httponly=True, expires=300)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
 			return response
 	except Exception as e:
 		error_message = str(e)
-		print(f"An error occurred: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
+		if settings.DEBUG == "True":
+			print(f"An error occurred in api_oauth2_redirect: {error_message}")
+		store_secret(id_hash, 400, 'intra_status')
+		response = HttpResponse(status=400)
+		response.set_cookie('id',id_hash, httponly=True, expires=300)
+		return response

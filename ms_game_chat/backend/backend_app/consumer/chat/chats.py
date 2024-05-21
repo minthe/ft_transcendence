@@ -9,8 +9,8 @@ class _Chat:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
 
     async def handle_send_current_users_chats(self, text_data_json):
-        chat_id = text_data_json["data"]["chat_id"]
-        user_id = text_data_json["data"]["user_id"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         users_chats = await self.get_users_chats(user_id)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -18,15 +18,15 @@ class _Chat:
                 'type': 'send.current.users.chats',
                 'data': {
                     'user_id': user_id,
-                    'chat_id': chat_id,
                     'users_chats': users_chats,
                 },
             }
         )
 
     async def handle_create_new_public_chat(self, text_data_json):
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         chat_name = text_data_json["data"]["chat_name"]
-        user_id = text_data_json["data"]["user_id"]
         is_private = text_data_json["data"]["isPrivate"]
         info = await self.createChat(user_id, chat_name, is_private)
         await self.send(text_data=json.dumps({
@@ -38,7 +38,8 @@ class _Chat:
     async def handle_create_new_private_chat(self, text_data_json):
         # chat_name IS the others users name!!
         chat_name = text_data_json["data"]["chat_name"]
-        user_id = text_data_json["data"]["user_id"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         info = await self.createPrivateChat(user_id, chat_name)
         others_user_id = await self.get_id_with_name(chat_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
@@ -66,9 +67,10 @@ class _Chat:
         )
 
     async def handle_invite_user_to_chat(self, text_data_json):
-        chat_id = text_data_json["data"]["chat_id"]
-        user_id = text_data_json["data"]["user_id"]
-        invited_user_name = text_data_json["data"]["invited_user_name"]
+        chat_id = self.get_and_check_id(text_data_json["data"]["chat_id"])
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        invited_user_name = self.get_and_check_name(text_data_json["data"]["invited_user_name"])
+        if chat_id == -1 or user_id == -1 or invited_user_name == -1: return
         info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
         others_user_id = await self.get_id_with_name(invited_user_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
@@ -96,8 +98,9 @@ class _Chat:
         )
 
     async def handle_block_user(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
-        user_to_block = text_data_json["data"]["user_to_block"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        user_to_block = self.get_and_check_name(text_data_json["data"]["user_to_block"])
+        if user_id == -1 or user_to_block == -1: return
         response = await self.block_user(user_id, user_to_block)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -112,7 +115,8 @@ class _Chat:
         )
 
     async def handle_get_blocked_by_user(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         response = await self.get_blocked_by_user(user_id)
         await self.send(text_data=json.dumps({
             'type': 'blocked_by_user',
@@ -123,8 +127,9 @@ class _Chat:
 
 
     async def handle_unblock_user(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
-        user_to_unblock = text_data_json["data"]["user_to_unblock"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        user_to_unblock = self.get_and_check_name(text_data_json["data"]["user_to_unblock"])
+        if user_id == -1 or user_to_unblock == -1: return
         response = await self.unblock_user(user_id, user_to_unblock)
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -139,7 +144,8 @@ class _Chat:
         )
 
     async def handle_get_blocked_user(self, text_data_json):
-        user_id = text_data_json["data"]["user_id"]
+        user_id = self.get_and_check_id(text_data_json["data"]["user_id"])
+        if user_id == -1: return
         response = await self.get_blocked_user(user_id)
         await self.send(text_data=json.dumps({
             'type': 'blocked_user',
@@ -149,7 +155,10 @@ class _Chat:
         }))
 
     async def handle_new_tournament_chatbot(self, text_data_json):
-        invited_user_id = await self.get_id_with_name(text_data_json["data"]["invited_user_name"])
+        invited_user_name = self.get_and_check_name(text_data_json["data"]["invited_user_name"])
+        current_user_name = self.get_and_check_name(text_data_json["data"]["current_user_name"])
+        if invited_user_name == -1 or current_user_name == -1: return
+        invited_user_id = await self.get_id_with_name(invited_user_name)
         await self.channel_layer.group_send(
             'channel_zer0',
             {
@@ -157,19 +166,121 @@ class _Chat:
                 'data': {
                     'message': 'ok',
                     'user_id': invited_user_id,
-                    'other_user_name': text_data_json["data"]["current_user_name"]
+                    'other_user_name': current_user_name
                 },
             }
         )
 
     async def handle_save_chatbot_message(self, text_data_json):
-        other_user_name = text_data_json["data"]["other_user_name"]
-        current_user_name = text_data_json["data"]["current_user_name"]
-        response_message = await self.create_message_chatbot(other_user_name, current_user_name)
+        other_user_name = self.get_and_check_name(text_data_json["data"]["other_user_name"])
+        current_user_name = self.get_and_check_name(text_data_json["data"]["current_user_name"])
+        if other_user_name == -1 or current_user_name == -1: return
+        message = "Hey, " + other_user_name + " invited you to a tournament! Go to the Game interface to play."
+        response_message = await self.create_message_chatbot(current_user_name, message)
         await self.send(text_data=json.dumps({
             'type': 'message_save_success_bot',
             'message': response_message
         }))
+
+    async def handle_inform_chatbot_new_game(self, text_data_json):
+        if (text_data_json["data"]["game_type"] == 'semi_final'):
+            await self.handle_inform_chatbot_new_game_semifinal(text_data_json)
+        elif (text_data_json["data"]["game_type"] == 'final'):
+            await self.handle_inform_chatbot_new_game_final(text_data_json)
+
+    async def handle_inform_chatbot_new_game_semifinal(self, text_data_json):
+        user_one_id = text_data_json["data"]["user_one_id"]
+        user_one_name = text_data_json["data"]["user_one_name"]
+        user_two_id = text_data_json["data"]["user_two_id"]
+        user_two_name = text_data_json["data"]["user_two_name"]
+        user_three_id = text_data_json["data"]["user_three_id"]
+        user_three_name = text_data_json["data"]["user_three_name"]
+        user_four_id = text_data_json["data"]["user_four_id"]
+        user_four_name = text_data_json["data"]["user_four_name"]
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.inform.chatbot.new.game',
+                'sender': text_data_json["data"]["user_id"],
+                'data': {
+                    'game_type': 'semi_final',
+                    'user_one_id': user_one_id,
+                    'user_one_name': user_one_name,
+                    'user_two_id': user_two_id,
+                    'user_two_name': user_two_name,
+                    'user_three_id': user_three_id,
+                    'user_three_name': user_three_name,
+                    'user_four_id': user_four_id,
+                    'user_four_name': user_four_name,
+                },
+            }
+        )
+
+    async def handle_inform_chatbot_new_game_final(self, text_data_json):
+        user_one_id = text_data_json["data"]["user_one_id"]
+        user_one_name = text_data_json["data"]["user_one_name"]
+        user_two_id = text_data_json["data"]["user_two_id"]
+        user_two_name = text_data_json["data"]["user_two_name"]
+        await self.channel_layer.group_send(
+            'channel_zer0',
+            {
+                'type': 'send.inform.chatbot.new.game',
+                'sender': text_data_json["data"]["user_id"],
+                'data': {
+                    'game_type': 'final',
+                    'user_one_id': user_one_id,
+                    'user_one_name': user_one_name,
+                    'user_two_id': user_two_id,
+                    'user_two_name': user_two_name,
+                },
+            }
+        )
+
+    async def handle_send_chatbot_message_new_game(self, text_data_json):
+        if (text_data_json["data"]["game_type"] == 'semi_final'):
+            await self.handle_send_chatbot_message_new_game_semifinal(text_data_json)
+        elif (text_data_json["data"]["game_type"] == 'final'):
+            await self.handle_send_chatbot_message_new_game_final(text_data_json)
+
+
+    async def handle_send_chatbot_message_new_game_semifinal(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        user_one_id = text_data_json["data"]["user_one_id"]
+        user_two_id = text_data_json["data"]["user_two_id"]
+        user_three_id = text_data_json["data"]["user_three_id"]
+        user_four_id = text_data_json["data"]["user_four_id"]
+        if user_id == user_one_id:
+            opponent = text_data_json["data"]["user_two_name"]
+        elif user_id == user_two_id:
+            opponent = text_data_json["data"]["user_one_name"]
+        elif user_id == user_three_id:
+            opponent = text_data_json["data"]["user_four_name"]
+        elif user_id == user_four_id:
+            opponent = text_data_json["data"]["user_three_name"]
+        current_user_name = await self.get_name_with_id(user_id)
+        message = "Yoooo, " + opponent + " is waiting for you to play the first match in the tournament against you. If you win this game you will go in the final round!"
+        response_message = await self.create_message_chatbot(current_user_name, message)
+        await self.send(text_data=json.dumps({
+            'type': 'message_save_success_bot',
+            'message': response_message
+        }))
+
+    async def handle_send_chatbot_message_new_game_final(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        user_one_id = text_data_json["data"]["user_one_id"]
+        user_two_id = text_data_json["data"]["user_two_id"]
+        if user_id == user_one_id:
+            opponent = text_data_json["data"]["user_two_name"]
+        elif user_id == user_two_id:
+            opponent = text_data_json["data"]["user_one_name"]
+        current_user_name = await self.get_name_with_id(user_id)
+        message = "SHEEEESH, " + opponent + " is waiting for you to play the LAST and FINAL match in the tournament against you!! If you win this game you are the WINNER OF THE TOURNAMENT!"
+        response_message = await self.create_message_chatbot(current_user_name, message)
+        await self.send(text_data=json.dumps({
+            'type': 'message_save_success_bot',
+            'message': response_message
+        }))
+
 
 # ---------- SEND FUNCTIONS ---------------------------------------
     async def send_current_users_chats(self, event):
@@ -227,10 +338,20 @@ class _Chat:
             'status': event['data']['status'],
             'user_id': event['data']['user_id'],
         }))
+
+    async def send_inform_chatbot_new_game(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'inform_chatbot_new_game',
+            'sender': event["sender"],
+            'data': event['data']
+        }))
 # ---------- DATABASE REQUEST FUNCTIONS -----------------------------
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_users_chats")
+            return
         user_instance = MyUser.objects.get(user_id=user_id)
         all_chats = user_instance.chats.all()
         user_chats = []
@@ -301,6 +422,15 @@ class _Chat:
             return -1
 
     @database_sync_to_async
+    def get_name_with_id(self, id):
+        try:
+            user_instance = MyUser.objects.get(user_id=id)
+            name = user_instance.name
+            return name
+        except Exception as e:
+            return -1
+
+    @database_sync_to_async
     def get_chat_id_with_name(self, chat_name):
         try:
             chat_instance = Chat.objects.get(name=chat_name)
@@ -351,7 +481,6 @@ class _Chat:
             return {'status': 404, 'unblocked_by': None}
         current_user_instance = MyUser.objects.get(user_id=user_id)
         other_user_instance = MyUser.objects.get(name=user_to_unblock)
-
         if current_user_instance in other_user_instance.blockedBy.all():
             other_user_instance.blockedBy.remove(current_user_instance)
             other_user_instance.save()
@@ -360,6 +489,9 @@ class _Chat:
 
     @database_sync_to_async
     def get_blocked_by_user(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_blocked_by_user")
+            return
         user_instance = MyUser.objects.get(user_id=user_id)
         blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_names)
@@ -367,6 +499,9 @@ class _Chat:
 
     @database_sync_to_async
     def get_blocked_user(self, user_id):
+        if not MyUser.objects.filter(user_id=user_id).exists():
+            print("user id not found in get_blocked_user")
+            return
         current_user = MyUser.objects.get(user_id=user_id)
         users_blocking_current_user = MyUser.objects.filter(blockedBy=current_user)
         blocked_by_current_user_names = users_blocking_current_user.values_list('name', flat=True)
@@ -419,7 +554,6 @@ class _Chat:
             return None
         user_instance = MyUser.objects.get(name=chat_name)
         avatar_url = user_instance.avatar if user_instance.avatar else None
-
         if self.is_valid_url(avatar_url):
             print("Valid URL")
             result = str(avatar_url) if avatar_url else None

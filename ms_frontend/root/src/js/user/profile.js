@@ -2,19 +2,19 @@ let emailBeforeEdit;
 let gameAliasBeforeEdit;
 
 //combine function with the one from twofa
-function updateProfileMessage(success, message) {
-	const twoFaStatus = document.getElementById('updateTwoFa');
+// function updateProfileMessage(success, message) {
+// 	const twoFaStatus = document.getElementById('updateTwoFa');
 
-	setTimeout(function() {
-	twoFaStatus.classList.add('hidden');
-	}, 3500);
-	twoFaStatus.classList.remove('hidden');
-	if (success)
-		twoFaStatus.style.color = 'green';
-	else
-		twoFaStatus.style.color = 'red';
-	twoFaStatus.textContent = message;
-}
+// 	setTimeout(function() {
+// 	twoFaStatus.classList.add('hidden');
+// 	}, 3500);
+// 	twoFaStatus.classList.remove('hidden');
+// 	if (success)
+// 		twoFaStatus.style.color = 'green';
+// 	else
+// 		twoFaStatus.style.color = 'red';
+// 	twoFaStatus.textContent = message;
+// }
 
 
 function editProfile() {
@@ -56,13 +56,12 @@ function saveChanges() {
       const data = await response.json();
       throw Error(data.message);
     }
-    updateProfileMessage(true, "Profile updated successfully");
+    updateTwoFaStatus(true, "Profile updated successfully");
   })
   .catch(error => {
     mail.value = emailBeforeEdit;
     gameAlias.value = gameAliasBeforeEdit;
-    updateProfileMessage(false, error);
-    console.error('There was a problem with the fetch operation:', error);
+    updateTwoFaStatus(false, error);
   });
 
   mail.setAttribute('readonly', true);
@@ -71,12 +70,6 @@ function saveChanges() {
   saveButton.style.display = 'none';
 }
 
-
-//fetch to get picture, gamealias, mail
-//fetch for new picture
-//fetch for gameAlias and Mail
-
-
 function changeProfileImage() {
   const profileImageInput = document.querySelector('.change-profile-image input[type="file"]');
   
@@ -84,67 +77,58 @@ function changeProfileImage() {
     const file = this.files[0];
 
 
-  if (file) {
-    if (!file.type.startsWith('image/')) {
-      setTimeout(function () {document.getElementById('fileError').style.display = 'none';}, 3000);
-      document.getElementById('fileError').style.display = 'block';
-      return;
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        updateTwoFaStatus(false, 'Invalid file type. Please select an image file.');
+        this.value = '';
+        return;
+      }
+      const reader = new FileReader();
+
+      reader.readAsDataURL(file);
+      reader.onload = function(e) {
+        const dataURI = e.target.result;
+        const url = `${window.location.origin}/user/avatar`
+
+        fetch (url, {
+          method: 'PUT',
+          header: headerProfilePictureChange(),
+          body: JSON.stringify(bodyProfilePictureChange(dataURI))
+        })
+        .then(async response => {
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw Error(data.message);
+          }
+          document.getElementById('profilePicture').src = data.avatar;
+          updateTwoFaStatus(true, "Avatar updated successfully");
+        })
+        .catch(error => {
+          updateTwoFaStatus(false, error);
+          // console.error('There was a problem with the fetch operation:', error);
+        });
+      };
     }
-    // console.log('this is the file type: ', file.type);
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-    reader.onload = function(e) {
-      const dataURI = e.target.result;
-
-    
-      const url = `${window.location.origin}/user/avatar`
-      fetch (url, {
-        method: 'PUT',
-        header: headerProfilePictureChange(),
-        body: JSON.stringify(bodyProfilePictureChange(dataURI))
-      })
-      .then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-          throw Error(data.message);
-        }
-        document.getElementById('profilePicture').src = data.avatar;
-        updateProfileMessage(true, "Avatar updated successfully");
-      })
-      .catch(error => {
-        updateProfileMessage(false, error);
-        console.error('There was a problem with the fetch operation:', error);
-      });
-
-
-    };
-  }
-});
+    this.value = '';
+  });
 }
 
-
-
-//needs to be called when clicked on profile page, traversing in spa or refresh
 async function getProfileData() {
   const url = `${window.location.origin}/user/profile`
   fetch (url, {
     method: 'GET',
-    // header: headerProfilePictureChange(),
   })
   .then(async response => {
     const data = await response.json();
     if (!response.ok)
       throw Error(data.message);
-    console.log('data for profile: ', data);
     document.getElementById('profilePicture').src = data.avatar;
     document.getElementById("email").value = data.email;
     document.getElementById("gameAlias").value = data.alias;
-    // updateProfileMessage(true, "Avatar updated successfully");
   })
   .catch(error => {
-    // updateProfileMessage(false, error);
-    console.error('There was a problem with the fetch operation:', error);
+    // console.error('There was a problem getting profile data: ', error);
   });
 }
 
@@ -158,21 +142,19 @@ async function profileButtonClicked() {
 async function getProfilePicture(id) {
   let avatarUrl;
   const url = `${window.location.origin}/user/avatar?user_id=${id}`;
+
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: headerProfilePictureChange(),
     });
     const data = await response.json();
-    console.log('data getting picture: ', data);
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(data.message);
-    }
     avatarUrl = data.avatar;
-    console.log("in fetch avatarUrl: ", avatarUrl);
-  } catch (error) {
-    console.error('There was a problem with the fetch operation:', error);
   }
-  console.log("avatarUrl: ", avatarUrl);
+  catch (error) {
+    // console.error('There was a problem with the fetch operation:', error);
+  }
   return avatarUrl;
 }

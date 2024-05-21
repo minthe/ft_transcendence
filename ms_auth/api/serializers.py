@@ -19,7 +19,6 @@ def validate_alias(alias):
 def validate_password(password):
 	try:
 		error_message = 'Password too weak'
-		print(password)
 		if password.isalnum():
 			raise ValidationError(error_message)
 		pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&,;:])[A-Za-z\d@$!%*?&,;:]{8,}$'
@@ -36,13 +35,21 @@ def validate_avatar(avatar):
 	return None
 
 def validate_user_id(user_id):
-	if not user_id.isnumeric():
-		raise ValidationError("user_id must be numeric")
+	user_id_as_int = int(user_id)
+	if not isinstance(user_id_as_int, int):
+		raise ValidationError("user_id must be an integer")
+	if isinstance(user_id, str):
+		if not user_id.isdigit():
+			raise ValidationError("user_id must be an integer")
 	return None
 
 def validate_2fa_code(code):
-	if not code.isnumeric():
-		raise ValidationError("code must be numeric")
+	code_as_int = int(code)
+	if not isinstance(code_as_int, int):
+		raise ValidationError("code must be digits only")
+	if isinstance(code, str):
+		if not code.isdigit():
+			raise ValidationError("code must be digits only")
 	if not len(code) == 6:
 		raise ValidationError('code must be 6 digits long')
 	return None

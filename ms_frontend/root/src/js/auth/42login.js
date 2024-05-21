@@ -19,75 +19,79 @@ function openAuthPopup() {
 
 
 function checkForToken(popup) {
-const url = `${window.location.origin}/user/login`
-const interval = setInterval(() => {
-	if (popup.closed) {
-	clearInterval(interval);
-	return ;
-	}
-	if (!isFetching) {
-	isFetching = true;
-	fetch(url, {
-		method: 'GET',
-		headers: {
-		'Content-Type': 'application/json',
-		},
-	})
-	.then(async response => {
-		const data = await response.json();
-		//check again
-		if (!response.ok && !data.second_factor) {
-		await logoutUser();
-		throw new Error('User has no token');
+	const url = `${window.location.origin}/user/login`
+	const interval = setInterval(() => {
+		if (popup.closed) {
+			clearInterval(interval);
+			return ;
 		}
-		popup.close();
-		if (data.second_factor) {
-		setUpTwoFaPage();
-		await verifyButtonClick();
-		if (checkTwoFaCode()) {
-			const url = `${window.location.origin}/user/2fa/verify`
-			return fetch(url, {
-			method: 'POST',
-			headers: headerTwoFa(),
-			body: JSON.stringify(bodyTwoFa(data.user_id))
+		if (!isFetching) {
+			isFetching = true;
+			fetch(url, {
+				method: 'GET',
+				headers: {
+				'Content-Type': 'application/json',
+				},
 			})
 			.then(async response => {
-			if (!response.ok) {
-				return response.json().then(data => {
-				loginErrors(data);
-				});
-			}
-			else {
-				console.log('after 2fa data: ', data);
-				await afterAuthLogin42(data);
+				const data = await response.json();
+				
+				//check again
+				if (!response.ok && !data.second_factor) {
+					if (response.status === 400 || response.status === 500 || response.status === 429) {
+						popup.close();
+						loginErrors(data);
+					}
+					await logoutUser();
+					throw new Error('User has no token');
+
+				}
+				popup.close();
+				if (data.second_factor) {
+					setUpTwoFaPage();
+					await verifyButtonClick();
+					if (checkTwoFaCode()) {
+						const url = `${window.location.origin}/user/2fa/verify`;
+
+						return fetch(url, {
+							method: 'POST',
+							headers: headerTwoFa(),
+							body: JSON.stringify(bodyTwoFa(data.user_id))
+						})
+						.then(async response => {
+							if (!response.ok) {
+								return response.json().then(data => {
+									loginErrors(data);
+								});
+							}
+							else {
+								await afterAuthLogin42(data);
+								setDownTwoFaPage();
+							}
+						});
+					}
+					data.message = 'Not enough digits or non numeric characters';
+					loginErrors(data);
+				}
+				else
+					await afterAuthLogin42(data);
+				document.getElementById("reloadScreen").style.display = "block";
+				setTimeout(function() {
+				document.getElementById("reloadScreen").style.display = "none";
+				hideDiv('userIsNotAuth');
+				showDiv('userIsAuth');
+				}, 500);
+			})
+			.catch(error => {
+				clearLoginInput42();
 				setDownTwoFaPage();
-			}
+			})
+			.finally(() => {
+				isFetching = false;
 			});
 		}
-		data.message = 'Not enough digits or non numeric characters';
-		loginErrors(data);
-		}
-		else
-		await afterAuthLogin42(data);
-		document.getElementById("reloadScreen").style.display = "block";
-		setTimeout(function() {
-		document.getElementById("reloadScreen").style.display = "none";
-		hideDiv('userIsNotAuth');
-		showDiv('userIsAuth');
-		}, 500);
-	})
-	.catch(error => {
-		clearLoginInput42();
-		setDownTwoFaPage();
 		
-		// console.log('Error during login:', error);
-	})
-	.finally(() => {
-		isFetching = false;
-	});
-	}
-	
-}, 2000);
+	}, 2000);
 }
 
 async function afterAuthLogin42(data) {

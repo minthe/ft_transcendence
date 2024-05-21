@@ -1,25 +1,25 @@
 
 async function renderTourns() {
-	console.log('In renderTourns');
 	const matches = websocket_obj.game.invites;
+	const container = document.getElementById('tournGameSessionContainer');
   
-	  const container = document.getElementById('tournGameSessionContainer');
-	  container.innerHTML = generateHTMLContentTourns(matches);
-  
-	  container.querySelectorAll('.join-tourn-btn').forEach(button => {
-		button.addEventListener('click', async function() {
-		  const tournId = this.getAttribute('data-tournid');
-		//   userState.currPage = 'tournPage';
-		//   userState.tournId = tournId;
-		  joinTourn(tournId, matches);
-		//   handleButtonClick("");
-		});
-	  });
-  }
+	container.innerHTML = generateHTMLContentTourns(matches);
+
+	container.querySelectorAll('.join-tourn-btn').forEach(button => {
+	button.addEventListener('click', async function() {
+		const tournId = this.getAttribute('data-tournid');
+	//   userState.currPage = 'tournPage';
+	//   userState.tournId = tournId;
+		joinTourn(tournId, matches);
+	//   handleButtonClick("");
+	});
+	});
+}
 
 
 function generateHTMLContentTourns(matches) {
 	let htmlContent = '';
+
 	if (matches.length > 0) {
 	  htmlContent += '<ul style="justify-content: center; margin-left: 30vw;">';
 	  matches.forEach(match => {
@@ -29,21 +29,33 @@ function generateHTMLContentTourns(matches) {
 	  });
 	  htmlContent += '</ul>';
 	}
-	// else {
-	//   htmlContent = '<p>No matches found.</p>';
-	// }
 	return htmlContent;
 }
 
 
 function joinTourn(tournId, matches) {
 	let userId = `${websocket_obj.user_id}`;
-	console.log('userId : ', userId);
-	
+	let emptyTourn = false;
+
+	removeTournViewDisplay();
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
+			
+			
+			
+			if (match.length < 3){
+				document.getElementById('tournNotFull').classList.remove('hidden');
+				document.getElementById('tournGameSessionContainer').classList.add('hidden');
+				setTimeout(function() {
+					document.getElementById('tournNotFull').classList.add('hidden');
+					document.getElementById('tournGameSessionContainer').classList.remove('hidden');
+				}, 3000);
+				emptyTourn = true;
+				return;
+			}
+			
 			const joinButtons = document.querySelectorAll('#displayTourn .join-game-div');
-
+			
 			joinButtons.forEach(joinButton => {
 				joinButton.remove();
 			});
@@ -53,37 +65,56 @@ function joinTourn(tournId, matches) {
 				else if (match[i][0].stage === "final")
 					stageFinal(match[i][0], userId);			
 			}	
-			return ;
+			return;
 		}
 	});
-
-
-	document.getElementById('tournInvitesScreen').classList.add('hidden');
-	document.getElementById('displayTourn').classList.remove('hidden');
+	if (emptyTourn)
+		return;
 
 	let container = document.getElementById('displayTourn');
+	
+	document.getElementById('tournInvitesScreen').classList.add('hidden');
+	container.classList.remove('hidden');
 	container.querySelectorAll('.join-game-btn').forEach(button => {
 		button.addEventListener('click', async function() {
-		  	const gameId = this.getAttribute('data-gameid');
-			// console.log(gameId);
+			const gameId = this.getAttribute('data-gameid');
+
 			joinGame(gameId);
 		});
-	  });
+	});
 }
 
+function removeTournViewDisplay() {
+	let playerOne = document.getElementById('playerTopLeft');
+	let playerTwo = document.getElementById('playerBottomLeft');
+	let winnerGameOne = document.getElementById('playerLeftCenter');
+	let playerThree	= document.getElementById('playerTopRight');
+	let playerFour	= document.getElementById('playerBottomRight');
+	let winnerGameTwo = document.getElementById('playerRightCenter');
 
+	playerOne.classList.remove('winner-tourn-game');
+	playerTwo.classList.remove('winner-tourn-game');
+	playerThree.classList.remove('winner-tourn-game');
+	playerFour.classList.remove('winner-tourn-game');
+	winnerGameOne.classList.remove('winner-tourn-game');
+	winnerGameTwo.classList.remove('winner-tourn-game');
 
-// alias_one: "jkroger"
-// alias_two:"julien"
-// game_id:1
-// loser_id:null
-// player_one:"5"
-// player_two:"2"
-// stage:"semi"
-// winner_id:null
-// counter_semi
-// : 
-// 2
+	playerOne.classList.remove('loser-tourn-game');
+	playerTwo.classList.remove('loser-tourn-game');
+	playerThree.classList.remove('loser-tourn-game');
+	playerFour.classList.remove('loser-tourn-game');
+	winnerGameOne.classList.remove('loser-tourn-game');
+	winnerGameTwo.classList.remove('loser-tourn-game');
+
+	playerOne.textContent = '';
+	playerTwo.textContent = '';
+	playerThree.textContent = '';
+	playerFour.textContent = '';
+	winnerGameOne.textContent = 'Winner One';
+	winnerGameTwo.textContent = 'Winner Two';
+
+	document.getElementById('tournamentWinner').textContent = 'Winner';
+}
 
 function stageSemi(semi, userId) {
 	if (semi.counter_semi === 1)
@@ -147,12 +178,14 @@ function stageFinal(final, userId) {
 	let winnerGameTwo = document.getElementById('playerRightCenter');
 	
 	if (final.winner_id) {
-		document.getElementById('tournamentWinner').textContent = final.winner_id;
+		// document.getElementById('tournamentWinner').textContent = final.winner_id;
 		if (final.winner_id === final.player_one) {
+			document.getElementById('tournamentWinner').textContent = final.alias_one;
 			winnerGameOne.classList.add('winner-tourn-game');
 			winnerGameTwo.classList.add('loser-tourn-game');
 		}
 		else {
+			document.getElementById('tournamentWinner').textContent = final.alias_two;
 			winnerGameOne.classList.add('loser-tourn-game');
 			winnerGameTwo.classList.add('winner-tourn-game');
 		}
