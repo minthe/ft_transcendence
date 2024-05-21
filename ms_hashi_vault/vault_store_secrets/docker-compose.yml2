@@ -1,15 +1,13 @@
 version: '3.8'
 
-name: ft_transcendence
-
 services:
-
+# REST API DOCUMENTATION
   swagger:
     container_name: swagger
     build:
       context: swagger
     environment:
-      URLS_PRIMARY_NAME: "Auth"
+      URLS_PRIMARY_NAME: "API Gateway"
       URLS: "[{ url: './doc/ms-api-gateway.yaml', name: 'API Gateway'},
               { url: './doc/ms-auth.yaml', name: 'Auth' },
               { url: './doc/ms-game-chat.yaml', name: 'Game-Chat' },
@@ -23,6 +21,8 @@ services:
         ipv4_address: 172.16.10.2
     expose:
       - 8080
+    depends_on:
+     - vault_store_secrets
 
 # MICROSERVICE API-GATEWAY
   api_gateway:
@@ -33,7 +33,7 @@ services:
       args:
         CURRENT_HOST: ${CURRENT_HOST}
     volumes:
-      - static_files:/usr/share/nginx/html/static
+      - ./ms_api_gateway/root:/usr/share/nginx/html
       - ./ms_api_gateway/nginx.conf.template:/nginx.conf.template
       - ./.cert/:/etc/nginx/ssl/
     ports:
@@ -44,6 +44,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.3
     depends_on:
+      - vault_store_secrets
       - auth_backend
       - users_db
       - frontend
@@ -63,6 +64,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.4
     depends_on:
+      - vault_store_secrets
       - game_chat_backend
     restart: always
     expose:
@@ -76,14 +78,13 @@ services:
       context: ms_auth
     volumes:
       - ./ms_auth:/code
-      - static_files:/static
     networks:
       app_net:
         ipv4_address: 172.16.10.5
     restart: always
     depends_on:
-      users_db:
-        condition: service_healthy
+      - vault
+      - users_db
     expose:
       - 8000
   users_db:
@@ -91,10 +92,8 @@ services:
     build:
       context: postgres
     user: postgres
-    # env_file: .env
+    env_file: .env
     restart: always
-    depends_on:
-    - vault_store_secrets
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
       interval: 3s
@@ -108,6 +107,8 @@ services:
       - users_db:/var/lib/postgresql/data/
     expose:
       - 5432
+    depends_on:
+     - vault_store_secrets
 
 # MICROSERVICE GAME_CHAT
   game_chat_backend:
@@ -126,7 +127,6 @@ services:
         condition: service_healthy
     expose:
       - 6969
-
   game_chat_db:
     container_name: game_chat_db
     build:
@@ -144,7 +144,7 @@ services:
       app_net:
         ipv4_address: 172.16.10.8
     ports:
-      - 6969 # for admin page, delete later
+      - 6969:6969 # for admin page, delete later
     volumes:
       - game_chat_db:/var/lib/postgresql/data/
     expose:
@@ -156,7 +156,7 @@ services:
   vault:
     build: ./ms_hashi_vault/vault
     ports:
-      - 8200
+      - "8200:8200"
     environment:
       VAULT_DEV_ROOT_TOKEN_ID: "root"
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
@@ -190,8 +190,6 @@ services:
 volumes:
   game_chat_db:
   users_db:
-  static_files:
-  vault_secrets:
 
 networks:
   app_net:
