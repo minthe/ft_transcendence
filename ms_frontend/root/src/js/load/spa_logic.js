@@ -71,7 +71,7 @@ window.onpopstate = async function (event) {
       updatePage();
     })
     .catch(error => {
-      console.error('There was a problem showing the page:', error);
+      // console.error('There was a problem showing the page:', error);
     });
 };
 
@@ -129,7 +129,7 @@ async function handleClickEvent(event) {
 			userState.userName = null;
 			throw new Error(data.message);
 		}
-    
+    // changeToProfile();
     
     if (event.target.closest('#homeButton'))
       showSiteHideOthers('homeSite', 'homeButton');
@@ -200,7 +200,7 @@ async function handleClickEvent(event) {
     
   })
 	.catch(error => {
-    console.error('Error during login:', error);
+    // console.error('Error during login:', error);
 	});
   
   
