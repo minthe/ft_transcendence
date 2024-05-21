@@ -155,11 +155,12 @@ async function establishWebsocketConnection() {
       case 'render_left':
 
         websocket_obj.game.left_pedal = data.new_pedal_pos
-        // console.log("new left_pedal: ", websocket_obj.game.left_pedal);
+        console.log("new left_pedal: ", websocket_obj.game.left_pedal);
         await update();
         break
       case 'render_right':
-        // console.log("RENDER_RIGHT");
+        console.log("RENDER_RIGHT");
+        console.log(data.new_pedal_pos);
         websocket_obj.game.right_pedal = data.new_pedal_pos
         await update();
         break
@@ -174,7 +175,7 @@ async function establishWebsocketConnection() {
         console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
-        sendDataToBackend('request_score')
+        // sendDataToBackend('request_score')
         // startCountdownAnimation();
         break
       case 'ball_update':
@@ -430,7 +431,7 @@ async function sendDataToBackend(request_type) {
           // const canvas = document.getElementById("pongCanvas");
           console.log("in game_new_move");
           console.log(websocket_obj.game.is_host);
-          // prev_pos =  websocket_obj.game.left_pedal;
+        //   prev_pos =  websocket_obj.game.left_pedal;
           if (websocket_obj.game.is_host === true)
             pedal_pos = websocket_obj.game.left_pedal
           else
