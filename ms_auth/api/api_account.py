@@ -224,11 +224,10 @@ def oauth2_login(request):
 	'''
 	try:
 		data = {
-			"client_id": settings.CLIENT_ID,
-			"redirect_uri": settings.REDIRECT_URI,
-			"scope": settings.INTRA_SCOPE,
-			"state": settings.INTRA_STATE,
-			"response_type": "code"
+			'client_id': settings.CLIENT_ID,
+			'redirect_uri': settings.REDIRECT_URI,
+			'scope': settings.INTRA_SCOPE,
+			'response_type': 'code'
 		}
 		return redirect(f"{settings.OAUTH_AUTH}?{urlencode(data)}")
 	except Exception as e:
@@ -241,13 +240,13 @@ def oauth2_redirect(request):
 	try:
 		with transaction.atomic():
 			id_hash = get_random_string(length=12)
-			if request.GET.get('state') != settings.INTRA_STATE:
-				return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
-
 			access_token = oauth2_views.getToken(request)
-
+			if settings.DEBUG == "True":
+				print(f"access token: {access_token}")
 
 			user_data = intra42_views.getUserData(access_token)
+			if not user_data:
+				raise Exception("Failed to get user data")
 
 			if settings.GET_INTRA_USERS_LIST == "True" and user_data['username'] == "vfuhlenb":
 				intra42_views.getIntraUsersList(access_token)
