@@ -54,7 +54,8 @@ async function updatePage() {
 		window.history.replaceState(userState, null, "");
 		render(userState);
 	}
-	document.getElementById('updateTwoFa').classList.add('hidden');
+	if (document.getElementById('updateTwoFa'))
+		document.getElementById('updateTwoFa').classList.add('hidden');
 }
 
 window.addEventListener('beforeunload', function(event) {
