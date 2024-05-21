@@ -106,7 +106,7 @@ def login(request):
 	API Endpoint: /user/login
 	'''
 	try:
-		intra_status = get_secret(id_cookie, 'intra_status')
+		intra_status = 200
 		if request.method == "POST":
 			data =json.loads(request.body)
 			username = data.get('username')
@@ -140,6 +140,7 @@ def login(request):
 		elif request.method == "GET":
 			jwt_token = request.COOKIES.get('jwt_token')
 			id_cookie = request.COOKIES.get('id')
+			intra_status = get_secret(id_cookie, 'intra_status')
 			if settings.DEBUG == "True":
 				print (intra_status)
 				print (id_cookie)
