@@ -165,8 +165,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         print(type(game_id))
         print(game_id)
 
-        self.game_group_id = 'group_%s' % game_id
-        self.b_game_group_id = 'b_group_%s' % game_id
+        self.game_group_id = 'game_group_%s' % game_id
+        self.b_game_group_id = 'b_game_group_%s' % game_id
 
 
         if self.game_group_id:

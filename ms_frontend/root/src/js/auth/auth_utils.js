@@ -47,7 +47,10 @@ function setUpTwoFaPage() {
 }
 
 function setDownTwoFaPage() {
-  document.getElementById('loginHeader').classList.remove('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-  document.getElementById('twoFA').classList.add('hidden');
+  if (document.getElementById('loginHeader'))
+   document.getElementById('loginHeader').classList.remove('hidden');
+  if (document.getElementById('loginPage'))
+   document.getElementById('loginPage').classList.remove('hidden');
+  if (document.getElementById('twoFA'))
+   document.getElementById('twoFA').classList.add('hidden');
 }

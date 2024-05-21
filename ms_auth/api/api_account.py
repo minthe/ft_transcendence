@@ -106,6 +106,7 @@ def login(request):
 	API Endpoint: /user/login
 	'''
 	try:
+		intra_status = 200
 		if request.method == "POST":
 			data =json.loads(request.body)
 			username = data.get('username')
@@ -139,6 +140,10 @@ def login(request):
 		elif request.method == "GET":
 			jwt_token = request.COOKIES.get('jwt_token')
 			id_cookie = request.COOKIES.get('id')
+			intra_status = get_secret(id_cookie, 'intra_status')
+			if settings.DEBUG == "True":
+				print (intra_status)
+				print (id_cookie)
 			if jwt_token and jwt.validateToken(jwt_token):
 				user_id = jwt.getUserId(jwt_token)
 				username = user_views.getValue(user_id, 'username')
@@ -173,11 +178,15 @@ def login(request):
 				response.status_code = 200
 				return response
 			else:
+				if intra_status == 400:
+					return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 				return JsonResponse({'message': 'Unauthorized'}, status=401)
 	except Exception as e:
 		error_message = str(e)
 		if settings.DEBUG == "True":
 			print(f"An error occurred in api_login: {error_message}")
+		if intra_status == 400:
+			return JsonResponse({'message': '42Intra currently out of service'}, status=400)
 		return JsonResponse({'message': error_message}, status=500)
 
 @require_http_methods(["POST"])
@@ -231,6 +240,7 @@ def oauth2_login(request):
 def oauth2_redirect(request):
 	try:
 		with transaction.atomic():
+			id_hash = get_random_string(length=12)
 			if request.GET.get('state') != settings.INTRA_STATE:
 				return JsonResponse({'message': 'Unauthorized (state does not match)'}, status=401)
 
@@ -271,6 +281,7 @@ def oauth2_redirect(request):
 				game_chat_response = urlopen(game_chat_request)
 				if game_chat_response.getcode() == 200:
 					response = HttpResponse(status=200)
+					response.set_cookie('id',id_hash, httponly=True, expires=300)
 					response.set_cookie('jwt_token', jwt_token, httponly=True)
 					return response
 				elif game_chat_response.getcode() == 409:
@@ -283,7 +294,6 @@ def oauth2_redirect(request):
 
 			#2fa
 			if user_views.getValue(user_id, 'second_factor_enabled') == True:
-				id_hash = get_random_string(length=12)
 				store_secret(id_hash, access_token, 'oauth2_token')
 				print (f"token: {access_token}")
 				# second_factor_views.create_2fa(user_id)
@@ -294,10 +304,14 @@ def oauth2_redirect(request):
 			jwt_token = jwt.createToken(user_id)
 
 			response = HttpResponse(status=200)
+			response.set_cookie('id',id_hash, httponly=True, expires=300)
 			response.set_cookie('jwt_token', jwt_token, httponly=True)
 			return response
 	except Exception as e:
 		error_message = str(e)
 		if settings.DEBUG == "True":
 			print(f"An error occurred in api_oauth2_redirect: {error_message}")
-		return JsonResponse({'message': error_message}, status=500)
+		store_secret(id_hash, 400, 'intra_status')
+		response = HttpResponse(status=400)
+		response.set_cookie('id',id_hash, httponly=True, expires=300)
+		return response

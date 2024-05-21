@@ -35,10 +35,16 @@ function checkForToken(popup) {
 			})
 			.then(async response => {
 				const data = await response.json();
+				
 				//check again
 				if (!response.ok && !data.second_factor) {
+					if (response.status === 400 || response.status === 500) {
+						popup.close();
+						loginErrors(data);
+					}
 					await logoutUser();
 					throw new Error('User has no token');
+
 				}
 				popup.close();
 				if (data.second_factor) {

@@ -292,7 +292,7 @@ async function sendGameInvitation() {
     displayError(data.error);
     }
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    // console.error('Error fetching user data:', error);
     displayError('Error fetching user data');
   }
 }
@@ -332,7 +332,7 @@ try {
   displayError(data.error);
   }
 } catch (error) {
-  console.error('Error fetching user data:', error);
+  // console.error('Error fetching user data:', error);
   displayError('Error fetching user data');
 }
 
@@ -536,8 +536,14 @@ function gameOver(data) {
   document.getElementById('winningScreen').classList.remove('hidden');
 
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  if (websocket_obj.game.game_id === data.game_id)
+  if (websocket_obj.game.game_id === data.game_id) {
     activateFireworks();
+
+    // setTimeout(function() {
+    //   stopFirework();
+      
+    //   }, 4400);
+  }
   
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');
