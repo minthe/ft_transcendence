@@ -835,21 +835,37 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 
 
 
-
-
-
 #pongCanvas {
+  /* width: 70vw;
+  height: 70vh; */
+  height: 30vw;
+  width: 60vw;
+  margin: 0 auto;
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+  margin-left: 20vw;
+  background-color: #f8efb5;
+  outline: 10px solid #131615;
+}
+
+
+/* #pongCanvas {
   width: 70vw;
-  height: 70vh;
+  height: 70vh; */
+
+
   /* height: 35vw;
   margin: 0 auto; */
   /* display: flex;
   justify-content: center;
   align-items: center; */
-  margin-left: 15.5vw;
+
+
+  /* margin-left: 15.5vw;
   background-color: #f8efb5;
   outline: 10px solid #131615;
-}
+} */
 
 .game-site {
   height: 100vh;

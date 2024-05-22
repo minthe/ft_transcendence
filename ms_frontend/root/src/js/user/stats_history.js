@@ -24,6 +24,8 @@ async function statsSiteClicked() {
 
 	document.getElementById('userStats').classList.remove('hidden');
 	document.getElementById('userHistory').classList.add('hidden');
+	document.getElementById('tournHistory').classList.add('hidden');
+
 	showSiteHideOthers('statsSite', 'statsButton');
 }
 
