@@ -5,7 +5,7 @@ re: clean all
 build:
 	chmod +x setup.sh
 	bash setup.sh
-	docker compose build
+	docker compose build 
 stop:
 	docker compose stop
 up:
@@ -32,3 +32,6 @@ fclean: clean
 env:
 	chmod +x setup_env.sh
 	bash setup_env.sh
+
+rebuild modsec:
+	docker-compose up --build  --no-deps -d modsecurity

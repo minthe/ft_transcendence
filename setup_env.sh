@@ -11,3 +11,4 @@ else
 	echo "Please update the GIST_URL in .env"
 	exit 1
 fi
+

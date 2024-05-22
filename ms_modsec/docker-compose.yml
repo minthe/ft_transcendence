@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  modsecurity:
+    container_name: modsecurity
+    build: .
+    volumes:
+    - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+    - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 9000:9000
+    networks:
+      app_modsec:
+        ipv4_address: 172.16.10.10
+    expose:
+      - 9000
+
+
+networks:
+  app_modsec:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.10.0/24
+            gateway: 172.16.10.1

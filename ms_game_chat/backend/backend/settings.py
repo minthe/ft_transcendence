@@ -10,9 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import hvac
 from pathlib import Path
 
-JWT_SECRET = os.environ.get('JWT_SECRET')
+def read_secret_from_vault(key):
+    # Construct the secret path using the key
+    secret_path = f"secret/data/{key}"
+    
+    # Initialize the Vault client
+    vault_client = hvac.Client(url='http://vault:8200', token='root')
+
+    # Read the secret from Vault
+    response = vault_client.read(secret_path)
+
+    # Check if the read operation was successful
+    if response and response.get('data') and response['data'].get('data'):
+        # Extract and return the secret data
+        secret_data = response['data']['data']
+        # Return the value corresponding to the given key
+        return secret_data.get(key)
+    else:
+        print(f"Failed to read secret from Vault at '{secret_path}'")
+        return None
+
+JWT_SECRET = read_secret_from_vault('JWT_SECRET')
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
@@ -30,9 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET')
-
-JWT_SECRET = os.environ.get('JWT_SECRET')
+SECRET_KEY = read_secret_from_vault('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
