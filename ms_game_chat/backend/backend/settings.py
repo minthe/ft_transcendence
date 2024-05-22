@@ -13,7 +13,6 @@ import os
 import hvac
 from pathlib import Path
 
-
 def read_secret_from_vault(key):
     # Construct the secret path using the key
     secret_path = f"secret/data/{key}"

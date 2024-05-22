@@ -4,7 +4,6 @@ from django.contrib.postgres.fields import ArrayField
 import random
 import string
 
-
 # inherits from "models.Model" which means it's a database model
 class MyUser(models.Model):
     user_id = models.AutoField(primary_key=True, db_column='user_id')
@@ -17,8 +16,6 @@ class MyUser(models.Model):
     new_matches = models.ManyToManyField('Game', related_name='new_matches', blank=True)
     old_matches = models.ManyToManyField('Game', related_name='old_matches', blank=True)
     tourns = models.ManyToManyField('Tournament', related_name='passed_turns', blank=True)
-    # gameAlias = models.CharField("gameAlias", max_length=100) #Julien changed
-
 
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
@@ -43,8 +40,6 @@ class Game(models.Model):
     tournId = models.IntegerField("tournId", default=None, blank=True, null=True)
     stage = models.CharField("stage", max_length=100)
     date = models.DateTimeField(default=timezone.now)
-    # hostName = models.CharField("hostName", max_length=100) #Julien changed
-    # guestName = models.CharField("guestName", max_length=100) #Julien changed
 
 class Tournament(models.Model):
     semiMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
