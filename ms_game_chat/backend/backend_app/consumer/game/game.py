@@ -852,7 +852,6 @@ class _Game:
         # Iterate through game_sessions
         for game_session in game_sessions:
             # Extract opponent name and game id
-            print(game_session.hostId)
             if type(game_session.hostId) == str:
                 if game_session.hostId.isdigit():
                     host = int(game_session.hostId)

@@ -14,12 +14,12 @@ from pathlib import Path
 
 JWT_SECRET = os.environ.get('JWT_SECRET')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
-EMAIL_PORT = 587  # Outlook SMTP port
-EMAIL_USE_TLS = True  # Use TLS for security
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
+# EMAIL_PORT = 587  # Outlook SMTP port
+# EMAIL_USE_TLS = True  # Use TLS for security
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 AVATAR_STYLE_BOT = os.environ.get('AVATAR_STYLE_BOT')
 
