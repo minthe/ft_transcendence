@@ -8,7 +8,6 @@ class CorsMiddleware:
 
         # Handle OPTIONS requests
         if request.method == "OPTIONS":
-            print(response)
             # Include any specific headers needed for the OPTIONS request
             response["Access-Control-Allow-Origin"] = "*"
         return response

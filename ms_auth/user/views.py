@@ -76,7 +76,7 @@ def updateValue(user_id, key, value):
 	user.save()
 
 def getValue(user_id, key):
-	try: # TODO valentin: refactor error handling (remove try catch in child and dont return JsonResponse in child, use second_factor as reference)
+	try:
 		user = User.objects.get(user_id=user_id)
 		value = getattr(user, key, None)
 		return value
