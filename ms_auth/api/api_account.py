@@ -112,17 +112,10 @@ def login(request):
 			username = data.get('username')
 			password = data.get('password')
 
-			try:
-				serializers_views.validate_username(username)
-				if settings.STRONG_PASSWORD == "True":
-					serializers_views.validate_password(password)
-			except ValidationError as e:
-				return JsonResponse({'message': str(e)}, status=409)
-
 			if not user_views.checkValueExists('username', username):
 				return JsonResponse({'message': "User not found"}, status=404)
 			if not user_views.check_password(username, password):
-				return JsonResponse({'message': "Credentials are wrong"}, status=409)
+				return JsonResponse({'message': "Wrong password"}, status=409)
 
 			user_id = user_views.returnUserId(username)
 	
