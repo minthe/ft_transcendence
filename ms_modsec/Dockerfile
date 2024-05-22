@@ -1,5 +1,7 @@
 FROM owasp/modsecurity:nginx
 
+# ENV CURRENT_HOST=localhost
+
 COPY ./html /usr/share/nginx
 COPY ./nginx_start.sh /nginx_start.sh
 

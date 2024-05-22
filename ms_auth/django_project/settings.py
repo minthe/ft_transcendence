@@ -36,7 +36,7 @@ CLIENT_SECRET = read_secret_from_vault('CLIENT_SECRET')
 OAUTH_AUTH = os.environ.get('OAUTH_AUTH')
 OAUTH_TOKEN = os.environ.get('OAUTH_TOKEN')
 
-MS_GAME_CHAT = os.environ.get('MS_GAME_CHAT')
+MS_GAME_CHAT = read_secret_from_vault('MS_GAME_CHAT')
 
 # network
 LOC_AVATAR = os.environ.get('LOC_AVATAR')
@@ -47,7 +47,7 @@ REDIRECT_URI = f"https://{CURRENT_HOST}{os.environ.get('REDIRECT_URI')}"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'  # Outlook SMTP server
 EMAIL_PORT = 587  # Outlook SMTP port
-EMAIL_USE_TLS = True  # Use TLS for security
+EMAIL_USE_TLS = True  # Use TLSfor security
 EMAIL_HOST_USER = read_secret_from_vault('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = read_secret_from_vault('EMAIL_HOST_PASSWORD')
 
@@ -56,6 +56,10 @@ INTRA_SCOPE = os.environ.get('INTRA_SCOPE')
 
 INTRA_SCOPE='public'
 
+WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
+GET_INTRA_USERS_LIST = os.environ.get('GET_INTRA_USERS_LIST')
+STRONG_PASSWORD = os.environ.get('STRONG_PASSWORD')
+
 ALLOWED_HOSTS = ['*']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,10 +67,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ASGI_APPLICATION = 'django_project.asgi.application'
 
 SECRET_KEY = DJANGO_SECRET
-
-WELCOME_MAIL = os.environ.get('WELCOME_MAIL')
-GET_INTRA_USERS_LIST = os.environ.get('GET_INTRA_USERS_LIST')
-STRONG_PASSWORD = os.environ.get('STRONG_PASSWORD')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
