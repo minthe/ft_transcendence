@@ -106,10 +106,10 @@ function removeTournViewDisplay() {
 	winnerGameOne.classList.remove('loser-tourn-game');
 	winnerGameTwo.classList.remove('loser-tourn-game');
 
-	playerOne.textContent = '';
-	playerTwo.textContent = '';
-	playerThree.textContent = '';
-	playerFour.textContent = '';
+	playerOne.textContent = 'Player One';
+	playerTwo.textContent = 'Player Two';
+	playerThree.textContent = 'Player Three';
+	playerFour.textContent = 'Player Four';
 	winnerGameOne.textContent = 'Winner One';
 	winnerGameTwo.textContent = 'Winner Two';
 
@@ -176,16 +176,18 @@ function secondSemi(semi, userId) {
 function stageFinal(final, userId) {
 	let winnerGameOne = document.getElementById('playerLeftCenter');
 	let winnerGameTwo = document.getElementById('playerRightCenter');
+	let tournWinner = document.getElementById('tournamentWinner');
 	
 	if (final.winner_id) {
-		// document.getElementById('tournamentWinner').textContent = final.winner_id;
-		if (final.winner_id === final.player_one) {
-			document.getElementById('tournamentWinner').textContent = final.alias_one;
+		if (final.winner_id === final.player_one)
+			tournWinner.textContent = final.alias_one;
+		else
+			tournWinner.textContent = final.alias_two;
+		if (tournWinner.textContent === winnerGameOne.textContent) {
 			winnerGameOne.classList.add('winner-tourn-game');
 			winnerGameTwo.classList.add('loser-tourn-game');
 		}
 		else {
-			document.getElementById('tournamentWinner').textContent = final.alias_two;
 			winnerGameOne.classList.add('loser-tourn-game');
 			winnerGameTwo.classList.add('winner-tourn-game');
 		}

@@ -104,6 +104,7 @@ async function handleClickedOnChatElement(chat_obj) {
     document.getElementById('right-heading-name').textContent = chat_obj.chat_name
     if (chat_obj.isPrivate) {
       document.getElementById('backdropPrivateProfileLabel').textContent = chat_obj.chat_name
+      document.getElementById('profilePicturePrivateChat').src = chat_obj.avatar;
       document.getElementById('right-heading-name').dataset.state = 'private'
     } else {
       document.getElementById('backdropPublicProfileLabel').textContent = chat_obj.chat_name
@@ -112,15 +113,10 @@ async function handleClickedOnChatElement(chat_obj) {
     websocket_obj.chat_id = chat_obj.chat_id;
     websocket_obj.chat_name = chat_obj.chat_name;
 
-
-    // console.log('chat obj### : ', chat_obj.chat_id);
-    // console.log('chat name### : ', chat_obj.chat_name);
-
     await sendDataToBackend('messages_in_chat_read')
     await sendDataToBackend('get_online_stats')
     await sendDataToBackend('get_user_in_current_chat')
     await sendDataToBackend('get_chat_messages')
-
     
     userState.chatOpen = true;
   }

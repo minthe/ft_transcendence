@@ -51,14 +51,24 @@
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title" id="backdropPrivateProfileLabel"></h1>
+                <div class="profile-image-wrapper">
+                  <label class="change-profile-image-private-chat">
+                    <img id="profilePicturePrivateChat" src="" class="profile-picture" alt="Profile Picture">
+                  </label>
+                </div>
+              </div>
+              <div class="privateChatProfileName">
+                <h2 id="backdropPrivateProfileLabel"></h2>
               </div>
               <div class="modal-body">
-                <button id="blockUserButton" class="btn btn-outline-danger hidden">block User</button>
-                <button id="unblockUserButton" class="btn btn-outline-warning hidden">unblock User</button>
-<!--?           TODO: KRISTINA:-->
-                <button id="challengeUserToGame" class="btn btn-outline-success">challenge User</button>
-                <button id="challengeUserToTourn" class="btn btn-outline-success">invite to Tournament</button>
+                <div class="center-buttons">
+                  <button id="blockUserButton" class="btn btn-outline-danger hidden">block User</button>
+                  <button id="unblockUserButton" class="btn btn-outline-warning hidden">unblock User</button>
+                </div>
+                <div class="center-buttons">
+                  <button id="challengeUserToGame" class="btn btn-outline-success">challenge User</button>
+                  <button id="challengeUserToTourn" class="btn btn-outline-success">invite to Tournament</button>
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close</button>
