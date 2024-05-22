@@ -10,7 +10,6 @@ def getUserData(access_token):
 	conn = http.client.HTTPSConnection('api.intra.42.fr')
 	conn.request('GET', '/v2/me', headers=user_headers)
 	data_response_raw = conn.getresponse()
-	print("getUserData data_response_raw.status:", data_response_raw.status)
 	if data_response_raw.status == 200:
 		data_response = json.loads(data_response_raw.read().decode('utf-8'))
 		# remove unnecessary data

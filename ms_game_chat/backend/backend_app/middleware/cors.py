@@ -3,13 +3,7 @@ class CorsMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Log incoming Origin header
-        # origin = request.META.get('HTTP_ORIGIN', '')
-        # print('Incoming Origin:', origin)
-
         response = self.get_response(request)
-
-        # Allow all origins for simplicity; adjust as needed
         response["Access-Control-Allow-Origin"] = "*"
 
         # Handle OPTIONS requests

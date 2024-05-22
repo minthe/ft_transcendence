@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/split.js@1.6.0"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/styles.css">
 <style>
@@ -16,10 +15,7 @@
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-
-    /* background-color: #124457; */
     background-image: url('../img/championsTrophie.webp');
-
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -38,15 +34,10 @@
     text-transform: uppercase;
     outline: 10px solid #f8efb5;
     border-radius: 50%;
-    
-    
     color: #f8efb5;
-    /* color: #131615; */
-
   }
   .winner-div {
     outline: 10px solid #131615;
-
     position: absolute;
     width: 12vw;
     height: 12vw;
@@ -60,7 +51,6 @@
     align-items: center;
     cursor: pointer;
     text-transform: uppercase;
-
     box-shadow: 0 0 25px 30px #FFF700;
   }
   .top-left { top: 16vh; left: 10vw; }
@@ -80,23 +70,14 @@
     left: 44vw;
   }
 
-
-
   .join-game-div {
     position: absolute;
-    /* width: 10vw;
-    height: 8vh; */
-    /* background-color: #124457; */
-    /* color: #ef7267; */
     font-weight: bold;
-    /* font-size: 3vh; */
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     text-transform: uppercase;
-    /* outline: 10px solid #131615; */
-
   }
 
   .loser-tourn-game {
@@ -113,19 +94,16 @@
   .bi-arrow-right-rotate::before {
     position: absolute;
     font-weight: bold;
-
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-
-
-      left: 25vw;
-      top: 30vh;
-      color: limegreen;
-      font-size: 13vh;
-      transform: rotate(30deg);
-      color: #ecc85d;
+    left: 25vw;
+    top: 30vh;
+    color: limegreen;
+    font-size: 13vh;
+    transform: rotate(30deg);
+    color: #ecc85d;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     }
     .bi-arrow-right-rotate-two::before {
@@ -148,7 +126,6 @@
   .bi-arrow-left-rotate::before {
     position: absolute;
     font-weight: bold;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -164,7 +141,6 @@
 .bi-arrow-left-rotate-two::before {
   position: absolute;
     font-weight: bold;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -175,13 +151,11 @@
     transform: rotate(150deg);
     color: #ecc85d;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .bi-arrow-left-center-rotate::before {
   position: absolute;
   font-weight: bold;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -198,7 +172,6 @@
 .bi-arrow-right-center-rotate::before {
   position: absolute;
   font-weight: bold;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -209,32 +182,23 @@
   transform: rotate(125deg);
   color: #ecc85d;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-
 }
-
 
 </style>
 </head>
 <body>
 
 <div id="playerTopLeft" class="corner-div top-left winner-tourn-game">Player 1</div>
-
 <div id="playerTopRight" class="corner-div top-right loser-tourn-game">Player 3</div>
-
 <div style="left: 12vw; top: 44vh;" class="join-game-div">
-  <!-- <div style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: julien, Game ID: 15</div> -->
   <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>
 
 </div>
 <div style="left: 47vw; top: 35vh;" class="join-game-div hidden">
-  <!-- <div style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: julien, Game ID: 15</div> -->
   <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>
-
 </div>
 <div style="right: 12vw; top: 44vh;" class="join-game-div hidden">
-  <!-- <div style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: julien, Game ID: 15</div> -->
   <button style="background-color: #ecc85d; color: black;" class="btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>
-
 </div>
 
 <div id="playerBottomLeft" class="corner-div bottom-left loser-tourn-game">Player 2</div>
@@ -243,9 +207,6 @@
 <div id="playerRightCenter" class="corner-div right-center">Win Game 2</div>
 <div id="tournamentWinner" class="winner-div winner-center">Winner</div>
 
-
-
-
 <i class="bi bi-arrow-right bi-arrow-right-rotate"></i>
 <i class="bi bi-arrow-right bi-arrow-right-rotate-two"></i>
 <i class="bi bi-arrow-right bi-arrow-left-rotate"></i>
@@ -253,8 +214,5 @@
 <i class="bi bi-arrow-right bi-arrow-left-center-rotate"></i>
 <i class="bi bi-arrow-right bi-arrow-right-center-rotate"></i>
 
-
 </body>
 </html>
-
-
