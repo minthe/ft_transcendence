@@ -1,199 +1,63 @@
-
-function gameDom() {
-  // HERE EVENTLISTENERS FOR GAME:
-  // if (document.getElementById('createGameButton'))
-  //   document.getElementById('createGameButton').addEventListener('click', createGame);
-  // if (document.getElementById('tournamentsContainer'))
-  //   document.getElementById('tournamentsContainer').addEventListener('click', requestTourns);
-
-}
-
 async function joinedGameSuccessfully(gameId) {
-  console.log('In joinedGameSuccessfully');
-
   const gameScreen = document.getElementById("game-screen");
-
   const canvas = document.getElementById("pongCanvas");
   const ctx = canvas.getContext("2d");
 
-  // Draw paddles
   ctx.fillStyle = "black";
 
   websocket_obj.game.left_pedal = 0.75
-  console.log("websocket_obj.game.left_pedal: ", websocket_obj.game.left_pedal);
   websocket_obj.game.right_pedal = 0.75
-
 
   ctx.fillRect(canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
   ctx.fillRect(canvas.width - canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
 
-  // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
-
-
-//   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
   websocket_obj.game.is_host = false;
-
-
-
-  console.log("IN joinedGameSuccessfully");
 
   async function updateCanvasSize() {
     const canvas = document.getElementById("pongCanvas");
     canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
     canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
-
   }
 
   window.addEventListener("resize", updateCanvasSize);
-
-  // window.addEventListener("load", updateCanvasSize);
-
   document.getElementById("invites-screen").classList.add("hidden");
   document.getElementById('displayTourn').classList.add('hidden');
-
   document.getElementById("pongCanvas").classList.remove("hidden");
 
   gameScreen.classList.add('show');
   gameScreen.classList.remove('hidden');
 
-
   document.getElementById('mainSidebar').classList.add('hidden');
   document.getElementById('siteContent').classList.remove('site-content');
   document.getElementById('siteContent').classList.add('site-content-game');
 
-  // await sendDataToBackend('init_game');
   if (websocket_obj.game.active_state)
     window.addEventListener('popstate', function(event) {
         // Your code to handle the back button press here
-        console.log('Back button pressed!');
-        
     });
 
-
     document.addEventListener("keydown", async function(event) {
-        // Log the key code to the console
-        console.log("Key pressed: " + event.keyCode);
         if (event.keyCode == 40 || event.keyCode == 38)
         {
             websocket_obj.game.key_code = event.keyCode;
-            // websocket_obj.game.game_id = gameId;
-            console.log("in key event listener:");
-
-            console.log(websocket_obj.game.is_host);
-
             await sendDataToBackend('game_new_move');
             websocket_obj.game.key_code = 0;
         }
     });
-
-    console.log('end of JoinedGameSuccessfully');
-    // return true;
 }
 
 async function joinGame(gameId) {
-
-    console.log('In joinGame');
-    console.log('websocket_obj.game.active_state: ', websocket_obj.game.active_state);
-    // if (websocket_obj.game.active_state == false)
-    // {
     websocket_obj.game.game_id = gameId;
     await sendDataToBackend('init_game');
     websocket_obj.game.active_state = true;
-    // }
 }
-  
-
-
-  // const gameScreen = document.getElementById("game-screen");
-
-  // const canvas = document.getElementById("pongCanvas");
-  // const ctx = canvas.getContext("2d");
-
-  // // Draw paddles
-  // ctx.fillStyle = "black";
-
-  // websocket_obj.game.left_pedal = 0.75
-  // console.log("websocket_obj.game.left_pedal: ", websocket_obj.game.left_pedal);
-  // websocket_obj.game.right_pedal = 0.75
-
-
-  // ctx.fillRect(canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
-  // ctx.fillRect(canvas.width - canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
-
-  // // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
-
-
-  // websocket_obj.game.game_id = gameId;
-  // websocket_obj.game.key_code = 0;
-  // websocket_obj.game.is_host = false;
-
-
-
-  // console.log("IN JOINGAME");
-
-  // async function updateCanvasSize() {
-  //   const canvas = document.getElementById("pongCanvas");
-  //   canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
-  //   canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
-
-  // }
-
-  // window.addEventListener("resize", updateCanvasSize);
-
-  // // window.addEventListener("load", updateCanvasSize);
-
-  // document.getElementById("invites-screen").classList.add("hidden");
-
-  // document.getElementById("pongCanvas").classList.remove("hidden");
-  // gameScreen.classList.add('show');
-  // gameScreen.classList.remove('hidden');
-  // // await sendDataToBackend('init_game');
-
-  // window.addEventListener('popstate', function(event) {
-  //     // Your code to handle the back button press here
-  //     console.log('Back button pressed!');
-      
-  // });
-
-
-  // document.addEventListener("keydown", async function(event) {
-  //     // Log the key code to the console
-  //     console.log("Key pressed: " + event.keyCode);
-  //     if (event.keyCode == 40 || event.keyCode == 38)
-  //     {
-  //         websocket_obj.game.key_code = event.keyCode;
-  //         // websocket_obj.game.game_id = gameId;
-  //         console.log("in key event listener:");
-
-  //         console.log(websocket_obj.game.is_host);
-
-  //         await sendDataToBackend('game_new_move');
-  //         websocket_obj.game.key_code = 0;
-  //     }
-  // });
-
-  // console.log('end of JoinGame');
-
-  // }
-
 
 async function requestInvites() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("invites-screen").classList.remove("hidden");
   await sendDataToBackend('request_invites');
 }
-
-
-// async function requestTournHis() {
-//     console.log('In requestTournHis');
-//     // if (userState.currPage !== 'tournPage') {
-//     //   document.getElementById("start-screen").classList.add("hidden");
-//     //   document.getElementById("tournInvitesScreen").classList.remove("hidden");
-//     // }
-
-//     await sendDataToBackend('request_tourn_history');
-//   }
 
 async function requestTourns() {
   if (userState.currPage !== 'tournPage') {
@@ -203,30 +67,15 @@ async function requestTourns() {
   await sendDataToBackend('request_tourns');
 }
 
-async function generateFrontendRepresentation(data) {
-  const tournamentsContainer = document.getElementById('tournamentsContainer');
-
-    console.log('In generateFrontendRepresentation');
-    console.log(typeof data);
-    console.log(data);
-
- 
-}
-
-
-
 async function renderInvites() {
   const matches = websocket_obj.game.invites;
   const container = document.getElementById('game-session-container');
 
   container.innerHTML = generateHTMLContentInv(matches);
   if (websocket_obj.game.invites != 0) {
-
     container.querySelectorAll('.join-game-btn').forEach(button => {
     button.addEventListener('click', async function() {
-
       const gameId = this.getAttribute('data-gameid');
-
         joinGame(gameId); // Call your function with gameId
       });
     });
@@ -241,36 +90,15 @@ function generateHTMLContentInv(matches) {
     matches.forEach(match => {
       htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
       htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-game-btn btn btn-secondary" data-gameid="${match.game_id}">Join Game</button>`;
-
     });
     htmlContent += '</ul>';
   }
-  // else {
-  //   htmlContent = '<p>No matches found.</p>';
-  // }
   return htmlContent;
 }
 
-
-  async function  displayError(){
-    console.log('hi');
-
-  }
-
-
 async function sendGameInvitation() {
-
-
-  console.log('In invite user to game');
-
   let userNameInput = document.getElementById("guestUser");
-
-  // Access the value property to get the entered data
   let guestUser = userNameInput.value;
-
-  console.log("User Name: " + guestUser);
-
-
   let theButton = document.getElementById('createGameButton');
   theButton.style.display = 'none';
   let username = websocket_obj.username
@@ -279,80 +107,24 @@ async function sendGameInvitation() {
   try {
     const response = await fetch(`${window.location.origin}/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
-
-    console.log('DATA ', data);
-
     if (response.ok) {
     displayError(null);
     // Perform actions on successful login, e.g., set isLoggedIn and userData
       websocket_obj.active_game = null;
-
-        console.log(data);
     } else {
     displayError(data.error);
     }
   } catch (error) {
-    // console.error('Error fetching user data:', error);
     displayError('Error fetching user data');
   }
 }
 
-async function createGame() {
-
-
-  console.log("IN CREATEGAME");
-
-
-  let element = document.getElementById('createGameButton');
-  console.log(element);
-
-
-
-let theButton = document.getElementById('createGameButton');
-theButton.style.display = 'none';
-try {
-  const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/`);
-  const data = await response.json();
-
-
-
-  console.log('DATA ', data);
-  websocket_obj.active_game = data.id;
-  console.log('active game ', data.id);
-
-
-  if (response.ok) {
-  displayError(null);
-  websocket_obj.active_game = data.id;
-  // console.log(data.id); // Check the console for the result
-
-  // Perform actions on successful login, e.g., set isLoggedIn and userData
-      console.log(data);
-  } else {
-  displayError(data.error);
-  }
-} catch (error) {
-  // console.error('Error fetching user data:', error);
-  displayError('Error fetching user data');
-}
-
-
-}
-
-
 function drawPaddles() {
-
-  // console.log("in drawPaddles WEBSOCKETS.JS");
   const canvas = document.getElementById("pongCanvas");
-
   const ctx = canvas.getContext("2d");
 
-  // console.log("left pedal: ", websocket_obj.game.left_pedal);
-  // console.log("right pedal: ", websocket_obj.game.right_pedal);
   left_pedal = canvas.height * websocket_obj.game.left_pedal / 2
   right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
-
-
   const paddleHeight = canvas.height / 4;
 
   // Ensure paddles stay within canvas boundaries
@@ -373,7 +145,6 @@ function drawPaddles() {
   }
 
   ctx.fillStyle = "#131615";
-
   ctx.fillRect(
     canvas.width / 80,
     left_pedal,
@@ -388,36 +159,24 @@ function drawPaddles() {
 }
 
 function drawBall() {
-  // console.log("in drawBall WEBSOCKETS.JS");
-
   const canvas = document.getElementById("pongCanvas");
-
   const ctx = canvas.getContext("2d");
 
-
   ctx.beginPath();
-  // radius = canvas.width / 80
   radius = canvas.height / 40
 
   ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, radius, 0, Math.PI * 2);
-  // console.log("BALL canvas.width / 80", canvas.width / 80)
-  // ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
-
   ctx.fill();
   ctx.closePath();
 }
 
 async  function update() {
   const canvas = document.getElementById("pongCanvas");
-
   const ctx = canvas.getContext("2d");
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // moveBall();
   drawPaddles();
   drawBall();
-
   drawDashedLine(canvas, ctx);
 }
 
@@ -438,15 +197,10 @@ async function updateScore() {
   let guestScoreElem = document.getElementById('score2');
   hostScoreElem.textContent = websocket_obj.game.host_score;
   guestScoreElem.textContent = websocket_obj.game.guest_score;
-
 }
 
 async function launchGame()
 {
-  console.log('In launchGame');
-
-  // document.getElementById("waitingScreen").style.display = "none";
-
   const canvas = document.getElementById("pongCanvas");
   const ctx = canvas.getContext("2d");
 
@@ -458,50 +212,9 @@ async function launchGame()
       dx: 5,
       dy: 5,
     },
-
   };
-
   await update()
 }
-
-
-
-
-
-
-
-//
-// async function renderGame() {
-//
-//   console.log("in ACTUAL rendering");
-//   console.log(websocket_obj.game.is_host);
-//
-//   const canvas = document.getElementById("pongCanvas");
-//   const ctx = canvas.getContext("2d");
-//
-//   // Clear the canvas
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//
-//   ctx.fillStyle = "black";
-//
-//   ctx.fillRect(canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
-//   ctx.fillRect(canvas.width / 80 - canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
-//   console.log ("canvas.width: ", canvas.width);
-//   console.log ("canvas.height: ", canvas.height);
-//   console.log ("canvas.width / 80: ", canvas.width / 80);
-//   console.log ("canvas.height / 8: ", canvas.height / 8);
-//   console.log ("canvas.height / 4: ", canvas.height / 4);
-//
-//
-//   // Draw the ball
-//   ctx.beginPath();
-//   // ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
-//   ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
-//
-//   ctx.fill();
-//   ctx.closePath();
-// }
-
 
 function gameSiteClicked() {
   document.getElementById('start-screen').classList.remove('hidden');
@@ -525,29 +238,17 @@ function tournInvSiteClicked() {
   handleButtonClick(""); 
 }
 
-
 function gameOver(data) {
   document.getElementById('mainSidebar').classList.remove('hidden');
   document.getElementById('siteContent').classList.add('site-content');
   document.getElementById('siteContent').classList.remove('site-content-game');
-
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('pongCanvas').classList.add('hidden');
   document.getElementById('winningScreen').classList.remove('hidden');
-
   document.getElementById('fireworkCanvas').style.zIndex = 1;
-  // if (websocket_obj.game.game_id === data.game_id) {
-  //   activateFireworks();
 
-  //   // setTimeout(function() {
-  //   //   stopFirework();
-      
-  //   //   }, 4400);
-  // }
   activateFireworks();
-  // stopFirework();
 
-  
   let hostScoreElem = document.getElementById('score1');
   let guestScoreElem = document.getElementById('score2');
   if (hostScoreElem.textContent > guestScoreElem.textContent)
@@ -562,7 +263,6 @@ function gameOver(data) {
   websocket_obj.game.game_id = 0
   updateScore();
 }
-
 
 async function initGame(data) {
   document.getElementById("waitingScreen").style.display = "block";

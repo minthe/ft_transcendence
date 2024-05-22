@@ -7,53 +7,23 @@ let userState = {
   chatObj: {},
   chatOpen: false,
   userName: null,
-  
-  // tournId: null,
   currPageNotLogedIn: null
 }
-// groupChatName: "",
-//   idxState : 0
-// logedOut: false
-
-
   
 function render() {
   document.body.innerHTML = userState.bodyText;
 }
-  
-// (function initialize() {
-//   window.history.replaceState(state, null, "");
-//   render(state);
-// })();
 
 function handleButtonClick(url) {
-
-
-
   userState.bodyText = document.body.innerHTML;
-
-// userState.currPage = url;
   window.history.pushState(userState, null, url);
 }
 
-
-
 window.onpopstate = async function (event) {
-  console.log('onpopstate triggered')
-
-  console.log(websocket_obj.game.active_state)
-  console.log(websocket_obj.game)
-
   if (websocket_obj.game.active_state === true)
-  {  console.log('You left the game!')
-    console.log(websocket_obj.game.active_state)
+  {
     websocket_obj.game.active_state = false
     sendDataToBackend('user_left_game')
-  }
-  else
-  {
-    console.log('onpop ignored')
-
   }
 
   if (event.state)
@@ -71,7 +41,6 @@ window.onpopstate = async function (event) {
       updatePage();
     })
     .catch(error => {
-      // console.error('There was a problem showing the page:', error);
     });
 };
 
@@ -126,14 +95,12 @@ async function handleClickEvent(event) {
       await logoutUser();
       const data = await response.json();
 			userState.bodyText = document.body.innerHTML;
-			// userState.currPage = "homeSite";
 			userState.chatObj = {};
 			userState.chatOpen = false;
 			userState.userName = null;
 			throw new Error(data.message);
 		}
-    // changeToProfile();
-    
+
     if (event.target.closest('#homeButton'))
       showSiteHideOthers('homeSite', 'homeButton');
     else if (event.target.closest('#gameButton'))
@@ -204,27 +171,13 @@ async function handleClickEvent(event) {
     else if (event.target.closest('#tournHistoryBtn') || event.target.closest('#tournHistoryBtnTwo')) {
       tournHistoryBtnClicked();
     }
-
   })
 	.catch(error => {
-    // console.error('Error during login:', error);
 	});
-  
-  
-  
-  
 }
-
-
 
 function spaNotLogedIn(site_to_show) {
   logedOutSpaCount++;
   userState.currPageNotLogedIn = site_to_show;
   handleButtonClick("");
-  
-  // if (site_to_show === 'registerPage')
-  //   window.history.replaceState(userState, null, "");
-  
 }
-
-

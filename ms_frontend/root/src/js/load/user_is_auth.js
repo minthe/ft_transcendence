@@ -47,12 +47,10 @@ async function enterKeyEvent(event) {
   return false;
 }
 
-
 function showSiteHideOthers(site_to_show, btnToColor) {
   if (userState.currPage === site_to_show)
     return ;
   
-  // userState.bodyText = document.body.innerHTML;
   changeCurrSite(site_to_show);
   changeCurrBtn(btnToColor);
   handleButtonClick("");
@@ -76,36 +74,6 @@ function changeCurrBtn(btnToColor) {
       document.getElementById(button).style.backgroundColor = '#f8efb5';
   })
 }
-
-
-
-// function submitForm() {
-//   const img = document.getElementById('profilePictureInput')
-//   if (img.files && img.files[0]) {
-//       const file = img.files[0];
-//       const reader = new FileReader();
-//       reader.onload = function (e) {
-//         const imageData = e.target.result;
-//         const formData = new FormData();
-//         formData.append('avatar', file);
-//         // if response good, assign new image && display Image
-//         const url = `${window.location.origin}/game/upload/avatar/${websocket_obj.username}/`
-//         fetch(url, {
-//             method: 'POST',
-//             body: formData
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//           websocket_obj.avatar = imageData
-//           displayImagePreview(imageData);
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//         });
-//       };
-//     reader.readAsDataURL(file);
-//   }
-// }
 
 function displayImagePreview(imageData) {
   document.getElementById('previewImage').src = imageData;

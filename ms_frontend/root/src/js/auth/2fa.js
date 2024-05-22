@@ -105,15 +105,8 @@ async function getTwoFaStatus() {
 			showTwoFaEnableBtn();
 	})
 	.catch(error => {
-		console.log('Get 2fa status error: ', error);
 	})
 }
-
-
-
-
-
-
 
 // check errors
 function updateTwoFactor(correctMethod) {
@@ -121,7 +114,6 @@ function updateTwoFactor(correctMethod) {
   
 	fetch(url, {
 	  method: 'POST',
-	//   headers: headerEnableTwoFa()
 	})
 	.then(async function(response) {
 		changeToTwoFa();
