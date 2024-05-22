@@ -1175,6 +1175,38 @@ text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   transform: scale(1.2);
 }
 
+.change-profile-image-private-chat {
+  width: 15vh;
+  height: 15vh;
+  overflow: hidden;
+  border-radius: 50%;
+  transition: transform 0.3s ease-in-out;
+  /* box-shadow: 0 0 25px rgba(192, 192, 192, 0.8); */
+  /*outline: 3px solid #131615;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.change-profile-image-private-chat img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.modal-header .profile-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.privateChatProfileName {
+  text-align: center;
+}
+
+.center-buttons {
+  margin-bottom: 15px;
+}
 
 .profile-picture {
   object-fit: cover;
