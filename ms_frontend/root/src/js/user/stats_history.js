@@ -96,7 +96,7 @@ function displayTournHistory() {
 	for (let i = 0; tourns[i]; i++) {
 		historyHTML += '<div class="stats-item"><span id="tournsPlayed">';
 		historyHTML += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Host: ${tourns[i][0][0].tourn_host}, Tournament ID: ${tourns[i][0][0].tourn_id}</li>`;
-		historyHTML += `<button style="background-color: #ecc85d; color: black;" class="join-tourn-btn btn btn-secondary" data-tournid="${tourns[i][0][0].tourn_host}">View Tournament</button>`;
+		historyHTML += `<button class="join-tourn-btn btn btn-outline-dark" data-tournid="${tourns[i][0][0].tourn_host}">View Tournament</button>`;
 		historyHTML += '</span></div>';
 	}
 	historyHTML += '</div>';
