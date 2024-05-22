@@ -2,17 +2,14 @@
 async function updatePage() {
 	changeToProfile();
 
-    if (userState.userName === websocket_obj.username) {
-
+	if (userState.userName === websocket_obj.username) {
 		if (userState.currPage === 'homeSite') {
 			showSiteHideOthers('homeSite', 'homeButton');
-
 			document.getElementById('displayUserName').innerHTML = 'Hey '+ websocket_obj.username +' 🫠';
 		}
 		else if (userState.currPage === 'gameSite')
 			gameSiteClicked();
 		else if (userState.currPage === 'profileSite') {
-			//profileButtonClicked
 			await getProfileData();
 			await getTwoFaStatus();
 			showSiteHideOthers('profileSite', 'profileButton')
@@ -25,13 +22,13 @@ async function updatePage() {
 			await sendDataToBackend('get_current_users_chats')
 			await sendDataToBackend('get_blocked_by_user')
 			await sendDataToBackend('get_blocked_user')
-		  }
+		}
 		if (userState.currPage === 'group_chat') {
-		if (userState.chatOpen)
-			userState.chatOpen = false;
-		else
-			userState.chatOpen = true;
-		await handleClickedOnChatElement(userState.chatObj);
+			if (userState.chatOpen)
+				userState.chatOpen = false;
+			else
+				userState.chatOpen = true;
+			await handleClickedOnChatElement(userState.chatObj);
 		}
 		if (userState.currPage === 'invites')
 			await requestInvites();
@@ -42,11 +39,10 @@ async function updatePage() {
 		if (userState.currPage === 'chat') {
 			hideDiv('messageSide');
 			document.getElementById('right-heading-name').textContent = "";
-			// chat_avatar.src = "../img/ballWithEye.jpg";
 		}
 	}
-	else {
-		// showSiteHideOthers('homeSite');
+	else
+	{
 		showSiteHideOthersSpa('homeSite');
 		document.getElementById('displayUserName').innerHTML = 'Hey '+ websocket_obj.username +' 🫠';
 		userState.bodyText = document.body.innerHTML;
@@ -72,7 +68,6 @@ window.addEventListener('load', function() {
 	const myData = JSON.parse(localStorage.getItem('myData'));
 
 	if (myData) {
-		// localStorage.clear();
 		websocket_obj = myData.ws_obj
 		username = myData.ws_obj.username
 		password = myData.ws_obj.password
@@ -81,7 +76,6 @@ window.addEventListener('load', function() {
 	}
 	checkPageState();
 });
-
 
 function sillyLogin(username, password, user_id) {
 	websocket_obj.username = username
@@ -103,15 +97,12 @@ function checkPageState() {
 	.then(async response => {
 		if (!response.ok) {
 			const data = await response.json();
-			
 			await logoutUser();
 			userState.bodyText = document.body.innerHTML;
-			// userState.currPage = "homeSite";
 			userState.chatObj = {};
 			userState.chatOpen = false;
 			userState.userName = null;
 
-			//problem of storing currPage from before maybe new var in userState needed
 			if (userState.currPageNotLogedIn === null) {
 				userState.currPageNotLogedIn = 'loginPage'
 				window.history.replaceState(userState, null, "");
@@ -124,10 +115,6 @@ function checkPageState() {
 				document.getElementById('registerPassword').value  = null;
 				document.getElementById("registerUsername").style.border = "";
 				document.getElementById("registerPassword").style.border = "";
-				
-				
-				// spaNotLogedIn('loginPage');
-				// changeToLoginPageButton();
 			}
 			else if (userState.currPageNotLogedIn === 'registerPage') {
 				hideDiv('loginPage')
@@ -137,12 +124,7 @@ function checkPageState() {
 				document.getElementById('loginPassword').value  = null;
 				document.getElementById("loginUsername").style.border = "";
 				document.getElementById("loginPassword").style.border = "";
-				
-				// spaNotLogedIn('registerPage');
-				// showRegisterPage();
 			}
-			// else
-			// 	spaNotLogedIn(userState.currPage);
 			throw new Error(data.message);
 		}
 		sillyLogin(websocket_obj.username, websocket_obj.password, websocket_obj.user_id)
@@ -156,6 +138,5 @@ function checkPageState() {
 		}, 500);
 	})
 	.catch(error => {
-		// console.error('Error during login:', error);
 	});
 }

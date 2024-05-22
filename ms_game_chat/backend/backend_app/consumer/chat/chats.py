@@ -555,10 +555,8 @@ class _Chat:
         user_instance = MyUser.objects.get(name=chat_name)
         avatar_url = user_instance.avatar if user_instance.avatar else None
         if self.is_valid_url(avatar_url):
-            print("Valid URL")
             result = str(avatar_url) if avatar_url else None
         else:
-            print("Invalid URL")
             result = str(avatar_url) if avatar_url else None # doesnt work if avatar is url
         return result
 

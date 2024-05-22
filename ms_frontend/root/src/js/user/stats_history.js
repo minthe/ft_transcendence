@@ -4,7 +4,6 @@ function historyBtnClicked() {
 	document.getElementById('tournHistory').classList.add('hidden');
 	document.getElementById('userHistory').classList.remove('hidden');
 }
-
 function statsBtnClicked() {
 	document.getElementById('userHistory').classList.add('hidden');
 	document.getElementById('tournHistory').classList.add('hidden');
@@ -57,8 +56,6 @@ function displayStats() {
 }
 
 function displayHistory() {
-	console.log('display history');
-
 	const userHistory = document.getElementById('userHistory');
 	let historyHTML = '<h2 class="stats-item">Your History</h2><div class="stats">';
 
@@ -80,30 +77,23 @@ function getUserStats(stats) {
 	websocket_obj.game_stats.won_games = stats.won_games;
 }
 
-
-
-
-
-
 function displayTournHistory() {
 	const tournHistory = document.getElementById('tournHistory');
 	let historyHTML = '<h2 class="stats-item">Tourn History</h2><div class="stats">';
 	let tourns = websocket_obj.tourn_history;
 
-	console.log('tourn history: ', websocket_obj.tourn_history[0]);
 	tournHistory.innerHTML = '';
 	historyHTML += '<div class="scroll-history">'
 	for (let i = 0; tourns[i]; i++) {
 		historyHTML += '<div class="stats-item"><span id="tournsPlayed">';
 		historyHTML += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Host: ${tourns[i][0][0].tourn_host}, Tournament ID: ${tourns[i][0][0].tourn_id}</li>`;
-		historyHTML += `<button style="background-color: #ecc85d; color: black;" class="join-tourn-btn btn btn-secondary" data-tournid="${tourns[i][0][0].tourn_host}">View Tournament</button>`;
+		historyHTML += `<button class="join-tourn-btn btn btn-outline-dark" data-tournid="${tourns[i][0][0].tourn_host}">View Tournament</button>`;
 		historyHTML += '</span></div>';
 	}
 	historyHTML += '</div>';
 	historyHTML += `<button id="userStatsBtnTwo" class="stats-btn btn btn-outline-dark">Your Stats</button>
 	<button id ="userHistoryBtnTwo" class="stats-btn btn btn-outline-dark">Your History</button></div>`;
 	tournHistory.innerHTML = historyHTML;
-
 
 	tournHistory.querySelectorAll('.join-tourn-btn').forEach(button => {
 		button.addEventListener('click', async function() {
@@ -115,22 +105,5 @@ function displayTournHistory() {
 			document.getElementById('start-screen').classList.add('hidden');
 		  	handleButtonClick("");
 		});
-	});
-}
-
-function renderTournHistory() {
-	const matches = websocket_obj.tourn_history;
-	const container = document.getElementById('tournGameSessionContainer');
-  
-	container.innerHTML = generateHTMLContentHistory(matches);
-
-	container.querySelectorAll('.join-tourn-btn').forEach(button => {
-	button.addEventListener('click', async function() {
-		const tournId = this.getAttribute('data-tournid');
-	//   userState.currPage = 'tournPage';
-	//   userState.tournId = tournId;
-		joinTourn(tournId, matches);
-	//   handleButtonClick("");
-	});
 	});
 }

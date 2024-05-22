@@ -54,10 +54,6 @@ async function createPublicChat() {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
-  // if (containsSQLInjection(chat_name)) {
-  //   setErrorWithTimout('info_create_chat', 'Invalid Characters for Chat name!',  5000)
-  //   return;
-  // }
   
   await sendDataToBackend('set_new_chat')
   let chatNameLabel = document.getElementById('new_chat_name');
@@ -72,10 +68,6 @@ async function createPrivateChat() {
     setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;
   }
-  // if (containsSQLInjection(chat_name)) {
-  //   setErrorWithTimout('info_create_private_chat', 'Invalid Characters for Chat name!',  5000)
-  //   return;
-  // }
 
   websocket_obj.new_private_chat_name = chat_name
   await sendDataToBackend('set_new_private_chat')
@@ -368,7 +360,6 @@ async function chatSiteClicked() {
   hideDiv('messageSide');
   document.getElementById('right-heading-name').textContent = "";
   chat_avatar.src = "../img/playPongLogoWhite.webp";
-  
   userState.chatOpen = false;
 }
 
@@ -379,19 +370,7 @@ async function sendMessage() {
       return
     }
   const messageInput = document.getElementById('messageInput');
-    // if (containsSQLInjection(messageInput.value)) {
-    //   setTimeout(function () {
-    //     messageInput.value = '';
-    //     messageInput.style.color = 'white';
-    //     messageInput.removeAttribute('readonly')
-    //     document.getElementById('sendMessageButton').disabled = false;
-    //   }, 2000);
-    //   document.getElementById('sendMessageButton').disabled = true;
-    //   messageInput.setAttribute('readonly', true);
-    //   messageInput.style.color = 'red';
-    //   messageInput.value = 'Message contains invalid characters';
-    //   return;
-    // }
+
     websocket_obj.message = document.getElementById('messageInput').value
 
     websocket_obj.sender = websocket_obj.username
@@ -421,17 +400,10 @@ async function openChat() {
 }
 
 async function challengeTournClicked() {
-  console.log('In inviting through chat 1')
   sendDataToBackend('get_user_in_current_chat')
-  console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
-  console.log('websocket_obj.userInCurrentChat ', websocket_obj.userInCurrentChat)
-  console.log('websocket_obj.username ', websocket_obj.username)
 
-  // websocket_obj.username = 'm' // !!!!!!!!!!!! HARDCODED
   const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
-  console.log('invited_username ', invited_username)
-  websocket_obj.invited_id = invited_username 
-//   websocket_obj.invited_id = websocket_obj.chat_name
+  websocket_obj.invited_id = invited_username
 
   await sendDataToBackend('inform_chatbot')
   await sendDataToBackend('join_tournament');
@@ -439,32 +411,20 @@ async function challengeTournClicked() {
 }
 
 async function challengeUserClicked() {
-  console.log('In inviting through chat 2')
-  // const username = websocket_obj.username;
   sendDataToBackend('get_user_in_current_chat')
-  console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
-
   const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
-  console.log('invited_username ', invited_username)
-  // const invited_username = 'test'
-  websocket_obj.invited_id = invited_username 
+  websocket_obj.invited_id = invited_username
   try {
     const response = await fetch(`${window.location.origin}/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
     const data = await response.json();
-    console.log('DATA ', data);
-    // websocket_obj.active_game = data.id;
 
     if (response.ok) {
     displayError(null);
     websocket_obj.active_game = data.id;
-    // console.log(data.id); // Check the console for the result
-    // Perform actions on successful login, e.g., set isLoggedIn and userData
-        console.log(data);
     } else {
     displayError(data.error);
     }
   } catch (error) {
-    // console.error('Error fetching user data:', error);
     displayError('Error fetching user data');
   }
 }
@@ -493,7 +453,6 @@ async function unblockUserClicked() {
 async function rightHeadingClicked() {
   const state = document.getElementById('right-heading-name').dataset.state
   const chatName = document.getElementById('backdropPrivateProfileLabel').textContent;
-  console.log('STATE: ', state)
 
   if(chatName !== 'CHAT_BOT') {
     if (state === 'private')

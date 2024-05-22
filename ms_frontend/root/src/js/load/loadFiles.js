@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function () {
 	loadContent('html/userIsNotAuth.html', 'userIsNotAuth');
 	loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
@@ -10,7 +8,6 @@ function loadContent(file, targetId) {
     .then(response => response.text())
     .then(html => {
       document.getElementById(targetId).innerHTML = html;
-    //   addEventListenersNotAuth();
     })
     .catch(error => console.error('Error loading content:', error, 'try reloading'));
 }

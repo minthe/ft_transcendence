@@ -1,22 +1,6 @@
 let emailBeforeEdit;
 let gameAliasBeforeEdit;
 
-//combine function with the one from twofa
-// function updateProfileMessage(success, message) {
-// 	const twoFaStatus = document.getElementById('updateTwoFa');
-
-// 	setTimeout(function() {
-// 	twoFaStatus.classList.add('hidden');
-// 	}, 3500);
-// 	twoFaStatus.classList.remove('hidden');
-// 	if (success)
-// 		twoFaStatus.style.color = 'green';
-// 	else
-// 		twoFaStatus.style.color = 'red';
-// 	twoFaStatus.textContent = message;
-// }
-
-
 function editProfile() {
   emailBeforeEdit = document.getElementById('email').value;
   gameAliasBeforeEdit = document.getElementById('gameAlias').value;
@@ -30,21 +14,6 @@ function editProfile() {
 function saveChanges() {
   const mail = document.getElementById("email");
   const gameAlias = document.getElementById("gameAlias");
-  // if (containsSQLInjection(mail.value) || containsSQLInjection(gameAlias.value)) {
-  //   console.log('are malicious for user profile')
-  //   setTimeout(function () {
-  //     document.getElementById('wrongSavedInput').classList.add('hidden');
-  //   }, 3000);
-  //   document.getElementById('wrongSavedInput').classList.remove('hidden');
-  //   mail.value = emailBeforeEdit;
-  //   gameAlias.value = gameAliasBeforeEdit;
-  //   mail.setAttribute('readonly', true);
-  //   gameAlias.setAttribute('readonly', true);
-  //   editButton.style.display = 'block';
-  //   saveButton.style.display = 'none';
-  //   return ;
-  // }
-
   const url = `${window.location.origin}/user/profile`
   fetch (url, {
     method: 'PUT',
@@ -72,10 +41,8 @@ function saveChanges() {
 
 function changeProfileImage() {
   const profileImageInput = document.querySelector('.change-profile-image input[type="file"]');
-  
   profileImageInput.addEventListener("change", function() {
     const file = this.files[0];
-
 
     if (file) {
       if (!file.type.startsWith('image/')) {
@@ -106,7 +73,6 @@ function changeProfileImage() {
         })
         .catch(error => {
           updateTwoFaStatus(false, error);
-          // console.error('There was a problem with the fetch operation:', error);
         });
       };
     }
@@ -128,7 +94,6 @@ async function getProfileData() {
     document.getElementById("gameAlias").value = data.alias;
   })
   .catch(error => {
-    // console.error('There was a problem getting profile data: ', error);
   });
 }
 
@@ -154,7 +119,6 @@ async function getProfilePicture(id) {
     avatarUrl = data.avatar;
   }
   catch (error) {
-    // console.error('There was a problem with the fetch operation:', error);
   }
   return avatarUrl;
 }

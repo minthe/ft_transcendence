@@ -4,18 +4,13 @@ async function renderTourns() {
 	const container = document.getElementById('tournGameSessionContainer');
   
 	container.innerHTML = generateHTMLContentTourns(matches);
-
 	container.querySelectorAll('.join-tourn-btn').forEach(button => {
 	button.addEventListener('click', async function() {
 		const tournId = this.getAttribute('data-tournid');
-	//   userState.currPage = 'tournPage';
-	//   userState.tournId = tournId;
 		joinTourn(tournId, matches);
-	//   handleButtonClick("");
 	});
 	});
 }
-
 
 function generateHTMLContentTourns(matches) {
 	let htmlContent = '';
@@ -25,13 +20,11 @@ function generateHTMLContentTourns(matches) {
 	  matches.forEach(match => {
 		htmlContent += `<li style="color: #ef7267; margin-bottom: 20px; margin-top: 20px;">Host: ${match[0][0].tourn_host}, Tournament ID: ${match[0][0].tourn_host}</li>`;
 		htmlContent += `<button style="background-color: #ecc85d; color: black;" class="join-tourn-btn btn btn-secondary" data-tournid="${match[0][0].tourn_host}">Enter Tournament</button>`;
- 
 	  });
 	  htmlContent += '</ul>';
 	}
 	return htmlContent;
 }
-
 
 function joinTourn(tournId, matches) {
 	let userId = `${websocket_obj.user_id}`;
@@ -40,10 +33,7 @@ function joinTourn(tournId, matches) {
 	removeTournViewDisplay();
 	matches.forEach(match => {
 		if (match[0][0].tourn_host === tournId) {
-			
-			
-			
-			if (match.length < 3){
+			if (match.length < 3) {
 				document.getElementById('tournNotFull').classList.remove('hidden');
 				document.getElementById('tournGameSessionContainer').classList.add('hidden');
 				setTimeout(function() {
@@ -55,7 +45,6 @@ function joinTourn(tournId, matches) {
 			}
 			
 			const joinButtons = document.querySelectorAll('#displayTourn .join-game-div');
-			
 			joinButtons.forEach(joinButton => {
 				joinButton.remove();
 			});
@@ -78,7 +67,6 @@ function joinTourn(tournId, matches) {
 	container.querySelectorAll('.join-game-btn').forEach(button => {
 		button.addEventListener('click', async function() {
 			const gameId = this.getAttribute('data-gameid');
-
 			joinGame(gameId);
 		});
 	});

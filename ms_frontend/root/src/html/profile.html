@@ -1,55 +1,36 @@
 <div id="profilePage" class="profile-page">
-  <!-- <div class="profile"> -->
-    <div id="profilePanel" class="profile-header">
-      <label id="changeProfileImage" class="change-profile-image">
-        <input type="file" style="display: none;" accept="image/*">
-        <img id="profilePicture" src="" class="profile-picture" alt="Profile Picture">
-      </label>
-      <button id="twoFAButtonE" class="change-profile-btn btn btn-outline-dark two-fa profile-page-btn">Enable 2FA</button>
-      <button id="twoFAButtonD" class="change-profile-btn btn btn-outline-secondary two-fa hidden profile-page-btn">Disable 2FA</button>
-    
-      <h1 id="profileName" class="profile-name"></h1>
-      
-      <div class="profile-details">
-        <h2 class="section-heading">Details</h2>
-        
-        <ul class="details-list">
-          <li class="input-field">
-            <label for="email" class="form-label profile-label">E-Mail :</label>
-            <input id="email" class="form-control input-profile" value="test" readonly autocomplete="email">
-          </li>
-          <li class="input-field">
-            <label for="gameAlias" class="form-label profile-label">Game-Alias :</label>
-            <input id="gameAlias" class="form-control input-profile" value="test" readonly>
-          </li>
-        </ul>
-        
+  <div id="profilePanel" class="profile-header">
+    <label id="changeProfileImage" class="change-profile-image">
+      <input type="file" style="display: none;" accept="image/*">
+      <img id="profilePicture" src="" class="profile-picture" alt="Profile Picture">
+    </label>
+    <button id="twoFAButtonE" class="change-profile-btn btn btn-outline-dark two-fa profile-page-btn">Enable 2FA</button>
+    <button id="twoFAButtonD" class="change-profile-btn btn btn-outline-secondary two-fa hidden profile-page-btn">Disable 2FA</button>
+    <h1 id="profileName" class="profile-name"></h1>
 
-
-       
-
-        <button id="saveButton" class="btn btn-outline-secondary profile-page-btn" style="display: none;">Save</button>
-        <button id="editButton" class="btn btn-outline-dark profile-page-btn">Edit</button>
-        <div id="wrongSavedInput" class="hidden" style="color: red; margin-top: 10px;">Malicious characters entered!</div>
-        
-        <div id="updateTwoFa" class="hidden" ></div>
-
-        
-        <!-- <div id="updateTwoFaError" class="hidden" style="color: red;">Failed to Update 2FA</div>
-        <div id="updateTwoFaSucces" class="hidden" style="color: green;">Updated 2FA succesfully</div> -->
-      </div>
+    <div class="profile-details">
+      <h2 class="section-heading">Details</h2>
+      <ul class="details-list">
+        <li class="input-field">
+          <label for="email" class="form-label profile-label">E-Mail :</label>
+          <input id="email" class="form-control input-profile" value="test" readonly autocomplete="email">
+        </li>
+        <li class="input-field">
+          <label for="gameAlias" class="form-label profile-label">Game-Alias :</label>
+          <input id="gameAlias" class="form-control input-profile" value="test" readonly>
+        </li>
+      </ul>
+      <button id="saveButton" class="btn btn-outline-secondary profile-page-btn" style="display: none;">Save</button>
+      <button id="editButton" class="btn btn-outline-dark profile-page-btn">Edit</button>
+      <div id="wrongSavedInput" class="hidden" style="color: red; margin-top: 10px;">Malicious characters entered!</div>
+      <div id="updateTwoFa" class="hidden" ></div>
     </div>
-
-    
-    
-    <!-- </div> -->
   </div>
-  <div id="twoFAProfile" class="pop-up-two-fa hidden">
-
-    <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
-    <form class="centered-form">
-      <input type="digit" id="twoFaCodeProfile" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
-    </form>
-  
-    <button type="submit" id="verifyButtonProfile" class="btn btn-secondary verify-btn">Verify</button>
-  </div>
+</div>
+<div id="twoFAProfile" class="pop-up-two-fa hidden">
+  <h2 class="header-two-fa">Enter the 6-digit code send to your E-Mail to deactivate 2FA</h2>
+  <form class="centered-form">
+    <input type="digit" id="twoFaCodeProfile" class="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="6">
+  </form>
+  <button type="submit" id="verifyButtonProfile" class="btn btn-secondary verify-btn">Verify</button>
+</div>

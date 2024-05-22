@@ -56,9 +56,6 @@ websocket_obj = {
       ball_y: 0,
       host_score: 0,
       guest_score: 0,
-
-      // game_joined: false,
-      // hostName: null,
       guestName: null
     }
   ],
@@ -153,59 +150,41 @@ async function establishWebsocketConnection() {
         }
         break
       case 'render_left':
-
         websocket_obj.game.left_pedal = data.new_pedal_pos
-        console.log("new left_pedal: ", websocket_obj.game.left_pedal);
         await update();
         break
       case 'render_right':
-        console.log("RENDER_RIGHT");
-        console.log(data.new_pedal_pos);
         websocket_obj.game.right_pedal = data.new_pedal_pos
         await update();
         break
       case 'init_game':
-        console.log(data);
         websocket_obj.game.active_state = true
         joinedGameSuccessfully(websocket_obj.game.game_id)
         initGame(data);
         break
       case 'game_start':
-        
-        console.log("GAME START");
         document.getElementById("waitingScreen").style.display = "none";
         launchGame();
-        // sendDataToBackend('request_score')
-        // startCountdownAnimation();
         break
       case 'ball_update':
-        // console.log("BALL_UPDATE");
-        // websocket_obj.game.ball_x = data.ball_x
         const canvas = document.getElementById("pongCanvas");
         websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
         websocket_obj.game.ball_y = data.ball_y * canvas.height / 2;
-        // console.log("ball_y: ", websocket_obj.game.ball_y);
         await update();
         break
       case 'score_update':
-        console.log("SCORE_UPDATE");
         websocket_obj.game.host_score = data.host_score
         websocket_obj.game.guest_score = data.guest_score
-        // console.log("host_score: ", websocket_obj.game.host_score);
-        // console.log("guest_score: ", websocket_obj.game.guest_score);
         await updateScore();
         break
       case 'game_over':
-        console.log("GAME OVER");
         gameOver(data);
         break
       case 'reset_stable_id':
-        console.log("RESET STABLE ID");
         websocket_obj.game.active_state = false
         sendDataToBackend('reset_stable_id')
         break
       case 'opponent_disconnected':
-        console.log("YOUR APPONENT LEFT THE GAME");
         websocket_obj.game.host_score = 0
         websocket_obj.game.guest_score = 0
         websocket_obj.game.game_id = 0
@@ -259,45 +238,28 @@ async function establishWebsocketConnection() {
         }
         break
       case 'recieve_invites':
-      // websocket_obj.game.invites = data.matches
         websocket_obj.game.invites = JSON.parse(data.matches);
-  
-        console.log('DATA: ', websocket_obj.game.invites)
-        console.log('joined value: ', data.joined_game);
         if (data.joined_game)
-          console.log('already in a game+#++##+##+#+#+#++#+#');
+          console.log('');
         else
           renderInvites();
         break
       case 'recieve_tourns':
-        console.log('recieve_tourns');
         websocket_obj.game.invites = JSON.parse(data.matches)
-        console.log('DATA: ', websocket_obj.game.invites)
         if (userState.currPage !== 'tournPage')
           renderTourns();
         else
           joinTourn(userState.tournId, websocket_obj.game.invites);
-        // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_tourn_history':
         websocket_obj.tourn_history = JSON.parse(data.matches)
-        console.log('DATA tourn history: ', data.matches)
         displayTournHistory();
-        // if (userState.currPage !== 'tournPage')
-        //   renderTourns();
-        // else
-        //   joinTourn(userState.tournId, websocket_obj.game.invites);
-        // console.log('DATA: ', websocket_obj.game.invites[1][1])
         break
       case 'recieve_stats':
-        console.log('recieve_stats')
-        console.log(data);
         websocket_obj.game_stats = data.stats;
         displayStats();
-        // getUserStats(data.stats);
         break
       case 'recieve_history':
-        console.log('recieve_history')
         websocket_obj.history = data.history;
         displayHistory();
         break
@@ -305,13 +267,11 @@ async function establishWebsocketConnection() {
         break
       case 'inform_chatbot':
         if (websocket_obj.user_id === data.user_id) {
-          // console.log("I ["+websocket_obj.username+"] got INFORM_CHATBOT through ws")
           websocket_obj.other_user_name = data.other_user_name
           await sendDataToBackend('save_chatbot_message')
         }
         break
       case 'already_in_game':
-        console.log('already_in_game')
         requestInvites()
         break
       case 'inform_chatbot_new_game':
@@ -321,18 +281,15 @@ async function establishWebsocketConnection() {
         }
         break
       default:
-        console.log('SOMETHING ELSE [something wrong in onmessage type]')
-        console.log('DATA: ', data)
+        console.log('')
     }
   };
 
   websocket_obj.websocket.onerror = function (error) {
-    console.error("WebSocket error:", error);
     logoutUser()
   };
 
   websocket_obj.websocket.onclose = function (event) {
-    console.log("WebSocket closed:", event);
     logoutUser()
   };
 }
@@ -428,36 +385,24 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'game_new_move':
-          // const canvas = document.getElementById("pongCanvas");
-          console.log("in game_new_move");
-          console.log(websocket_obj.game.is_host);
-        //   prev_pos =  websocket_obj.game.left_pedal;
           if (websocket_obj.game.is_host === true)
             pedal_pos = websocket_obj.game.left_pedal
           else
             pedal_pos = websocket_obj.game.right_pedal
-          // console.log(prev_pos);
-
-          // pedal_pos = pedal_pos * 2 / canvas.height;
-          // console.log("pedal_pos: ", pedal_pos);
           type = 'send_game_scene'
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-            // 'chat_id': websocket_obj.chat_id,
             'game_id': websocket_obj.game.game_id,
             'key_code': websocket_obj.game.key_code,
             'prev_pos': pedal_pos,
-            // 'is_host': websocket_obj.game.is_host,
           }
           break
         case 'init_game':
-          console.log("in init_game");
           type = 'send_init_game',
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-            // 'chat_id': websocket_obj.chat_id,
             'game_id': websocket_obj.game.game_id,
           }
           break
@@ -466,7 +411,6 @@ async function sendDataToBackend(request_type) {
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
-            // 'chat_id': websocket_obj.chat_id,
             'game_id': websocket_obj.game.game_id,
           }
           break
@@ -521,18 +465,14 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'request_invites':
-          console.log('request_invites')
           type = 'send_request_invites'
           logicType = 'game'
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': 0,
-
           }
           break
         case 'join_tournament':
-          console.log('join_tournamentttttttt')
-          console.log(websocket_obj.user_id)
           type = 'send_join_tournament'
           logicType = 'game'
           data = {
@@ -542,8 +482,6 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'request_tourns':
-          console.log('request_tournssss')
-          console.log(websocket_obj.user_id)
           type = 'send_request_tourns'
           logicType = 'game'
           data = {
@@ -552,8 +490,6 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'request_tourn_history':
-          console.log('request_tourn_his')
-          console.log(websocket_obj.user_id)
           type = 'request_tourn_his'
           logicType = 'game'
           data = {
@@ -561,13 +497,6 @@ async function sendDataToBackend(request_type) {
               'game_id': 0,
           }
           break
-        // case 'new_profile_picture':
-        //   type = 'new_profile_picture',
-        //   data = {
-        //     'profile_picture': websocket_obj.profile_picture,
-        //     'file_data': websocket_obj.file_data,
-        //   }
-        //   break
         case 'request_stats':
           type = 'send_stats'
           logicType = 'game'
@@ -628,7 +557,6 @@ async function sendDataToBackend(request_type) {
             'game_id': websocket_obj.game.game_id,
           }
           websocket_obj.game.active_state = false
-
           websocket_obj.game.host_score = 0
           websocket_obj.game.guest_score = 0
           websocket_obj.game.game_id = 0
@@ -636,8 +564,6 @@ async function sendDataToBackend(request_type) {
         case 'request_score':
           type = 'request_score'
           logicType = 'game'
-          console.log('request_score')
-          console.log(websocket_obj.game.active_state)
           data = {
             'user_id': websocket_obj.user_id,
             'game_id': websocket_obj.game.game_id,
@@ -685,7 +611,7 @@ async function sendDataToBackend(request_type) {
           }
           break
         default:
-          console.log('SOMETHING ELSE [something wrong in onmessage type]')
+          console.log('')
       }
 
       websocket_obj.websocket.send(JSON.stringify({
