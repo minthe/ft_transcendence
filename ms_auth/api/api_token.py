@@ -32,7 +32,7 @@ def token(request):
 
 		if jwt_token is not None:
 			if request.method == 'GET':
-				return JsonResponse({'message': "not implemented yet"}, status=200) # TODO valentin implement
+				return JsonResponse({'message': "not implemented yet"}, status=200)
 			else:
 				return HttpResponse(status=405)
 		else:

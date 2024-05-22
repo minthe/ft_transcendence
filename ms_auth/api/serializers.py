@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
 def validate_username(username):
-	# TODO valentin add check if username already exists from 42 Intra
 	if len(username) < 2:
 		raise ValidationError("Username must be at least 2 character long")
 	if not username.isalnum():
@@ -11,7 +10,6 @@ def validate_username(username):
 	return username
 
 def validate_alias(alias):
-	# TODO valentin add check if alias already exists from 42 Intra
 	if len(alias) < 1:
 		raise ValidationError("alias cannot be empty")
 	return None

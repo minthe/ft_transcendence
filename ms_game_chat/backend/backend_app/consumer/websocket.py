@@ -192,10 +192,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
     def get_and_check_id(self, id):
         if id is None:
-            print("id is None: ", id)
             return -1
         if not isinstance(id, int):
-            print("id is not number: ", id)
             return -1
         return id
 
